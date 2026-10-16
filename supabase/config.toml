@@ -1,0 +1,11 @@
+project_id = "fti-app"
+[functions.identity]
+verify_jwt = false
+[functions.whatsapp-otp]
+verify_jwt = false
+[functions.catalog]
+verify_jwt = false
+[functions.pricing]
+verify_jwt = false
+[functions.catalog-media]
+verify_jwt = false

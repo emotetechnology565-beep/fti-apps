@@ -1,0 +1,30 @@
+{
+  "action": "submitted",
+  "submitted_at": "2026-10-16T02:27:23.468034+00:00",
+  "request": {
+    "name": "fti_login_otp",
+    "language": "en_US",
+    "category": "AUTHENTICATION",
+    "components": [
+      {
+        "type": "BODY",
+        "add_security_recommendation": true
+      },
+      {
+        "type": "BUTTONS",
+        "buttons": [
+          {
+            "type": "OTP",
+            "otp_type": "COPY_CODE",
+            "text": "Copy Code"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "id": "924828203844649",
+    "status": "APPROVED",
+    "category": "AUTHENTICATION"
+  }
+}

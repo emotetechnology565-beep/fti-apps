@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "runtime_errors": [],
+  "checks": [
+    "empty home and markets",
+    "Material catalogue navigation and empty state",
+    "Market rates navigation and empty state",
+    "Cart navigation and empty state",
+    "Orders & dispatch navigation and empty state",
+    "Payments & credit navigation and empty state",
+    "Claims & certificates navigation and empty state",
+    "Requests & quotations navigation and empty state",
+    "user-entered local draft persists after reload",
+    "calculator input and validation",
+    "checkout direct route",
+    "admin direct route",
+    "login direct route",
+    "mobile navigation and overflow"
+  ]
+}

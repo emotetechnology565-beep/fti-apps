@@ -1,0 +1,148 @@
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { catalogApi, type AdminCategory, type AdminProduct, type AdminVariant } from '../data/catalog-repository';
+import { Badge, Button, Card, Chip, Empty, Field, Row, Txt, c, s } from '@shared/ui';
+import { View } from 'react-native';
+import { ProductImages } from '../components/ProductImages';
+
+const slugFor = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const adminKey = ['catalog', 'admin'] as const;
+
+export function CatalogManagement() {
+  const client = useQueryClient();
+  const query = useQuery({ queryKey: adminKey, queryFn: catalogApi.admin, retry: false });
+  const [categoryName, setCategoryName] = useState('');
+  const [categorySlug, setCategorySlug] = useState('');
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [productId, setProductId] = useState<string | null>(null);
+  const [variantId, setVariantId] = useState<string | null>(null);
+  const [category, setCategory] = useState('');
+  const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [description, setDescription] = useState('');
+  const [kind, setKind] = useState<AdminProduct['product_kind']>('steel');
+  const [purchaseMode, setPurchaseMode] = useState<AdminProduct['purchase_mode']>('rfq');
+  const [sku, setSku] = useState('');
+  const [size, setSize] = useState('');
+  const [uom, setUom] = useState<AdminVariant['uom']>('kg');
+  const [moq, setMoq] = useState('1');
+  const [diameter, setDiameter] = useState('');
+  const [length, setLength] = useState('');
+  const [grade, setGrade] = useState('');
+  const [brand, setBrand] = useState('');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [photosFor, setPhotosFor] = useState<string | null>(null);
+
+  function editCategory(item: AdminCategory) {
+    setCategoryId(item.id); setCategoryName(item.name); setCategorySlug(item.slug);
+  }
+  function editVariant(product: AdminProduct, variant: AdminVariant) {
+    setProductId(product.id); setVariantId(variant.id); setCategory(product.category_id);
+    setName(product.name); setSlug(product.slug); setDescription(product.description ?? '');
+    setKind(product.product_kind); setPurchaseMode(product.purchase_mode);
+    setSku(variant.sku); setSize(variant.size_label ?? ''); setUom(variant.uom);
+    setMoq(String(variant.min_order_qty)); setDiameter(variant.diameter_mm ? String(variant.diameter_mm) : '');
+    setLength(variant.length_mm ? String(variant.length_mm) : '');
+    setGrade(typeof variant.attributes.grade === 'string' ? variant.attributes.grade : '');
+    setBrand(typeof variant.attributes.brand === 'string' ? variant.attributes.brand : '');
+    setNote('');
+  }
+  function resetProduct() {
+    setProductId(null); setVariantId(null); setCategory(''); setName(''); setSlug('');
+    setDescription(''); setKind('steel'); setPurchaseMode('rfq'); setSku(''); setSize('');
+    setUom('kg'); setMoq('1'); setDiameter(''); setLength(''); setGrade(''); setBrand('');
+  }
+  async function saveCategory() {
+    setBusy(true); setNote('');
+    try {
+      await catalogApi.saveCategory({ id: categoryId, name: categoryName, slug: categorySlug || slugFor(categoryName), sort_order: 0, is_active: true });
+      setCategoryId(null); setCategoryName(''); setCategorySlug(''); setNote('Category saved.');
+      await client.invalidateQueries({ queryKey: adminKey });
+    } catch (error) { setNote((error as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function setCategoryActive(item: AdminCategory, is_active: boolean) {
+    setBusy(true); setNote('');
+    try { await catalogApi.saveCategory({ ...item, is_active }); await client.invalidateQueries({ queryKey: adminKey }); }
+    catch (error) { setNote((error as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function saveProduct() {
+    if (!category || !name.trim() || !sku.trim() || Number(moq) <= 0) { setNote('Choose a category and enter a product name, SKU and valid minimum quantity.'); return; }
+    setBusy(true); setNote('');
+    try {
+      await catalogApi.saveProduct({ id: productId, category_id: category, name, slug: slug || slugFor(name), description, product_kind: kind, purchase_mode: purchaseMode }, [{ id: variantId, sku, size_label: size, uom, min_order_qty: Number(moq), diameter_mm: diameter || null, length_mm: length || null, attributes: { ...(grade ? { grade } : {}), ...(brand ? { brand } : {}) }, is_active: true }]);
+      resetProduct(); setNote('Product and variant saved as catalogue data.');
+      await client.invalidateQueries({ queryKey: adminKey });
+      await client.invalidateQueries({ queryKey: ['catalog'] });
+    } catch (error) { setNote((error as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function changeStatus(item: AdminProduct, status: AdminProduct['status']) {
+    setBusy(true); setNote('');
+    try { await catalogApi.setProductStatus(item.id, status); await client.invalidateQueries({ queryKey: adminKey }); await client.invalidateQueries({ queryKey: ['catalog'] }); }
+    catch (error) { setNote((error as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  if (query.isPending) return <Card><Txt style={s.muted}>Loading catalogue management…</Txt></Card>;
+  if (query.error) return <Empty title="Catalogue management unavailable" description={query.error.message} action={<Button secondary onPress={() => void query.refetch()}>Try again</Button>} />;
+  const data = query.data;
+  return (
+    <View style={{ gap: 18 }}>
+      <Txt style={s.h2}>Catalogue management</Txt>
+      <Txt style={s.muted}>Create real categories, products and variant specifications. New products remain drafts until you publish them.</Txt>
+      <Card style={{ gap: 12 }}>
+        <Txt style={s.h2}>{categoryId ? 'Edit category' : 'Add category'}</Txt>
+        <Field label="Category name" value={categoryName} onChangeText={(value) => { setCategoryName(value); if (!categoryId) setCategorySlug(slugFor(value)); }} />
+        <Field label="Category URL slug" value={categorySlug} onChangeText={setCategorySlug} />
+        <Row>
+          <Button disabled={busy || !categoryName.trim()} onPress={() => void saveCategory()}>{categoryId ? 'Save category' : 'Create category'}</Button>
+          {categoryId ? <Button secondary onPress={() => { setCategoryId(null); setCategoryName(''); setCategorySlug(''); }}>Cancel</Button> : null}
+        </Row>
+        {data.categories.map((item) => (
+          <Row key={item.id} style={{ justifyContent: 'space-between', flexWrap: 'wrap', borderTopWidth: 1, borderColor: c.line, paddingTop: 10 }}>
+            <View><Txt>{item.name}</Txt><Txt style={s.muted}>{item.slug} · {item.is_active ? 'Active' : 'Inactive'}</Txt></View>
+            <Row><Button secondary onPress={() => editCategory(item)}>Edit</Button><Button secondary disabled={busy} onPress={() => void setCategoryActive(item, !item.is_active)}>{item.is_active ? 'Deactivate' : 'Activate'}</Button></Row>
+          </Row>
+        ))}
+      </Card>
+
+      <Card style={{ gap: 12 }}>
+        <Txt style={s.h2}>{productId ? 'Edit product variant' : 'Add product and first variant'}</Txt>
+        <Txt style={s.muted}>Category</Txt>
+        <Row style={{ flexWrap: 'wrap' }}>{data.categories.filter((item) => item.is_active).map((item) => <Chip key={item.id} selected={category === item.id} onPress={() => setCategory(item.id)}>{item.name}</Chip>)}</Row>
+        <Field label="Product name" value={name} onChangeText={(value) => { setName(value); if (!productId) setSlug(slugFor(value)); }} />
+        <Field label="Product slug" value={slug} onChangeText={setSlug} />
+        <Field label="Description" value={description} onChangeText={setDescription} multiline />
+        <Txt style={s.muted}>Product type</Txt>
+        <Row style={{ flexWrap: 'wrap' }}>{(['steel','fastener','tractor_part','other'] as const).map((value) => <Chip key={value} selected={kind === value} onPress={() => setKind(value)}>{value.replace('_',' ')}</Chip>)}</Row>
+        <Txt style={s.muted}>Purchase mode</Txt>
+        <Row style={{ flexWrap: 'wrap' }}>{(['rfq','direct','both'] as const).map((value) => <Chip key={value} selected={purchaseMode === value} onPress={() => setPurchaseMode(value)}>{value}</Chip>)}</Row>
+        <Field label="Variant SKU" value={sku} onChangeText={setSku} />
+        <Field label="Size / variant label" value={size} onChangeText={setSize} />
+        <Txt style={s.muted}>Unit of measure</Txt>
+        <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>
+        <Field label="Minimum order quantity" numeric value={moq} onChangeText={setMoq} />
+        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" numeric value={length} onChangeText={setLength} /></View></Row>
+        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" value={brand} onChangeText={setBrand} /></View></Row>
+        <Row style={{ flexWrap: 'wrap' }}><Button disabled={busy} onPress={() => void saveProduct()}>{productId ? 'Save product and variant' : 'Create product draft'}</Button>{productId ? <Button secondary onPress={resetProduct}>New product</Button> : null}</Row>
+      </Card>
+
+      <View style={{ gap: 12 }}>
+        <Txt style={s.h2}>Products ({data.products.length})</Txt>
+        {data.products.length ? data.products.map((item) => (
+          <Card key={item.id} style={{ gap: 10 }}>
+            <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><View><Txt style={{ fontWeight: '700' }}>{item.name}</Txt><Txt style={s.muted}>{item.category} · {item.slug}</Txt></View><Badge>{item.status.toUpperCase()}</Badge></Row>
+            {item.variants.map((variant) => <Row key={variant.id} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{variant.sku} · {variant.size_label || 'No size'} · MOQ {variant.min_order_qty} {variant.uom}</Txt><Button secondary onPress={() => editVariant(item, variant)}>Edit variant</Button></Row>)}
+            <Row style={{ flexWrap: 'wrap' }}>{item.status === 'published' ? <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'draft')}>Unpublish</Button> : <Button disabled={busy} onPress={() => void changeStatus(item, 'published')}>Publish</Button>}{item.status !== 'archived' ? <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'archived')}>Archive</Button> : <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'draft')}>Restore as draft</Button>}</Row>
+            <Button secondary onPress={() => setPhotosFor(photosFor === item.id ? null : item.id)}>{photosFor === item.id ? 'Hide photos' : 'Manage photos'}</Button>
+            {photosFor === item.id ? <ProductImages productId={item.id} /> : null}
+          </Card>
+        )) : <Empty title="No catalogue records" description="Create categories and products above. Nothing is preloaded." />}
+      </View>
+      {note ? <Txt accessibilityRole="alert" style={{ color: c.red }}>{note}</Txt> : null}
+    </View>
+  );
+}

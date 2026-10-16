@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "mode": "isolated intercepted API; no external messages or records",
+  "checks": [
+    "guest public routes and protected account/staff routes",
+    "WhatsApp consent and phone validation",
+    "OTP UI and authenticated session (intercepted responses)",
+    "profile and business submission; session restoration",
+    "staff role spoofing through user metadata denied by UI",
+    "logout clears account access and hides private drafts",
+    "calculator regression",
+    "mobile navigation and WhatsApp layout"
+  ],
+  "runtime_errors": []
+}
