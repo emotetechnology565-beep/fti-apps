@@ -13,7 +13,13 @@ In your Supabase project, open **Edge Functions → Secrets**. Add these four cu
 | `BUNNY_STORAGE_ENDPOINT` | Full regional API endpoint, such as `https://storage.bunnycdn.com` |
 | `BUNNY_CDN_BASE_URL` | Full Pull Zone URL, such as `https://your-zone.b-cdn.net` |
 
+Find the storage API endpoint in **Bunny dashboard → Storage → your Storage Zone → Access**. It depends on the zone's primary region: Frankfurt uses `https://storage.bunnycdn.com`, Singapore uses `https://sg.storage.bunnycdn.com`, and Sydney uses `https://syd.storage.bunnycdn.com`. Copy the endpoint for your own zone, including `https://`, without the zone name or any file path.
+
 The Bunny Storage password is different from the account API key. Supabase provides `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions as reserved defaults. Do not expose either service key or Bunny password through an `EXPO_PUBLIC_` variable.
+
+The mobile app's local `.env` uses `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`. Those are app-side names, not the Edge Function secret names. The four `BUNNY_*` names must match exactly in the function secrets; values entered only in local `.env` do not reach dashboard-deployed functions. A `503 Image service is not configured` response means at least one required Edge value is missing or malformed. Check that `BUNNY_STORAGE_ENDPOINT` is the full HTTPS storage API URL and `BUNNY_CDN_BASE_URL` is the full HTTPS Pull Zone URL.
+
+For `BUNNY_CDN_BASE_URL`, use the hostname of the Pull Zone connected to this Storage Zone, for example `https://your-pull-zone.b-cdn.net`. Find or create it under **Storage Zone → Connected Pull Zones**, then copy its hostname from the Pull Zone page. An S3 or Storage API hostname such as `https://de-s3.storage.bunnycdn.com` is not a CDN URL.
 
 ## 2. Run the migration
 

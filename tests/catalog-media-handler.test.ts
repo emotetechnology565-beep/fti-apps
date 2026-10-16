@@ -15,6 +15,23 @@ const request = (body: unknown, auth = 'Bearer user-session') => new Request('ht
   method: 'POST', headers: { Authorization: auth }, body: JSON.stringify(body),
 });
 
+test('accepts Bunny regional storage endpoints including Sydney', async () => {
+  const send: typeof fetch = async () => { throw new Error('Unauthenticated request must not call external services'); };
+  const body = { operation: 'upload', productId, base64: image };
+  for (const storageEndpoint of ['https://storage.bunnycdn.com', 'https://sg.storage.bunnycdn.com', 'https://syd.storage.bunnycdn.com']) {
+    const response = await handleCatalogMedia(request(body, ''), { ...config, storageEndpoint }, send);
+    assert.equal(response.status, 401, storageEndpoint);
+  }
+});
+
+test('rejects a storage API hostname as the public CDN base URL', async () => {
+  const send: typeof fetch = async () => { throw new Error('Invalid configuration must not call external services'); };
+  const response = await handleCatalogMedia(request({ operation: 'upload', productId, base64: image }, ''), {
+    ...config, cdnBaseUrl: 'https://de-s3.storage.bunnycdn.com',
+  }, send);
+  assert.equal(response.status, 503);
+});
+
 test('catalogue image upload verifies identity, checks bytes and never exposes storage credentials', async () => {
   let calls = 0;
   const send: typeof fetch = async (url, init) => {

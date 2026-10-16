@@ -6,11 +6,11 @@ export function Checkout() {
     <View>
       <Heading eyebrow="REVIEW & CONFIRM" title="Checkout" />
       <Empty
-        title="Order submission is not available yet"
-        description="Checkout requires confirmed prices, inventory, tax, freight, and an authenticated order service. Your cart is kept until those services are connected."
+        title="Order from an accepted quotation"
+        description="Direct cart checkout is waiting for approved pricing, GST, freight and payment rules. Request a quotation, accept its current revision, then place an order from that quotation when tracked stock is available. Your cart remains saved."
         action={
-          <Button secondary onPress={() => router.push('/cart')}>
-            Return to cart
+          <Button secondary onPress={() => router.push('/rfqs')}>
+            Open requests & quotations
           </Button>
         }
       />

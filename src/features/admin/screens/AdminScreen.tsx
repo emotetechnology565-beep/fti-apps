@@ -5,6 +5,8 @@ import { AccessGate, StaffMfa, useAuth } from '@features/auth/ui';
 import { identityRpc, hasPermission } from '@features/auth';
 import { CatalogManagement } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
+import { SalesManagement } from '@features/quotations/ui';
+import { CommerceManagement } from '@features/orders/ui';
 import { Heading, Card, Txt, Button, Field, Empty, Badge } from '@shared/ui';
 type Review = {
   id: string;
@@ -141,6 +143,8 @@ export function Admin() {
             <ReviewQueue />
             {hasPermission(auth.identity, 'catalog.manage') ? <CatalogManagement /> : null}
             {hasPermission(auth.identity, 'price.manage') ? <PricingManagement key={auth.session?.user.id} /> : null}
+            {hasPermission(auth.identity, 'sales.manage') ? <SalesManagement key={auth.session?.user.id} /> : null}
+            <CommerceManagement key={auth.session?.user.id} />
           </View>
         </StaffMfa>
       </AccessGate>

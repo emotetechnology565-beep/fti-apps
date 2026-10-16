@@ -9,3 +9,9 @@ verify_jwt = false
 verify_jwt = false
 [functions.catalog-media]
 verify_jwt = false
+[functions.sales]
+verify_jwt = false
+[functions.sales-media]
+verify_jwt = false
+[functions.commerce]
+verify_jwt = false

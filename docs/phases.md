@@ -41,14 +41,14 @@ Validation: 14 automated tests, 8 isolated browser scenarios, TypeScript, lint, 
 
 The owner reports applying the additive migration and deploying the Auth functions. The deployed account function is named `Identity`; app calls use this exact name. Private document uploads are deferred to the media phase; business review is manual and does not claim registry validation.
 
-## Phase 3 - Catalogue: core deployed; Bunny photo add-on ready for dashboard deployment
+## Phase 3 - Catalogue: core and Bunny photo add-on deployed; staff acceptance pending
 
 - Server-backed product browse, search, category filtering, detail and pagination.
 - MFA-protected admin category/product/variant CRUD, product publication states and database audit entries.
 - Product and variant records remain empty until authorized staff adds real catalogue information.
 - Additive migration and dashboard deployment files in `deployment/phase3`.
 
-Validation: TypeScript and lint checks. The owner reports the Phase 3 migration and catalogue function deployed. Staff-role acceptance remains pending. The product-photo add-on now includes a Bunny upload Edge Function, restricted media metadata migration, staff photo controls and public product-image display. Its dashboard package is in `deployment/catalog-media`. Live upload verification awaits populated Bunny secrets and add-on deployment. Private documents and CDN purge remain outside this add-on.
+Validation: TypeScript and lint checks. The owner reports the Phase 3 migration and catalogue function deployed. Staff-role acceptance remains pending. The product-photo add-on includes a Bunny upload Edge Function, restricted media metadata migration, staff photo controls and public product-image display. Its dashboard package is in `deployment/catalog-media`. A live public media metadata request returned 200, and the deployed `catalog-media` function returned the expected 401 for an unauthenticated request after Bunny secrets were configured. A read-only request to Bunny's HTTP Storage API with the configured zone credentials returned 200. A real staff upload and public CDN display still need acceptance testing. Private documents and CDN purge remain outside this add-on.
 
 ## Phase 4 - Pricing: deployed; staff acceptance pending
 
@@ -63,10 +63,28 @@ Validation: database-level tests cover role enforcement, atomic rollback, replay
 
 The source decision register still leaves public versus dealer pricing, validity policy, discount behavior, GST, freight and rounding pending. Phase 4 uses public indicative rates with explicit expiry and immediate publication as the initial narrow workflow. Confirm business rules before building firm quotes or checkout.
 
+## Phase 5 - RFQs and quotations: deployed; buyer and staff acceptance pending
+
+- Buyers can submit multi-item RFQs against active published variants, track their requests, view quotation revisions, ask for changes, and accept the latest valid revision once.
+- MFA-protected sales staff can claim requests, review details, enter manually approved line prices and totals, and issue numbered revisions. The app does not invent tax, freight or discount policy.
+- PDF/JPEG/PNG attachments up to 3 MB are encrypted with AES-256-GCM before storage in the existing Bunny zone. The Edge Function checks authorization before upload or decryption. The public CDN may serve ciphertext only. Supabase stores metadata only; Supabase Storage is not used.
+- Additive migrations and dashboard-ready Edge Function files are in `deployment/phase5`; see [deployment instructions](phase5-deployment.md). No sample sales data is inserted.
+
+Validation: isolated database tests cover RFQ ownership, staff MFA, revision freshness, one-time acceptance, and attachment access. Encryption tests cover decryption, path binding and tamper rejection. Typecheck, lint and web export pass. The owner reports applying both migrations and deploying the `sales` and updated `sales-media` functions. Read-only live checks returned the expected 401 from `sales` and the function-level `UNAUTHENTICATED` response from `sales-media`, confirming the encryption configuration now loads. Buyer/staff workflows and real encrypted upload/download still need acceptance testing with authorized accounts.
+
+Quotation acceptance records the buyer decision. Order creation, payment, inventory and final tax/freight reconciliation belong to Phase 6.
+
+## Phase 6 - Quote-based orders and manual payments: implemented; dashboard deployment pending
+
+- Accepted, unexpired quotations can become one order with an immutable price/tax/freight snapshot and a buyer-owned delivery address. Direct cart checkout remains disabled while D01 and D03 are pending.
+- Orders reserve real tracked stock atomically. A super-admin must enter an approved reservation duration before ordering; no policy or stock is seeded. MFA order staff can record inventory movements and release expired unpaid reservations.
+- Buyers submit a full bank UTR as a claim. MFA accounts staff verify it against the bank statement before an order is confirmed and reserved stock is consumed. There is no gateway charge, partial payment, credit, refund or invoice automation.
+- The additive migration and dashboard-ready `commerce` Edge Function are in `deployment/phase6`; see [deployment instructions](phase6-deployment.md).
+
+Validation: database tests cover authorization, policy gating, one-time quote conversion, idempotency, stock reservation and release, manual payment verification and replay rejection. Typecheck, lint, full app tests and web export pass. Live buyer/staff acceptance remains pending after deployment.
+
 ## Later phases - not started
 
-5. RFQs and quotations: multi-item requests, attachments, revisions and acceptance.
-6. Orders and payments: inventory, authoritative totals, approved tax/freight rules and reconciliation.
 7. Operations: dispatch, support, notifications, reporting, security/UAT and release.
 
 Business-policy decisions in the source documentation remain pending; Phase 1 does not assume their answers.

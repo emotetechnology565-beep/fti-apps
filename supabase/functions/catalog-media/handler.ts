@@ -25,8 +25,9 @@ function validConfig(config: CatalogMediaConfig) {
     const cdn = new URL(config.cdnBaseUrl);
     return !!config.supabaseUrl && !!config.anonKey && !!config.serviceKey &&
       !!config.storageAccessKey && /^[a-z0-9-]{2,100}$/.test(config.storageZone) &&
-      storage.protocol === 'https:' && /^(?:[a-z]{2}\.)?storage\.bunnycdn\.com$/.test(storage.hostname) &&
-      cdn.protocol === 'https:' && !cdn.search && !cdn.hash && !cdn.pathname.replaceAll('/', '');
+      storage.protocol === 'https:' && /^(?:[a-z]{2,3}\.)?storage\.bunnycdn\.com$/.test(storage.hostname) &&
+      cdn.protocol === 'https:' && !cdn.search && !cdn.hash && !cdn.pathname.replaceAll('/', '') &&
+      !/^(?:[a-z0-9-]+\.)?storage\.bunnycdn\.com$/.test(cdn.hostname);
   } catch { return false; }
 }
 

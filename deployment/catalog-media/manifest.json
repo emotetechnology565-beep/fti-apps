@@ -1,6 +1,6 @@
 {
-  "README.md": "cc6ff429b88980f664785b678b9ef7f68a7c8b693b0e67344e1b1c04a8f4b483",
-  "01_catalog_media.sql": "de05da2c055be29e60a0c1c5e090c336380b3eaab6f38498a703b5b82ea1deb4",
-  "02_catalog.ts": "b37fc4effcbb1559f451f98c51d6bd5c0ef5afb0cc73b54b0e929aca191bc23a",
-  "03_catalog-media.ts": "e4ae732112e4b36d2b5a9ccb104af786965d932e769814863b9d81619fd33b32"
+    "README.md":  "72d020593d3596401032f1edd5c6a9b9b14b7f0984bc176602f0670dd7cf2681",
+    "01_catalog_media.sql":  "de05da2c055be29e60a0c1c5e090c336380b3eaab6f38498a703b5b82ea1deb4",
+    "02_catalog.ts":  "b37fc4effcbb1559f451f98c51d6bd5c0ef5afb0cc73b54b0e929aca191bc23a",
+    "03_catalog-media.ts":  "811ace8a5721102aedb598ebd1621faa6a89fbb18e325d8e1d955cc736d8c94e"
 }
