@@ -24,7 +24,7 @@ for (const baseline of [false, true])
       if (baseline)
         await db.exec(
           readFileSync(
-            '../FTI_Implementation_Documentation_v2/14_PostgreSQL_Schema_Blueprint.sql',
+            'supabase/baseline/blueprint.sql',
             'utf8',
           ).replace('create extension if not exists pgcrypto;', ''),
         );

@@ -12,7 +12,7 @@ test('quote-to-order reserves tracked stock once and requires MFA bank verificat
       create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
       create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
       grant usage on schema auth to anon,authenticated;`);
-    await db.exec(readFileSync('../FTI_Implementation_Documentation_v2/14_PostgreSQL_Schema_Blueprint.sql','utf8').replace('create extension if not exists pgcrypto;',''));
+    await db.exec(readFileSync('supabase/baseline/blueprint.sql','utf8').replace('create extension if not exists pgcrypto;',''));
     for (const file of ['202610150001_phase2_identity.sql','202610160001_phase3_catalog.sql','202610160005_phase5_sales.sql','202610160007_phase6_commerce.sql'])
       await db.exec(readFileSync(`supabase/migrations/${file}`,'utf8').replace(/^\uFEFF/,''));
     await db.exec(`insert into auth.users values('${ids[0]}','+910000000001',now()),('${ids[1]}','+910000000002',now()),('${ids[2]}','+910000000003',now());`);

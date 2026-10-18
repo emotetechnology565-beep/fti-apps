@@ -1,0 +1,6748 @@
+{
+  "charts": [
+    {
+      "id": "bolt-dimensions",
+      "title": "Hex bolt and screw dimensions",
+      "standard": "IS:1363-1967 / ISO-272 / BS:4190",
+      "unit": "mm",
+      "filename": "BOLT-TECHNICAL-DIAMENTIONS-B5BxHUH4.pdf",
+      "sha256": "26ad4cbe04c6dbf467bd518a64bcb282db4501f880d2d055cfb645e359205c45",
+      "page": 1,
+      "groups": [
+        {
+          "id": "hex-bolt",
+          "label": "Hex bolts / screws"
+        }
+      ],
+      "notes": [
+        "Dimensions are in mm. The PDF identifies thread tolerance class IS:4218-8g.",
+        "Partial-thread minimum b: L <= 130 mm: 2d + 6; 130 < L <= 200 mm: 2d + 12; L > 200 mm: 2d + 25.",
+        "The source prints a thread-length tolerance of -0 / +2P. Its b1 column is blank; no b1 value is inferred.",
+        "This is a source reference for black hex bolts and screws; confirm the applicable standard for the supplied product."
+      ],
+      "pdfUrl": "https://ftis.b-cdn.net/product-documents/fasteners/26ad4cbe04c6dbf467bd518a64bcb282db4501f880d2d055cfb645e359205c45/bolt-dimensions.pdf"
+    },
+    {
+      "id": "metric-weights",
+      "title": "Metric bolt and nut weights",
+      "standard": "IS:1364-1992 coarse thread",
+      "unit": "kg per 1,000 pieces",
+      "filename": "WEIGHT-COUNT-Ccgf-h4J (1).pdf",
+      "sha256": "62a99e6c22f1c8ffbf3d504285e6ad626b60d97faffeb1bc0fedb3a5b520ce2a",
+      "page": 1,
+      "groups": [
+        {
+          "id": "hex-bolt",
+          "label": "Hex bolts"
+        },
+        {
+          "id": "hex-nut",
+          "label": "Hex nuts"
+        }
+      ],
+      "date": "2026-01-01",
+      "notes": [
+        "Approximate source weights in kg per 1,000 pieces. Blank cells are omitted; no values are interpolated.",
+        "Bolt rows and the separate nut row are distinct. The PDF does not state that each bolt weight includes a nut."
+      ],
+      "pdfUrl": "https://ftis.b-cdn.net/product-documents/fasteners/62a99e6c22f1c8ffbf3d504285e6ad626b60d97faffeb1bc0fedb3a5b520ce2a/metric-weights.pdf"
+    },
+    {
+      "id": "unc-weights",
+      "title": "UNC bolt and nut weights",
+      "standard": "BS:1768 UNC",
+      "unit": "kg per 1,000 pieces",
+      "filename": "WEIGHT-COUNT-BS-STD-DTyTNIO9.pdf",
+      "sha256": "e46117861e74b333eb46e14462d7386d40af70f4018743d888fb4767cb5aac62",
+      "page": 1,
+      "groups": [
+        {
+          "id": "hex-bolt",
+          "label": "Hex bolts"
+        },
+        {
+          "id": "hex-nut",
+          "label": "Hex nuts"
+        }
+      ],
+      "date": "2026-01-01",
+      "notes": [
+        "Approximate source weights in kg per 1,000 pieces. Blank cells are omitted; no values are interpolated.",
+        "Bolt rows and the separate nut row are distinct. The PDF does not state that each bolt weight includes a nut."
+      ],
+      "pdfUrl": "https://ftis.b-cdn.net/product-documents/fasteners/e46117861e74b333eb46e14462d7386d40af70f4018743d888fb4767cb5aac62/unc-weights.pdf"
+    },
+    {
+      "id": "washer-weights",
+      "title": "Washer and lock nut weights",
+      "standard": "See individual fastener type",
+      "unit": "kg per 1,000 pieces",
+      "filename": "WEIGHT-COUNT-WASHERS-GpgTiSCt.pdf",
+      "sha256": "a962c0b704d00cdd593a0376e56c5fb284f02953c5e4cf184591564a962e6f97",
+      "page": 1,
+      "groups": [
+        {
+          "id": "plain-washer",
+          "label": "Plain washers",
+          "standard": "IS:2016"
+        },
+        {
+          "id": "machined-washer",
+          "label": "Machined washers",
+          "standard": "IS:2016"
+        },
+        {
+          "id": "taper-5372",
+          "label": "Taper washers",
+          "standard": "IS:5372"
+        },
+        {
+          "id": "taper-5374",
+          "label": "Taper washers",
+          "standard": "IS:5374"
+        },
+        {
+          "id": "heavy-washer",
+          "label": "Heavy washers",
+          "standard": "IS:6649"
+        },
+        {
+          "id": "hex-lock-nut",
+          "label": "Hex lock nuts",
+          "standard": "IS:1364-92"
+        },
+        {
+          "id": "spring-washer",
+          "label": "Spring washers",
+          "standard": "IS:3063"
+        }
+      ],
+      "date": "2026-01-01",
+      "notes": [
+        "Approximate source weights in kg per 1,000 pieces. Washer types and standards are separate; do not substitute one type for another."
+      ],
+      "pdfUrl": "https://ftis.b-cdn.net/product-documents/fasteners/a962c0b704d00cdd593a0376e56c5fb284f02953c5e4cf184591564a962e6f97/washer-weights.pdf"
+    }
+  ],
+  "rows": [
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "dimensions": {
+        "Thread pitch": "1.00",
+        "Major diameter min.": "5.694",
+        "Major diameter max.": "5.974",
+        "Pitch diameter min.": "5.144",
+        "Pitch diameter max.": "5.324",
+        "Across flats min.": "9.64",
+        "Across flats max.": "10.00",
+        "Across corners min.": "10.89",
+        "Head thickness min.": "3.62",
+        "Head thickness max.": "4.38"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "dimensions": {
+        "Thread pitch": "1.25",
+        "Major diameter min.": "7.637",
+        "Major diameter max.": "7.972",
+        "Pitch diameter min.": "6.97",
+        "Pitch diameter max.": "7.16",
+        "Across flats min.": "12.57",
+        "Across flats max.": "13.00",
+        "Across corners min.": "14.20",
+        "Head thickness min.": "5.12",
+        "Head thickness max.": "5.88"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "dimensions": {
+        "Thread pitch": "1.50",
+        "Major diameter min.": "9.593",
+        "Major diameter max.": "9.968",
+        "Pitch diameter min.": "8.782",
+        "Pitch diameter max.": "8.994",
+        "Across flats min.": "16.57",
+        "Across flats max.": "17.00",
+        "Across corners min.": "18.72",
+        "Head thickness min.": "6.55",
+        "Head thickness max.": "7.45"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "dimensions": {
+        "Thread pitch": "1.75",
+        "Major diameter min.": "11.541",
+        "Major diameter max.": "11.966",
+        "Pitch diameter min.": "10.593",
+        "Pitch diameter max.": "10.829",
+        "Across flats min.": "18.48",
+        "Across flats max.": "19.00",
+        "Across corners min.": "20.88",
+        "Head thickness min.": "7.55",
+        "Head thickness max.": "8.45"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "dimensions": {
+        "Thread pitch": "2.00",
+        "Major diameter min.": "13.512",
+        "Major diameter max.": "13.962",
+        "Pitch diameter min.": "12.413",
+        "Pitch diameter max.": "12.663",
+        "Across flats min.": "21.16",
+        "Across flats max.": "22.00",
+        "Across corners min.": "23.91",
+        "Head thickness min.": "8.55",
+        "Head thickness max.": "9.45"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "dimensions": {
+        "Thread pitch": "2.00",
+        "Major diameter min.": "15.512",
+        "Major diameter max.": "15.962",
+        "Pitch diameter min.": "14.413",
+        "Pitch diameter max.": "14.663",
+        "Across flats min.": "23.16",
+        "Across flats max.": "24.00",
+        "Across corners min.": "26.17",
+        "Head thickness min.": "9.55",
+        "Head thickness max.": "10.45"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "dimensions": {
+        "Thread pitch": "2.50",
+        "Major diameter min.": "17.512",
+        "Major diameter max.": "17.962",
+        "Pitch diameter min.": "16.069",
+        "Pitch diameter max.": "16.334",
+        "Across flats min.": "26.16",
+        "Across flats max.": "27.00",
+        "Across corners min.": "29.56",
+        "Head thickness min.": "11.45",
+        "Head thickness max.": "12.55"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "dimensions": {
+        "Thread pitch": "2.50",
+        "Major diameter min.": "19.428",
+        "Major diameter max.": "19.958",
+        "Pitch diameter min.": "18.069",
+        "Pitch diameter max.": "18.334",
+        "Across flats min.": "29.16",
+        "Across flats max.": "30.00",
+        "Across corners min.": "32.95",
+        "Head thickness min.": "12.45",
+        "Head thickness max.": "13.55"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M22",
+      "dimensions": {
+        "Thread pitch": "2.50",
+        "Major diameter min.": "21.428",
+        "Major diameter max.": "21.958",
+        "Pitch diameter min.": "20.069",
+        "Pitch diameter max.": "20.334",
+        "Across flats min.": "31.00",
+        "Across flats max.": "32.00",
+        "Across corners min.": "35.03",
+        "Head thickness min.": "13.45",
+        "Head thickness max.": "14.55"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "dimensions": {
+        "Thread pitch": "3.00",
+        "Major diameter min.": "23.352",
+        "Major diameter max.": "23.952",
+        "Pitch diameter min.": "21.688",
+        "Pitch diameter max.": "22.003",
+        "Across flats min.": "35.00",
+        "Across flats max.": "36.00",
+        "Across corners min.": "39.55",
+        "Head thickness min.": "15.45",
+        "Head thickness max.": "15.55"
+      },
+      "reviewNote": "Source shows a narrow head-thickness range of 15.45-15.55 mm. Confirm with FTI before specifying."
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "dimensions": {
+        "Thread pitch": "3.00",
+        "Major diameter min.": "26.352",
+        "Major diameter max.": "26.952",
+        "Pitch diameter min.": "24.688",
+        "Pitch diameter max.": "25.003",
+        "Across flats min.": "40.00",
+        "Across flats max.": "41.00",
+        "Across corners min.": "45.20",
+        "Head thickness min.": "16.45",
+        "Head thickness max.": "17.55"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "dimensions": {
+        "Thread pitch": "3.50",
+        "Major diameter min.": "29.277",
+        "Major diameter max.": "29.947",
+        "Pitch diameter min.": "27.339",
+        "Pitch diameter max.": "27.674",
+        "Across flats min.": "45.00",
+        "Across flats max.": "46.00",
+        "Across corners min.": "50.85",
+        "Head thickness min.": "18.35",
+        "Head thickness max.": "19.65"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "dimensions": {
+        "Thread pitch": "3.50",
+        "Major diameter min.": "32.277",
+        "Major diameter max.": "32.947",
+        "Pitch diameter min.": "30.339",
+        "Pitch diameter max.": "30.674",
+        "Across flats min.": "49.00",
+        "Across flats max.": "50.00",
+        "Across corners min.": "55.37",
+        "Head thickness min.": "20.35",
+        "Head thickness max.": "21.65"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "dimensions": {
+        "Thread pitch": "4.00",
+        "Major diameter min.": "35.19",
+        "Major diameter max.": "35.94",
+        "Pitch diameter min.": "32.987",
+        "Pitch diameter max.": "33.342",
+        "Across flats min.": "53.80",
+        "Across flats max.": "55.00",
+        "Across corners min.": "60.79",
+        "Head thickness min.": "22.35",
+        "Head thickness max.": "23.65"
+      }
+    },
+    {
+      "chartId": "bolt-dimensions",
+      "groupId": "hex-bolt",
+      "size": "M39",
+      "dimensions": {
+        "Thread pitch": "4.00",
+        "Major diameter min.": "38.19",
+        "Major diameter max.": "38.94",
+        "Pitch diameter min.": "35.987",
+        "Pitch diameter max.": "36.342",
+        "Across flats min.": "58.80",
+        "Across flats max.": "60.00",
+        "Across corners min.": "66.44",
+        "Head thickness min.": "24.35",
+        "Head thickness max.": "25.65"
+      }
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 1.64,
+      "length": "10 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 2.63,
+      "length": "10 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 4.08,
+      "length": "10 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 31.51,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 350.0,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 464.0,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 592.0,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 1.8,
+      "length": "12 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 2.87,
+      "length": "12 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 4.42,
+      "length": "12 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 9.8,
+      "length": "12 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 33.0,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 370.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 488.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 620.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 1.96,
+      "length": "14 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 3.12,
+      "length": "14 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 4.77,
+      "length": "14 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 10.4,
+      "length": "14 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 36.87,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 53.02,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 72.0,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 390.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 513.25,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 648.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 795.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 2.12,
+      "length": "16 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 3.37,
+      "length": "16 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 5.11,
+      "length": "16 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 11.1,
+      "length": "16 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 21.2,
+      "length": "16 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 40.22,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 57.94,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 79.0,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 107.0,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 137.25,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 410.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 538.5,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 676.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 835.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 2.28,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 3.62,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 5.46,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 11.7,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 22.2,
+      "length": "18 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 43.82,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 62.97,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 86.0,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 115.0,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 147.5,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 430.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 563.75,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 704.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 875.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 2.44,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 3.87,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 5.8,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 12.4,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 23.2,
+      "length": "20 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 48.22,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 67.93,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 93.0,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 123.0,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 157.75,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 450.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 589.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 732.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 915.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 2.8,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 4.49,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 6.65,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 14.1,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 25.9,
+      "length": "25 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 52.62,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 72.97,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 100.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 131.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 168.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 247.0,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 470.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 614.25,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 760.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 955.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 3.19,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 5.11,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 7.78,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 15.7,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 28.5,
+      "length": "30 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 57.02,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 78.01,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 107.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 139.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 178.25,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 265.0,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 490.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 639.5,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 788.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 995.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 3.57,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 5.73,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 8.91,
+      "length": "35 mm",
+      "reviewNote": "Confirm this source entry: the M6 chart increases only from 8.91 at 35 mm to 9.04 at 40 mm."
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 17.7,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 31.3,
+      "length": "35 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 61.42,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 83.05,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 114.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 147.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 188.5,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 283.0,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 510.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 664.75,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 821.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1035.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 3.96,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 6.35,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 9.04,
+      "length": "40 mm",
+      "reviewNote": "Confirm this source entry: the M6 chart increases only from 8.91 at 35 mm to 9.04 at 40 mm."
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 19.7,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 34.4,
+      "length": "40 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 65.82,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 88.09,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 121.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 155.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 198.75,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 301.0,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 531.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 690.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 854.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1075.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 4.34,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 6.99,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 10.17,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 21.7,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 37.5,
+      "length": "45 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 70.22,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 93.13,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 128.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 163.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 209.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 319.0,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 552.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 716.5,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 887.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1115.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 4.73,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 7.59,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 11.3,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 23.7,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 40.6,
+      "length": "50 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 74.62,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 98.17,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 136.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 171.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 219.25,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 337.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 573.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 743.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 920.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1155.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 5.12,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 8.21,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 12.4,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 25.7,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 43.7,
+      "length": "55 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 79.02,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 103.21,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 144.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 179.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 229.5,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 355.0,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 594.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 769.5,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 953.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1195.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 5.5,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 8.83,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 13.5,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 27.7,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 46.8,
+      "length": "60 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 83.42,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 108.25,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 152.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 187.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 239.75,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 373.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 636.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 824.75,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1023.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1250.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 5.89,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 9.45,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 14.6,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 29.7,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 49.9,
+      "length": "65 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 87.82,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 113.29,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 160.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 195.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 250.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 391.0,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 678.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 880.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1093.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1330.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 6.28,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 10.1,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 15.7,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 31.7,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 53.0,
+      "length": "70 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 92.22,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 118.33,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 168.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 203.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 260.25,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 409.0,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 720.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 935.25,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1163.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1410.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 6.67,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 10.7,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 16.8,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 33.7,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 56.1,
+      "length": "75 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 96.62,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 123.37,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 176.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 211.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 270.5,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 427.0,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 762.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 990.5,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1233.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1490.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 7.06,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 11.3,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 18.0,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 35.7,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 59.2,
+      "length": "80 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 101.02,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 128.41,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 184.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 219.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 270.75,
+      "length": "100 mm",
+      "reviewNote": "Source value 270.75 needs confirmation: adjacent 95 mm and 110 mm entries are 270.50 and 301.25."
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 445.0,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 804.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1045.75,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1303.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1570.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 7.45,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 11.9,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 19.1,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 37.7,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 62.3,
+      "length": "85 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 110.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 138.49,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 200.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 237.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 301.25,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 481.0,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 846.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1101.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1373.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1650.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 7.84,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 12.5,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 20.2,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 39.7,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 65.4,
+      "length": "90 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 119.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 148.57,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 216.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 253.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 321.75,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 517.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 888.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1156.25,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1443.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1730.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 8.23,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 13.1,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 21.3,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 41.7,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 68.5,
+      "length": "95 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 127.8,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 158.65,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 232.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 269.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 342.25,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 553.0,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 930.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1211.5,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1513.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1810.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M4",
+      "weightKgPer1000": 8.62,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M5",
+      "weightKgPer1000": 13.7,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M6",
+      "weightKgPer1000": 22.4,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 43.7,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 71.6,
+      "length": "100 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 136.6,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 168.73,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 248.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 285.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 362.75,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 589.0,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 972.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1266.75,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1583.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1890.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 47.7,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 77.8,
+      "length": "110 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 145.4,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 178.81,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 264.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 301.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 383.25,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 625.0,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1014.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1322.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1653.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 1970.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M8",
+      "weightKgPer1000": 51.7,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 84.0,
+      "length": "120 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 154.2,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 188.89,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 280.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 317.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 403.75,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 661.0,
+      "length": "160 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1056.0,
+      "length": "210 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1377.25,
+      "length": "210 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1723.0,
+      "length": "210 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 2050.0,
+      "length": "210 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 90.2,
+      "length": "130 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 163.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 198.97,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 296.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 333.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 424.25,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 697.0,
+      "length": "170 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1098.0,
+      "length": "220 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1432.5,
+      "length": "220 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1793.0,
+      "length": "220 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 2130.0,
+      "length": "220 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 96.4,
+      "length": "140 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 172.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 209.05,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 312.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 349.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 444.75,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 733.0,
+      "length": "180 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1140.0,
+      "length": "230 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1487.75,
+      "length": "230 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1863.0,
+      "length": "230 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 2210.0,
+      "length": "230 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M10",
+      "weightKgPer1000": 102.6,
+      "length": "150 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 181.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 219.13,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 328.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 365.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 465.25,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 769.0,
+      "length": "190 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1182.0,
+      "length": "240 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1543.0,
+      "length": "240 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 1933.0,
+      "length": "240 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 2290.0,
+      "length": "240 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M12",
+      "weightKgPer1000": 190.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M14",
+      "weightKgPer1000": 229.21,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M16",
+      "weightKgPer1000": 344.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M18",
+      "weightKgPer1000": 381.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M20",
+      "weightKgPer1000": 485.75,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M24",
+      "weightKgPer1000": 805.0,
+      "length": "200 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M27",
+      "weightKgPer1000": 1224.0,
+      "length": "250 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M30",
+      "weightKgPer1000": 1598.25,
+      "length": "250 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M33",
+      "weightKgPer1000": 2003.0,
+      "length": "250 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-bolt",
+      "size": "M36",
+      "weightKgPer1000": 2370.0,
+      "length": "250 mm"
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M4",
+      "weightKgPer1000": 0.82
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M5",
+      "weightKgPer1000": 1.24
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M6",
+      "weightKgPer1000": 2.52
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M8",
+      "weightKgPer1000": 5.4
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M10",
+      "weightKgPer1000": 11.69
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M12",
+      "weightKgPer1000": 17.26
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M14",
+      "weightKgPer1000": 26.0
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M16",
+      "weightKgPer1000": 33.58
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M18",
+      "weightKgPer1000": 46.0
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M20",
+      "weightKgPer1000": 64.59
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M24",
+      "weightKgPer1000": 110.4
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M27",
+      "weightKgPer1000": 158.0
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M30",
+      "weightKgPer1000": 222.0
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M33",
+      "weightKgPer1000": 279.0
+    },
+    {
+      "chartId": "metric-weights",
+      "groupId": "hex-nut",
+      "size": "M36",
+      "weightKgPer1000": 387.0
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 11.05,
+      "length": "3/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 151.6,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 244.6,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 367.8,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 514.2,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 704.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 943.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1219.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 1569.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 2397.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 3404.0,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 11.8,
+      "length": "1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 19.9,
+      "length": "1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 29.3,
+      "length": "1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 169.3,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 270.6,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 403.5,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 561.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 763.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1017.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1308.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 1676.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 2543.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 3595.0,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 13.1,
+      "length": "5/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 22.0,
+      "length": "5/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 32.4,
+      "length": "5/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 187.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 296.6,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 439.2,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 607.8,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 822.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1091.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1397.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 1784.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 2689.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 3786.0,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 14.4,
+      "length": "3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 24.1,
+      "length": "3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 35.5,
+      "length": "3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 50.8,
+      "length": "3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 81.0,
+      "length": "3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 206.5,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 322.6,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 474.9,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 654.6,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 881.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1166.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1486.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 1891.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 2835.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 3977.0,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 15.7,
+      "length": "7/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 26.2,
+      "length": "7/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 38.6,
+      "length": "7/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 55.0,
+      "length": "7/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 86.6,
+      "length": "7/8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 228.2,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 351.2,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 510.6,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 701.4,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 940.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1240.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1575.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 1998.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 2980.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 4168.0,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 17.4,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 28.3,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 41.7,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 59.2,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 92.2,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 112.8,
+      "length": "1″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 249.7,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 382.3,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 549.6,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 748.2,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 999.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1315.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1664.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2106.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3126.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 4359.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 20.8,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 33.7,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 48.6,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 67.6,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 103.4,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 127.1,
+      "length": "1 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 271.3,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 413.4,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 591.9,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 799.2,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1058.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1389.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1753.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2213.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3272.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 4550.0,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 24.3,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 39.1,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 56.4,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 78.2,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 115.9,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 141.4,
+      "length": "1 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 292.8,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 444.5,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 634.2,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 854.4,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1123.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1463.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1842.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2320.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3418.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 4741.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 27.7,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 44.5,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 64.2,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 88.8,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 129.7,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 158.9,
+      "length": "1 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 314.4,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 475.6,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 676.5,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 909.6,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1193.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1544.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 1931.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2428.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3564.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 4932.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 31.2,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 49.9,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 71.9,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 99.4,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 143.5,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 176.4,
+      "length": "2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 335.9,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 506.7,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 718.8,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 964.8,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1263.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1630.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2028.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2535.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3709.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 5123.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 34.6,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 55.2,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 79.7,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 110.0,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 157.3,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 193.9,
+      "length": "2 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 357.5,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 537.8,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 761.1,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1020.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1333.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1717.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2133.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2651.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 3855.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 5314.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 38.1,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 60.6,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 87.4,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 120.6,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 171.1,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 211.4,
+      "length": "2 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 379.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 568.9,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 803.4,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1075.2,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1403.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1803.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2238.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2776.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 4001.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 5505.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 41.5,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 66.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 95.2,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 131.2,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 184.9,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 229.0,
+      "length": "2 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 400.6,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 600.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 845.7,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1130.4,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1473.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 1889.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2342.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 2900.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 4159.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 5696.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 45.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 71.4,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 103.0,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 141.8,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 198.7,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 246.5,
+      "length": "3″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 443.7,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 662.2,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 930.3,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1240.8,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1613.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2062.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2552.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 3149.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 4497.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 6093.0,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 48.4,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 76.8,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 110.7,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 152.4,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 212.5,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 264.0,
+      "length": "3 1/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 486.8,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 724.4,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1014.9,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1351.2,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1754.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2235.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2762.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 3399.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 4836.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 6536.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 51.9,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 82.1,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 118.5,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 163.0,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 226.3,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 281.5,
+      "length": "3 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 529.9,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 786.6,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1099.5,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1461.6,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 1894.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2408.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 2971.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 3648.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 5175.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 6979.0,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 55.3,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 87.5,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 126.2,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 173.6,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 240.1,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 299.0,
+      "length": "3 3/4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 573.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 848.8,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1184.1,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1572.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2034.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2581.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 3181.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 3897.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 5514.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 7422.0,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 58.8,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 92.9,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 134.0,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 184.1,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 253.9,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 316.5,
+      "length": "4″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 616.1,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 911.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1268.7,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1682.4,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2174.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2754.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 3391.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 4146.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 5853.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 7865.0,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 65.7,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 103.7,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 149.5,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 205.3,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 281.5,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 351.5,
+      "length": "4 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 659.2,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 973.2,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1353.3,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1792.8,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2314.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 2927.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 3601.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 4395.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 6192.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 8308.0,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 72.6,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 114.4,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 165.0,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 226.5,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 309.1,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 386.5,
+      "length": "5″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 702.3,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1035.4,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1437.9,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 1903.2,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2454.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3100.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 3811.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 4644.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 6531.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 8751.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 79.5,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 125.2,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 180.6,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 247.7,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 336.7,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 421.6,
+      "length": "5 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 745.4,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1097.6,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1522.5,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 2013.6,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2594.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3273.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 4021.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 4893.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 6870.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 9194.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 86.4,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 135.9,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 196.1,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 268.9,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 364.3,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 456.6,
+      "length": "6″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 788.5,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1159.8,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1607.1,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 2124.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2734.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3446.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 4231.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 5142.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 7209.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 9637.0,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 93.3,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 146.6,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 211.6,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 290.1,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 391.9,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 491.6,
+      "length": "6 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 831.6,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1222.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1691.7,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 2234.4,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 2874.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3619.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 4441.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 5391.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 7548.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 10080.0,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 100.2,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 157.3,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 227.1,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 311.3,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 419.5,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 526.6,
+      "length": "7″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 874.7,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1284.2,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1776.3,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 2344.8,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 3014.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3792.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 4651.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 5640.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 7887.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 10523.0,
+      "length": "9 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 107.1,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 168.0,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 242.6,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 332.5,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 447.1,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 561.6,
+      "length": "7 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/8″",
+      "weightKgPer1000": 917.8,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/4″",
+      "weightKgPer1000": 1346.4,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/8″",
+      "weightKgPer1000": 1860.9,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1″",
+      "weightKgPer1000": 2455.2,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/8″",
+      "weightKgPer1000": 3154.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/4″",
+      "weightKgPer1000": 3965.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/8″",
+      "weightKgPer1000": 4861.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 1/2″",
+      "weightKgPer1000": 5889.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1 3/4″",
+      "weightKgPer1000": 8226.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "2″",
+      "weightKgPer1000": 10966.0,
+      "length": "10″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 114.0,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 178.7,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 258.1,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 353.7,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 474.7,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 596.6,
+      "length": "8″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 120.9,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 189.4,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 273.6,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 374.9,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 502.3,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 631.6,
+      "length": "8 1/2″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/4″",
+      "weightKgPer1000": 127.8,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "5/16″",
+      "weightKgPer1000": 200.1,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "3/8″",
+      "weightKgPer1000": 289.1,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "7/16″",
+      "weightKgPer1000": 396.1,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "1/2″",
+      "weightKgPer1000": 529.9,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-bolt",
+      "size": "9/16″",
+      "weightKgPer1000": 666.6,
+      "length": "9″"
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1/4″",
+      "weightKgPer1000": 7.82
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "5/16″",
+      "weightKgPer1000": 12.37
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "3/8″",
+      "weightKgPer1000": 19.8
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "7/16″",
+      "weightKgPer1000": 33.67
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1/2″",
+      "weightKgPer1000": 44.08
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "9/16″",
+      "weightKgPer1000": 68.4
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "5/8″",
+      "weightKgPer1000": 86.24
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "3/4″",
+      "weightKgPer1000": 142.5
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "7/8″",
+      "weightKgPer1000": 190.0
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1″",
+      "weightKgPer1000": 286.23
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1 1/8″",
+      "weightKgPer1000": 400.73
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1 1/4″",
+      "weightKgPer1000": 516.56
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1 3/8″",
+      "weightKgPer1000": 834.85
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1 1/2″",
+      "weightKgPer1000": 885.54
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "1 3/4″",
+      "weightKgPer1000": 1338.14
+    },
+    {
+      "chartId": "unc-weights",
+      "groupId": "hex-nut",
+      "size": "2″",
+      "weightKgPer1000": 1445.25
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M5",
+      "weightKgPer1000": 0.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M6",
+      "weightKgPer1000": 1.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M8",
+      "weightKgPer1000": 2.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M10",
+      "weightKgPer1000": 3.9
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M12",
+      "weightKgPer1000": 5.8
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M16",
+      "weightKgPer1000": 10.6
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M20",
+      "weightKgPer1000": 16.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M24",
+      "weightKgPer1000": 31.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M27",
+      "weightKgPer1000": 39.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M30",
+      "weightKgPer1000": 50.5
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M33",
+      "weightKgPer1000": 71.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M36",
+      "weightKgPer1000": 87.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M39",
+      "weightKgPer1000": 126.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M42",
+      "weightKgPer1000": 175.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M45",
+      "weightKgPer1000": 212.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M48",
+      "weightKgPer1000": 284.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "plain-washer",
+      "size": "M52",
+      "weightKgPer1000": 319.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M5",
+      "weightKgPer1000": 0.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M6",
+      "weightKgPer1000": 1.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M8",
+      "weightKgPer1000": 2.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M10",
+      "weightKgPer1000": 4.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M12",
+      "weightKgPer1000": 6.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M16",
+      "weightKgPer1000": 11.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M20",
+      "weightKgPer1000": 17.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M24",
+      "weightKgPer1000": 33.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M27",
+      "weightKgPer1000": 42.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M30",
+      "weightKgPer1000": 53.6
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M33",
+      "weightKgPer1000": 75.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M36",
+      "weightKgPer1000": 92.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M39",
+      "weightKgPer1000": 133.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M42",
+      "weightKgPer1000": 183.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M45",
+      "weightKgPer1000": 220.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M48",
+      "weightKgPer1000": 294.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "machined-washer",
+      "size": "M52",
+      "weightKgPer1000": 330.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M5",
+      "weightKgPer1000": 3.75
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M6",
+      "weightKgPer1000": 5.95
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M8",
+      "weightKgPer1000": 9.5
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M10",
+      "weightKgPer1000": 8.8
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M12",
+      "weightKgPer1000": 18.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M16",
+      "weightKgPer1000": 31.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M20",
+      "weightKgPer1000": 57.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M24",
+      "weightKgPer1000": 128.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M27",
+      "weightKgPer1000": 139.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M30",
+      "weightKgPer1000": 152.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M33",
+      "weightKgPer1000": 190.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M36",
+      "weightKgPer1000": 243.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M39",
+      "weightKgPer1000": 283.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M42",
+      "weightKgPer1000": 312.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M45",
+      "weightKgPer1000": 352.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M48",
+      "weightKgPer1000": 402.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5372",
+      "size": "M52",
+      "weightKgPer1000": 460.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M5",
+      "weightKgPer1000": 3.95
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M6",
+      "weightKgPer1000": 6.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M8",
+      "weightKgPer1000": 10.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M10",
+      "weightKgPer1000": 9.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M12",
+      "weightKgPer1000": 20.1
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M16",
+      "weightKgPer1000": 35.6
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M20",
+      "weightKgPer1000": 67.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M24",
+      "weightKgPer1000": 143.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M27",
+      "weightKgPer1000": 154.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M30",
+      "weightKgPer1000": 174.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M33",
+      "weightKgPer1000": 221.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M36",
+      "weightKgPer1000": 284.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M39",
+      "weightKgPer1000": 339.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M42",
+      "weightKgPer1000": 368.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M45",
+      "weightKgPer1000": 408.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M48",
+      "weightKgPer1000": 458.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "taper-5374",
+      "size": "M52",
+      "weightKgPer1000": 520.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M5",
+      "weightKgPer1000": 7.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M6",
+      "weightKgPer1000": 10.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M8",
+      "weightKgPer1000": 13.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M10",
+      "weightKgPer1000": 16.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M12",
+      "weightKgPer1000": 19.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M16",
+      "weightKgPer1000": 29.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M20",
+      "weightKgPer1000": 44.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M24",
+      "weightKgPer1000": 63.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M27",
+      "weightKgPer1000": 80.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M30",
+      "weightKgPer1000": 101.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M33",
+      "weightKgPer1000": 120.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M36",
+      "weightKgPer1000": 146.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M39",
+      "weightKgPer1000": 167.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M42",
+      "weightKgPer1000": 201.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M45",
+      "weightKgPer1000": 222.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M48",
+      "weightKgPer1000": 260.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "heavy-washer",
+      "size": "M52",
+      "weightKgPer1000": 300.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M5",
+      "weightKgPer1000": 0.8
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M6",
+      "weightKgPer1000": 1.6
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M8",
+      "weightKgPer1000": 3.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M10",
+      "weightKgPer1000": 7.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M12",
+      "weightKgPer1000": 10.4
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M16",
+      "weightKgPer1000": 20.5
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M20",
+      "weightKgPer1000": 40.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M24",
+      "weightKgPer1000": 69.5
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M27",
+      "weightKgPer1000": 101.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M30",
+      "weightKgPer1000": 139.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M33",
+      "weightKgPer1000": 183.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M36",
+      "weightKgPer1000": 244.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M39",
+      "weightKgPer1000": 316.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M42",
+      "weightKgPer1000": 403.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M45",
+      "weightKgPer1000": 500.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M48",
+      "weightKgPer1000": 617.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "hex-lock-nut",
+      "size": "M52",
+      "weightKgPer1000": 755.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M5",
+      "weightKgPer1000": 0.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M6",
+      "weightKgPer1000": 0.8
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M8",
+      "weightKgPer1000": 1.6
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M10",
+      "weightKgPer1000": 2.5
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M12",
+      "weightKgPer1000": 3.8
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M16",
+      "weightKgPer1000": 8.9
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M20",
+      "weightKgPer1000": 15.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M24",
+      "weightKgPer1000": 26.2
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M27",
+      "weightKgPer1000": 28.7
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M30",
+      "weightKgPer1000": 44.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M33",
+      "weightKgPer1000": 63.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M36",
+      "weightKgPer1000": 67.3
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M39",
+      "weightKgPer1000": 71.7
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M42",
+      "weightKgPer1000": 111.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M45",
+      "weightKgPer1000": 117.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M48",
+      "weightKgPer1000": 123.0
+    },
+    {
+      "chartId": "washer-weights",
+      "groupId": "spring-washer",
+      "size": "M52",
+      "weightKgPer1000": 182.0
+    }
+  ]
+}

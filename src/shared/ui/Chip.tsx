@@ -16,6 +16,7 @@ export function Chip({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={typeof children === 'string' ? children : undefined}
       accessibilityState={{ selected }}
       onPress={onPress}
       style={[

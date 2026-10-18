@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "stock dropdown switches to separate business discovery with empty state",
+    "stock service failure displays a retry and recovers",
+    "verified seller saves draft, uploads certificate with raw base64 and submits",
+    "MFA staff review publishes submitted stock",
+    "returning to FTI stock never mixes seller-owned materials into results",
+    "mobile seller form, photo upload and approved photo display",
+    "mobile ownership labels, enquiry submission/tracking and certificate download",
+    "seller conversation and availability edits require reapproval before rediscovery"
+  ],
+  "errors": [],
+  "mode": "isolated intercepted APIs; no remote records or messages"
+}

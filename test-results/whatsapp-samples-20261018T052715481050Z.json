@@ -1,0 +1,41 @@
+{
+  "recipient_last_four": "2951",
+  "reference": "TEST-20261018T052715481050Z",
+  "messages": [
+    {
+      "template": "fti_request_received_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSNEIxM0FCQ0EwNEY0MDI3Q0Q5AA=="
+    },
+    {
+      "template": "fti_admin_request_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSRjJDMjJGNkM5MzVCRTBBMzBCAA=="
+    },
+    {
+      "template": "fti_request_approved_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSNjBGNzY4MjdDMTRGMzM0NUU0AA=="
+    },
+    {
+      "template": "fti_request_rejected_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSNkVEOEE1NEUxRkQyMUI4ODhFAA=="
+    },
+    {
+      "template": "fti_request_update_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSMEU0N0M1RjcwQzA4MzQyMEJCAA=="
+    },
+    {
+      "template": "fti_order_status_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSMEExOEVFODI3RTJFRTFFRDBFAA=="
+    },
+    {
+      "template": "fti_support_reply_v1",
+      "status": "accepted",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSNzBCQzBGQ0JFMUFDOENBQUExAA=="
+    }
+  ]
+}

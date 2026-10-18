@@ -84,9 +84,9 @@ export function PricingManagement() {
     <Button secondary disabled={busy} onPress={() => void refresh()}>Refresh pricing</Button>
     <Card style={{ gap: 10 }}>
       <Txt>Create a real trading market</Txt>
-      <Field label="Market code" value={code} onChangeText={setCode} />
-      <Field label="Market name" value={name} onChangeText={setName} />
-      <Field label="State" value={state} onChangeText={setState} />
+      <Field label="Market code" placeholder="e.g. TEST_DELHI" value={code} onChangeText={setCode} />
+      <Field label="Market name" placeholder="e.g. Delhi Test Market" value={name} onChangeText={setName} />
+      <Field label="State" placeholder="e.g. Delhi" value={state} onChangeText={setState} />
       <Button disabled={busy || !code.trim() || !name.trim() || !state.trim()} onPress={() => void run(async () => { await pricingRpc('fti_pricing_market_create', { p_code: code, p_name: name, p_state: state }); setCode(''); setName(''); setState(''); }, 'Market created.')}>Create market</Button>
     </Card>
     {query.isPending ? <Txt>Loading drafts…</Txt> : query.error ? <Empty title="Pricing unavailable" description={query.error.message} /> : <>

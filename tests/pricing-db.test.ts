@@ -11,7 +11,7 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
       create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
       create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
       grant usage on schema auth to anon,authenticated;`);
-    await db.exec(readFileSync('../FTI_Implementation_Documentation_v2/14_PostgreSQL_Schema_Blueprint.sql', 'utf8').replace('create extension if not exists pgcrypto;', ''));
+    await db.exec(readFileSync('supabase/baseline/blueprint.sql', 'utf8').replace('create extension if not exists pgcrypto;', ''));
     for (const file of ['202610150001_phase2_identity.sql', '202610160001_phase3_catalog.sql', '202610160003_phase4_pricing.sql']) await db.exec(readFileSync(`supabase/migrations/${file}`, 'utf8').replace(/^\uFEFF/, ''));
     const actor = '00000000-0000-0000-0000-000000000001';
     await db.exec(`insert into auth.users values('${actor}','+910000000001',now());`);

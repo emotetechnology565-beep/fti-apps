@@ -3,6 +3,7 @@ import { Badge, Button, Card, Empty, Heading, Row, Txt, c, s } from '@shared/ui'
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import { Image } from 'expo-image';
+import { ProductReferenceCharts } from '../components/ProductReferenceCharts';
 const go = (path: string) => router.push(path as never);
 export function ProductDetail({ id }: { id: string }) {
   const query = useProduct(id);
@@ -14,8 +15,10 @@ export function ProductDetail({ id }: { id: string }) {
     <View>
       <Heading eyebrow={p.category.toUpperCase()} title={p.name} description={p.description || 'Product specifications from the FTI catalogue.'} />
       {!!p.images.length && <Row style={{ flexWrap: 'wrap', marginBottom: 18 }}>{p.images.map(image => <Image key={image.id} source={{ uri: image.url }} contentFit="cover" style={{ width: 170, height: 150, borderRadius: 8 }} />)}</Row>}
+      <ProductReferenceCharts key={p.id} product={p} />
       <Card style={{ gap: 18 }}>
         <Row style={{ flexWrap: 'wrap' }}>
+          <Badge>FTI stock</Badge>
           <Badge>{p.product_kind.replace('_', ' ').toUpperCase()}</Badge>
           <Badge tone="green">{p.purchase_mode === 'both' ? 'Quote or direct order' : p.purchase_mode === 'direct' ? 'Direct order' : 'Request for quotation'}</Badge>
         </Row>

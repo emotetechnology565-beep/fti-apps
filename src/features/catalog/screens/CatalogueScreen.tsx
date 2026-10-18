@@ -1,4 +1,5 @@
 import { ProductCard } from '@features/catalog/components/ProductCard';
+import { StockSourceDropdown } from '@features/business-stock/ui';
 import { useStore } from '@core/state/workspace-store';
 import { Button, Card, Chip, Empty, Heading, Icon, Row, Txt, c, s } from '@shared/ui';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ export function Catalogue() {
   const total = query.data?.total ?? 0;
   return (
     <View>
+      <StockSourceDropdown source="fti"/>
       <Heading
         eyebrow="SOURCED RIGHT. SUPPLIED RIGHT."
         title="Material catalogue"

@@ -139,10 +139,14 @@ function ExpiryPanel() {
   </Card>;
 }
 
-export function CommerceManagement() {
+export function CommerceManagement({section = 'all'}: {section?: 'all'|'policy'|'inventory'|'payments'|'expiry'}) {
   const auth=useAuth();
   if (!['order.policy','order.manage','inventory.manage','payment.review'].some(p=>hasPermission(auth.identity,p))) return null;
-  return <View style={{gap:14}}><Txt style={{fontSize:24,fontWeight:'700'}}>Orders, stock & payments</Txt>
-    <PolicyPanel/><InventoryPanel/><PaymentsPanel/><ExpiryPanel/>
+  return <View style={{gap:14}}>
+    {section === 'all' ? <Txt style={{fontSize:24,fontWeight:'700'}}>Orders, stock & payments</Txt> : null}
+    {['all','policy'].includes(section) ? <PolicyPanel/> : null}
+    {['all','inventory'].includes(section) ? <InventoryPanel/> : null}
+    {['all','payments'].includes(section) ? <PaymentsPanel/> : null}
+    {['all','expiry'].includes(section) ? <ExpiryPanel/> : null}
   </View>;
 }

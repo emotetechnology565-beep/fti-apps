@@ -1,5 +1,6 @@
 import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
 import {
   Heading,
@@ -9,7 +10,6 @@ import {
   Icon,
   Row,
   Button,
-  Empty,
   c,
   s,
 } from '@shared/ui';
@@ -101,10 +101,7 @@ export function Home() {
           </Pressable>
         ))}
       </View>
-      <Empty
-        title="Your activity will appear here"
-        description="No activity source is connected. Orders, dispatch updates, and quotations will appear here when available."
-      />
+      <Announcements />
     </View>
   );
 }

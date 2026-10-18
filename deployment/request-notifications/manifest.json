@@ -1,0 +1,7 @@
+{
+  "01_request_notifications.sql": "2c33fb23fbc131bdb7d7c0cd6b23c2e098ce5037558ca60753011806b65d499b",
+  "02_operations-whatsapp.ts": "6c2db53bc0c15ec9de2755e501bcfa23c89076308a428e551f36483903fb9585",
+  "03_schedule_whatsapp.sql": "a0079259484286a71bc5e2f5677832b50ccde8301939ad4fca13f1e11c34efee",
+  "04_whatsapp_phone_format.sql": "49acdf05a4a29b32bc931d08b23329a6f194b7f9639d1abce53df42b18a46a4b",
+  "README.md": "c7a9637d07c2a2d3c78f45ca8d4c3bfd5d687166550dc93ccae3dfb457d4b8ce"
+}

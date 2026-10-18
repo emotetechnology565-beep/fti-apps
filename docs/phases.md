@@ -83,8 +83,28 @@ Quotation acceptance records the buyer decision. Order creation, payment, invent
 
 Validation: database tests cover authorization, policy gating, one-time quote conversion, idempotency, stock reservation and release, manual payment verification and replay rejection. Typecheck, lint, full app tests and web export pass. Live buyer/staff acceptance remains pending after deployment.
 
-## Later phases - not started
+## Phase 7 - Operations implementation prepared; updated deployment and acceptance pending
 
-7. Operations: dispatch, support, notifications, reporting, security/UAT and release.
+- Manual whole-order dispatch/delivery, buyer support conversations, audit history and bounded daily reports.
+- Encrypted private POD/MTC/support documents on the existing Bunny zone; ownership and MFA checks run before upload or download.
+- Transactional outbox projection to in-app updates with idempotency, bounded retries, failed-event review and audited replay.
+- Optional WhatsApp utility updates with explicit buyer opt-in, Meta template approval checks, service-only worker credentials and manual review for ambiguous provider responses. `fti_order_status_v1` and `fti_support_reply_v1` were submitted to Meta and were PENDING at the last check.
+- Staff-authored operational announcements appear on buyer home only after publication. EAS build profiles, CI checks and release evidence checklist are prepared.
+- Dashboard update: `deployment/phase7`; see [deployment instructions](phase7-deployment.md) and [release checklist](release-checklist.md). The earlier `operations` function was reachable by a live unauthenticated check, but new migrations/functions and signed-in staging workflows are not yet verified.
+
+Policy-dependent cancellation/refund, credit, invoice, automated tax/freight, partial shipment, PIN/e-way and marketing features remain gated because the owner confirmed their rules are not approved. Android/iOS device UAT, backup restore, production configuration, store submission and owner signoff require external execution. No production completion is claimed.
 
 Business-policy decisions in the source documentation remain pending; Phase 1 does not assume their answers.
+
+## Phase 8 - Business stock selling: deployed; signed-in acceptance pending
+
+- A stock navigation dropdown switches between **FTI stock** and **Business stock**, with separate results and clear ownership labels showing the selling business's name.
+- Verified businesses can submit their own available steel stock for sale.
+- Listings include material, grade, dimensions, available quantity/unit, asking price, location, photos and certificates using Bunny.
+- Sellers manage their listings and availability; FTI staff review submissions before publication.
+- Buyers browse approved listings and submit enquiries; sellers track enquiries and mark stock sold or withdraw it.
+- The sales model (through FTI or directly between businesses), payment handling, fulfilment, fees and dispute rules must be decided before transaction automation.
+
+Implemented in a dedicated business-stock feature with additive migrations, the `business-stock` and `business-stock-media` Edge Functions, buyer discovery/detail routes, seller workspace, and MFA staff review/oversight. All attachments use encrypted Bunny storage. Published edits require reapproval; expiry, business verification, seller membership and listing state are checked before discovery and enquiries. No demo business data is included. See [Phase 8 scope](phase8-plan.md) and [dashboard deployment](phase8-deployment.md). The owner reports deployment completed on 17 October 2026. Live unauthenticated checks returned function-level HTTP 401 `UNAUTHENTICATED` from both endpoints. These checks prove the functions are reachable and reject anonymous requests; signed-in workflows, database deployment and real Bunny uploads still require acceptance verification.
+
+Validation: 33 local regression tests pass, including Phase 8 database isolation/lifecycle/media permissions, API allowlists/JWT forwarding and Bunny encryption/tamper checks. Eight intercepted-API browser checks pass for source switching, failure/retry recovery, mobile seller editing and uploads, MFA review, seller labels/photos, private enquiries and certificate downloads, and reapproval after changes. Typecheck, lint, web export and Android Hermes export pass. Dashboard source copies, manifest checksums and ZIP entries are verified. Database test concurrency is capped at two to avoid simultaneous embedded-database memory exhaustion.

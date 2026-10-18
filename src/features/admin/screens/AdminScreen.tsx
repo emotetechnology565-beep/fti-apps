@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import { AccessGate, StaffMfa, useAuth } from '@features/auth/ui';
 import { identityRpc, hasPermission } from '@features/auth';
 import { CatalogManagement } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
 import { SalesManagement } from '@features/quotations/ui';
+import { OperationsManagement } from '@features/operations/ui';
 import { CommerceManagement } from '@features/orders/ui';
+import { StockReviewPanel } from '@features/business-stock/ui';
 import { Heading, Card, Txt, Button, Field, Empty, Badge } from '@shared/ui';
+import { selectedStaffSection } from '../model/sections';
 type Review = {
   id: string;
   legal_name: string;
@@ -30,14 +34,20 @@ function ReviewCard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   async function submit() {
-    if (!decision) return;
+    if (!decision || busy) return;
+    const reviewNote = note.trim();
+    if (reviewNote.length < 3 || reviewNote.length > 1000) {
+      setError('Enter a review note between 3 and 1,000 characters to confirm your decision.');
+      return;
+    }
+    setError('');
     setBusy(true);
     try {
       await identityRpc('fti_review_business', {
         p_id: application.id,
         p_revision: application.revision,
         p_decision: decision,
-        p_note: note,
+        p_note: reviewNote,
       });
       await refresh();
     } catch (e) {
@@ -53,9 +63,13 @@ function ReviewCard({
       <Txt>GSTIN: {application.gstin ?? 'Not supplied'}</Txt>
       <Txt>PAN: {application.pan ?? 'Not supplied'}</Txt>
       <Field
-        label={`Review note for ${application.legal_name}`}
+        label={`Review note for ${application.legal_name} (required, 3–1,000 characters)`}
         value={note}
-        onChangeText={setNote}
+        onChangeText={(value) => {
+          setNote(value);
+          setError('');
+        }}
+        placeholder="Enter the reason for approving or rejecting this business"
       />
       <Button secondary disabled={busy} onPress={() => setDecision('verified')}>
         Approve business
@@ -69,8 +83,8 @@ function ReviewCard({
             Confirm {decision === 'verified' ? 'approval' : 'rejection'} of{' '}
             {application.legal_name}?
           </Txt>
-          <Button disabled={busy || note.trim().length < 3} onPress={submit}>
-            Confirm decision
+          <Button disabled={busy} onPress={submit}>
+            {busy ? 'Saving decision...' : 'Confirm decision'}
           </Button>
           <Button secondary disabled={busy} onPress={() => setDecision(null)}>
             Cancel decision
@@ -128,6 +142,31 @@ function ReviewQueue() {
     </View>
   );
 }
+function StaffWorkspace() {
+  const auth = useAuth();
+  const {section} = useLocalSearchParams<{section?: string}>();
+  const selected = selectedStaffSection(auth.identity,section);
+  if (!selected) return <Empty title="No staff tools assigned" description="Ask an FTI administrator to assign the permissions needed for your work."/>;
+  const content = (() => {
+    switch (selected.id) {
+      case 'businesses': return <ReviewQueue/>;
+      case 'catalogue': return <CatalogManagement/>;
+      case 'pricing': return <PricingManagement/>;
+      case 'sales': return <SalesManagement/>;
+      case 'inventory': return <CommerceManagement section="inventory"/>;
+      case 'payments': return <CommerceManagement section="payments"/>;
+      case 'order-policy': return <CommerceManagement section="policy"/>;
+      case 'reservations': return <CommerceManagement section="expiry"/>;
+      case 'dispatch': return <OperationsManagement section="dispatch"/>;
+      case 'support': return <OperationsManagement section="support"/>;
+      case 'reports': return <OperationsManagement section="reports"/>;
+      case 'jobs': return <OperationsManagement section="jobs"/>;
+      case 'announcements': return <OperationsManagement section="content"/>;
+      case 'business-stock': return <StockReviewPanel/>;
+    }
+  })();
+  return <View style={{gap: 16}}><Txt style={{fontSize: 22, fontWeight: '700'}}>{selected.label}</Txt>{content}</View>;
+}
 export function Admin() {
   const auth = useAuth();
   return (
@@ -135,17 +174,11 @@ export function Admin() {
       <Heading
         eyebrow="FTI STAFF"
         title="Staff console"
-        description="Review business applications with your authorized staff account."
+        description="Choose a staff tool from the navigation menu. Each section opens separately."
       />
       <AccessGate permission="staff.access">
         <StaffMfa>
-          <View style={{ gap: 28 }}>
-            <ReviewQueue />
-            {hasPermission(auth.identity, 'catalog.manage') ? <CatalogManagement /> : null}
-            {hasPermission(auth.identity, 'price.manage') ? <PricingManagement key={auth.session?.user.id} /> : null}
-            {hasPermission(auth.identity, 'sales.manage') ? <SalesManagement key={auth.session?.user.id} /> : null}
-            <CommerceManagement key={auth.session?.user.id} />
-          </View>
+          <StaffWorkspace key={auth.session?.user.id}/>
         </StaffMfa>
       </AccessGate>
     </View>

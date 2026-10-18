@@ -1,17 +1,13 @@
 import { supabase } from '@core/api/supabase-client';
 import type { Market, PricingAdmin, RateHistory, RatesPage } from '../model/types';
+import { requestPricing } from './pricing-request';
 export async function pricingRpc<T>(operation: string, args: Record<string, unknown> = {}): Promise<T> {
-  if (!supabase) throw new Error('Pricing service is not configured.');
-  const { data, error } = await supabase.functions.invoke('pricing', { body: { operation, arguments: args } });
-  if (error) {
-    let message = 'Pricing service is unavailable. Please try again.';
-    if (error.context instanceof Response) {
-      try { const body = await error.context.json(); if (typeof body.message === 'string') message = body.message; }
-      catch { /* Gateway response was not JSON. */ }
-    }
-    throw new Error(message);
-  }
-  return data.data as T;
+  const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabase || !url || !key) throw new Error('Pricing service is not configured.');
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw new Error('Your pricing session could not be restored. Sign in again and complete authenticator verification.');
+  return requestPricing<T>({ url, key, accessToken: data.session?.access_token }, operation, args);
 }
 export const pricingApi = {
   markets: () => pricingRpc<Market[]>('fti_pricing_markets'),

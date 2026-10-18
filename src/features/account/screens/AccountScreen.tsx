@@ -1,7 +1,11 @@
+import { BusinessForm } from '../components/BusinessForm';
+import { BusinessDetails } from '../components/BusinessDetails';
 import { useState } from 'react';
 import { View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { selectedAccountSection } from '../model/sections';
 import { AccessGate, useAuth } from '@features/auth/ui';
-import type { Business } from '@features/auth';
+import { Notifications } from '@features/operations/ui';
 import {
   Heading,
   Card,
@@ -9,159 +13,26 @@ import {
   Button,
   Txt,
   Chip,
-  Row,
   Badge,
-  s,
   c,
+  s,
 } from '@shared/ui';
 import {
   profileSchema,
-  businessSchema,
-  type BusinessApplication,
 } from '../model/identity-schema';
 import {
   saveProfile,
-  applyBusiness,
   requestDeletion,
 } from '../services/account-api';
-const emptyAddress = { line1: '', city: '', state: '', pincode: '' };
-function BusinessForm({ business }: { business?: Business }) {
-  const { refresh } = useAuth();
-  const [legal, setLegal] = useState(business?.legal_name ?? '');
-  const [gstin, setGstin] = useState(business?.gstin ?? '');
-  const [pan, setPan] = useState(business?.pan ?? '');
-  const [kind, setKind] = useState<BusinessApplication['customer_type']>(
-    business?.customer_type ?? 'industrial_buyer',
-  );
-  const [billing, setBilling] = useState(
-    business?.addresses.find((a) => a.label === 'billing') ?? emptyAddress,
-  );
-  const [shipping, setShipping] = useState(
-    business?.addresses.find((a) => a.label === 'shipping') ?? emptyAddress,
-  );
-  const [same, setSame] = useState(!business);
-  const [consent, setConsent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
-  async function submit() {
-    const result = businessSchema.safeParse({
-      legal_name: legal,
-      gstin,
-      pan,
-      customer_type: kind,
-      billing,
-      shipping: same ? billing : shipping,
-      consent,
-      revision: business?.revision,
-    });
-    if (!result.success) {
-      setMessage(result.error.issues[0].message);
-      return;
-    }
-    setBusy(true);
-    try {
-      await applyBusiness(result.data);
-      await refresh();
-      setMessage('Application submitted for review.');
-    } catch (e) {
-      setMessage((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  if (business?.verification_status === 'verified')
-    return (
-      <Card>
-        <Badge tone="green">BUSINESS VERIFIED</Badge>
-        <Txt>{business.legal_name}</Txt>
-        <Txt style={s.muted}>
-          Contact FTI to request changes to verified business details.
-        </Txt>
-      </Card>
-    );
-  return (
-    <Card style={{ gap: 12 }}>
-      <Heading
-        title="Business application"
-        description="Submit your company details for review. Verification does not grant staff access or credit."
-      />
-      {business ? (
-        <>
-          <Badge>{business.verification_status.toUpperCase()}</Badge>
-          {business.review_note ? <Txt>{business.review_note}</Txt> : null}
-        </>
-      ) : null}
-      <Field
-        label="Legal business name"
-        value={legal}
-        onChangeText={setLegal}
-      />
-      <Field label="GSTIN (optional)" value={gstin} onChangeText={setGstin} />
-      <Field label="PAN (optional)" value={pan} onChangeText={setPan} />
-      <Row style={{ flexWrap: 'wrap' }}>
-        {(
-          [
-            'retailer',
-            'dealer',
-            'distributor',
-            'manufacturer',
-            'industrial_buyer',
-          ] as const
-        ).map((value) => (
-          <Chip
-            key={value}
-            selected={kind === value}
-            onPress={() => setKind(value)}
-          >
-            {value.replace('_', ' ')}
-          </Chip>
-        ))}
-      </Row>
-      <Txt>Billing address</Txt>
-      {Object.keys(emptyAddress).map((field) => (
-        <Field
-          key={field}
-          label={`Billing ${field === 'line1' ? 'address' : field}`}
-          value={billing[field as keyof typeof emptyAddress]}
-          onChangeText={(v) => setBilling({ ...billing, [field]: v })}
-        />
-      ))}
-      <Chip selected={same} onPress={() => setSame(!same)}>
-        Use billing address for delivery
-      </Chip>
-      {!same ? (
-        <>
-          <Txt>Delivery address</Txt>
-          {Object.keys(emptyAddress).map((field) => (
-            <Field
-              key={field}
-              label={`Delivery ${field === 'line1' ? 'address' : field}`}
-              value={shipping[field as keyof typeof emptyAddress]}
-              onChangeText={(v) => setShipping({ ...shipping, [field]: v })}
-            />
-          ))}
-        </>
-      ) : null}
-      <Chip selected={consent} onPress={() => setConsent(!consent)}>
-        I confirm these details are accurate and authorize verification
-      </Chip>
-      <Button disabled={busy} onPress={submit}>
-        {busy ? 'Submitting' : 'Submit business application'}
-      </Button>
-      {message ? (
-        <Txt accessibilityRole="alert" style={{ color: c.red }}>
-          {message}
-        </Txt>
-      ) : null}
-    </Card>
-  );
-}
 function AccountDetails() {
   const auth = useAuth();
   const identity = auth.identity!;
+  const {section: requested} = useLocalSearchParams<{section?: string}>();
+  const section = selectedAccountSection(requested);
   const [name, setName] = useState(identity.profile.full_name);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [businessSubmitted, setBusinessSubmitted] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   async function run(action: () => Promise<unknown>, success: string) {
     setBusy(true);
@@ -178,7 +49,8 @@ function AccountDetails() {
   }
   return (
     <View style={{ gap: 20 }}>
-      <Card style={{ gap: 12 }}>
+      {section === 'profile' ? <Card style={{ gap: 12 }}>
+        <Txt style={s.h2}>Personal profile</Txt>
         <Txt>Verified phone: {identity.profile.phone}</Txt>
         <Field label="Full name" value={name} onChangeText={setName} />
         <Button
@@ -197,18 +69,30 @@ function AccountDetails() {
         >
           Save profile
         </Button>
-        <Button
-          secondary
-          disabled={busy}
-          onPress={() =>
-            void auth.signOut().catch((e) => setMessage(e.message))
-          }
-        >
-          Sign out on this device
-        </Button>
+        <Button secondary onPress={() => router.setParams({section: 'business'})}>Continue to business details</Button>
         {message ? <Txt accessibilityRole="alert">{message}</Txt> : null}
-      </Card>
+      </Card> : null}
+      {section === 'profile' ? <Card style={{ gap: 16 }}>
+        <Txt style={s.h2}>Saved account details</Txt>
+        <Txt>Full name: {identity.profile.full_name || 'Not provided'}</Txt>
+        <Txt>Verified phone: {identity.profile.phone || 'Not provided'}</Txt>
+        {identity.businesses.length ? identity.businesses.map(business => (
+          <BusinessDetails key={business.id} business={business}/>
+        )) : <Txt>No business application saved yet. Complete business details and addresses, then submit your application to save them.</Txt>}
+      </Card> : null}
+      <View style={{display: ['business', 'addresses', 'review'].includes(section) ? 'flex' : 'none'}}>
+      {businessSubmitted ? (
+        <Card style={{ gap: 8, marginBottom: 16 }}>
+          <Badge tone="green">APPLICATION SUBMITTED</Badge>
+          <Txt accessibilityRole="alert" style={{ color: c.green }}>
+            Application submitted for review.
+          </Txt>
+          <Txt>FTI will review your business details. You can check your verification status here.</Txt>
+        </Card>
+      ) : null}
       <BusinessForm
+        section={section}
+        onSubmitted={() => setBusinessSubmitted(true)}
         key={
           identity.businesses.find(
             (b) => b.submitted_by === identity.profile.id,
@@ -218,7 +102,10 @@ function AccountDetails() {
           (b) => b.submitted_by === identity.profile.id,
         )}
       />
-      <Card style={{ gap: 12 }}>
+      </View>
+      {section === 'settings' ? <><Notifications/><Card style={{ gap: 12 }}>
+        <Txt style={s.h2}>Account settings</Txt>
+        <Button secondary disabled={busy} onPress={() => void auth.signOut().catch((e) => setMessage(e.message))}>Sign out on this device</Button>
         <Txt>Account deletion</Txt>
         {identity.deletion_requested ? (
           <Txt>
@@ -248,7 +135,8 @@ function AccountDetails() {
             </Button>
           </>
         )}
-      </Card>
+        {message ? <Txt accessibilityRole="alert">{message}</Txt> : null}
+      </Card></> : null}
     </View>
   );
 }
@@ -258,7 +146,7 @@ export function Account() {
       <Heading
         eyebrow="YOUR FTI ACCOUNT"
         title="Your account"
-        description="Manage your verified identity and business application."
+        description="Choose an account section from the navigation menu. Complete your profile, business details and addresses, then review your application."
       />
       <AccessGate>
         <AccountDetails />

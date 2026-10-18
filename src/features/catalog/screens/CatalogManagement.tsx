@@ -4,6 +4,9 @@ import { catalogApi, type AdminCategory, type AdminProduct, type AdminVariant } 
 import { Badge, Button, Card, Chip, Empty, Field, Row, Txt, c, s } from '@shared/ui';
 import { View } from 'react-native';
 import { ProductImages } from '../components/ProductImages';
+import { ProductReferenceCharts } from '../components/ProductReferenceCharts';
+import { chartsForProduct } from '../model/product-references';
+import { ProductPublication } from '../components/ProductPublication';
 
 const slugFor = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const adminKey = ['catalog', 'admin'] as const;
@@ -33,19 +36,20 @@ export function CatalogManagement() {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [photosFor, setPhotosFor] = useState<string | null>(null);
+  const [referencesFor, setReferencesFor] = useState<string | null>(null);
 
   function editCategory(item: AdminCategory) {
     setCategoryId(item.id); setCategoryName(item.name); setCategorySlug(item.slug);
   }
-  function editVariant(product: AdminProduct, variant: AdminVariant) {
-    setProductId(product.id); setVariantId(variant.id); setCategory(product.category_id);
+  function editVariant(product: AdminProduct, variant?: AdminVariant) {
+    setProductId(product.id); setVariantId(variant?.id ?? null); setCategory(product.category_id);
     setName(product.name); setSlug(product.slug); setDescription(product.description ?? '');
     setKind(product.product_kind); setPurchaseMode(product.purchase_mode);
-    setSku(variant.sku); setSize(variant.size_label ?? ''); setUom(variant.uom);
-    setMoq(String(variant.min_order_qty)); setDiameter(variant.diameter_mm ? String(variant.diameter_mm) : '');
-    setLength(variant.length_mm ? String(variant.length_mm) : '');
-    setGrade(typeof variant.attributes.grade === 'string' ? variant.attributes.grade : '');
-    setBrand(typeof variant.attributes.brand === 'string' ? variant.attributes.brand : '');
+    setSku(variant?.sku ?? ''); setSize(variant?.size_label ?? ''); setUom(variant?.uom ?? 'piece');
+    setMoq(variant ? String(variant.min_order_qty) : ''); setDiameter(variant?.diameter_mm ? String(variant.diameter_mm) : '');
+    setLength(variant?.length_mm ? String(variant.length_mm) : '');
+    setGrade(typeof variant?.attributes.grade === 'string' ? variant.attributes.grade : '');
+    setBrand(typeof variant?.attributes.brand === 'string' ? variant.attributes.brand : '');
     setNote('');
   }
   function resetProduct() {
@@ -79,11 +83,8 @@ export function CatalogManagement() {
     } catch (error) { setNote((error as Error).message); }
     finally { setBusy(false); }
   }
-  async function changeStatus(item: AdminProduct, status: AdminProduct['status']) {
-    setBusy(true); setNote('');
-    try { await catalogApi.setProductStatus(item.id, status); await client.invalidateQueries({ queryKey: adminKey }); await client.invalidateQueries({ queryKey: ['catalog'] }); }
-    catch (error) { setNote((error as Error).message); }
-    finally { setBusy(false); }
+  async function refreshCatalogue() {
+    await client.invalidateQueries({ queryKey: ['catalog'] });
   }
 
   if (query.isPending) return <Card><Txt style={s.muted}>Loading catalogue management…</Txt></Card>;
@@ -136,9 +137,12 @@ export function CatalogManagement() {
           <Card key={item.id} style={{ gap: 10 }}>
             <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><View><Txt style={{ fontWeight: '700' }}>{item.name}</Txt><Txt style={s.muted}>{item.category} · {item.slug}</Txt></View><Badge>{item.status.toUpperCase()}</Badge></Row>
             {item.variants.map((variant) => <Row key={variant.id} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{variant.sku} · {variant.size_label || 'No size'} · MOQ {variant.min_order_qty} {variant.uom}</Txt><Button secondary onPress={() => editVariant(item, variant)}>Edit variant</Button></Row>)}
-            <Row style={{ flexWrap: 'wrap' }}>{item.status === 'published' ? <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'draft')}>Unpublish</Button> : <Button disabled={busy} onPress={() => void changeStatus(item, 'published')}>Publish</Button>}{item.status !== 'archived' ? <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'archived')}>Archive</Button> : <Button secondary disabled={busy} onPress={() => void changeStatus(item, 'draft')}>Restore as draft</Button>}</Row>
+            {!item.variants.length ? <><Txt style={s.muted}>Add a variant with its SKU, unit and minimum order before publishing.</Txt><Button secondary onPress={() => editVariant(item)}>Add first variant</Button></> : null}
+            <ProductPublication product={item} categories={data.categories} disabled={busy} refresh={refreshCatalogue} />
             <Button secondary onPress={() => setPhotosFor(photosFor === item.id ? null : item.id)}>{photosFor === item.id ? 'Hide photos' : 'Manage photos'}</Button>
             {photosFor === item.id ? <ProductImages productId={item.id} /> : null}
+            {chartsForProduct(item.slug).length ? <Button secondary onPress={() => setReferencesFor(referencesFor === item.id ? null : item.id)}>{referencesFor === item.id ? 'Hide reference charts' : 'View reference charts'}</Button> : null}
+            {referencesFor === item.id ? <ProductReferenceCharts key={item.id} product={item} /> : null}
           </Card>
         )) : <Empty title="No catalogue records" description="Create categories and products above. Nothing is preloaded." />}
       </View>

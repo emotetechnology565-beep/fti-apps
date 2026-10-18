@@ -1,17 +1,8 @@
 import { View } from 'react-native';
-import { Heading, Empty } from '@shared/ui';
+import { Heading } from '@shared/ui';
+import { AccessGate } from '@features/auth/ui';
+import { SupportTickets, Notifications } from '@features/operations/ui';
 export function Support() {
-  return (
-    <View>
-      <Heading
-        eyebrow="SUPPORT & DOCUMENTS"
-        title="Claims, certificates & support"
-        description="Get help with orders and access authorized consignment documents."
-      />
-      <Empty
-        title="Support service not connected"
-        description="Claims, mill test certificates, and support tickets will be available when the support and private document services are connected."
-      />
-    </View>
-  );
+ return <View style={{gap:18}}><Heading eyebrow="SUPPORT" title="How can we help?" description="Follow dispatch updates and get help with your orders."/>
+ <AccessGate><Notifications/><SupportTickets/></AccessGate></View>;
 }

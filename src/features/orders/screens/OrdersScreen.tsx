@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { useStore } from '@core/state/workspace-store';
 import { Heading, Empty, Card, Row, Txt, Badge, Button, Field, s } from '@shared/ui';
+import { ShipmentTracking } from '@features/operations/ui';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
 
@@ -33,6 +34,7 @@ function OrderPanel({ order, refresh }: { order: OrderDetail; refresh: () => Pro
     <Txt style={s.h2}>Total INR {order.grand_total} · Due INR {order.amount_due}</Txt>
     {Number.isFinite(expiry) && order.status==='pending_payment' && <Txt>Stock reserved until {new Date(expiry).toLocaleString()}</Txt>}
   </Card>
+    <ShipmentTracking orderId={order.id}/>
     <Card style={{ gap: 9 }}><Txt style={s.h2}>Bank transfer review</Txt>
       <Txt>Only use bank details given directly by FTI. Entering a reference does not prove that funds arrived; authorized accounts staff verify the bank statement before confirming the order.</Txt>
       {!order.payments.length && <Txt>No transfer reference submitted.</Txt>}

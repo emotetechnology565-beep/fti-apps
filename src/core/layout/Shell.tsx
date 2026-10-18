@@ -1,14 +1,18 @@
 import { useAuth } from '@features/auth/ui';
 import { hasPermission } from '@features/auth';
+import { AdminNavigation } from '@features/admin/ui';
+import { AccountNavigation } from '@features/account/ui';
 import { pricingApi } from '@features/pricing/export';
 import { useQuery } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
 import { Badge, Button, Icon, Row, Txt, c, s } from '@shared/ui';
 import { Image } from 'expo-image';
-import { router, usePathname } from 'expo-router';
-import React, { ReactNode, useState } from 'react';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   View,
@@ -41,6 +45,12 @@ const nav: { label: string; icon: IconName; path: string; group: string }[] = [
     label: 'Cart',
     icon: 'shopping-bag',
     path: '/cart',
+    group: 'YOUR BUSINESS',
+  },
+  {
+    label: 'My stock & enquiries',
+    icon: 'package',
+    path: '/sell-stock',
     group: 'YOUR BUSINESS',
   },
   {
@@ -80,6 +90,13 @@ export function Shell({ children }: { children: ReactNode }) {
   const desktop = width >= 1000;
   const phone = width < 600;
   const path = usePathname();
+  const {section: adminSection} = useLocalSearchParams<{section?: string}>();
+  const staffWorkspace = path === '/admin' && hasPermission(auth.identity,'staff.access');
+  const accountWorkspace = path === '/account' && !!auth.identity;
+  const contentScroll = useRef<ScrollView>(null);
+  useEffect(() => {
+    if (accountWorkspace) contentScroll.current?.scrollTo({y: 0, animated: false});
+  }, [accountWorkspace, adminSection]);
   const markets = useQuery({ queryKey: ['pricing', 'markets'], queryFn: pricingApi.markets, staleTime: 60000 });
   const setMarket = useStore(state => state.setMarket);
   const { market, cart } = useStore(
@@ -97,9 +114,20 @@ export function Shell({ children }: { children: ReactNode }) {
   const [marketOpen, setMarketOpen] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const [menu, setMenu] = useState(false);
-  const active = (p: string) => (p === '/' ? path === '/' : path.startsWith(p));
+  const [menuProgress] = useState(() => new Animated.Value(0));
+  const animateMenu = (toValue: number, onClosed?: () => void) => {
+    Animated.timing(menuProgress, {
+      toValue,
+      duration: 220,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start(({ finished }) => {
+      if (finished) onClosed?.();
+    });
+  };
+  const closeMenu = () => animateMenu(0, () => setMenu(false));
+  const active = (p: string) => (p === '/' ? path === '/' : path.startsWith(p) || p === '/products' && path.startsWith('/business-stock'));
   const go = (p: string) => {
-    setMenu(false);
+    if (menu) closeMenu();
     router.push(p as never);
   };
   const current =
@@ -168,12 +196,12 @@ export function Shell({ children }: { children: ReactNode }) {
             }}
           />
           <Txt style={{ fontSize: 10, fontWeight: '700', letterSpacing: 0.8 }}>
-            BUSINESS WORKSPACE
+            {staffWorkspace ? 'STAFF WORKSPACE' : 'BUSINESS WORKSPACE'}
           </Txt>
         </Row>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {['PROCUREMENT', 'YOUR BUSINESS', 'TOOLS & SUPPORT'].map((group) => (
+        {staffWorkspace ? <AdminNavigation onNavigate={closeMenu}/> : accountWorkspace ? <AccountNavigation onNavigate={closeMenu}/> : ['PROCUREMENT', 'YOUR BUSINESS', 'TOOLS & SUPPORT'].map((group) => (
           <View key={group} style={{ marginBottom: 23 }}>
             <Txt
               style={{
@@ -243,10 +271,10 @@ export function Shell({ children }: { children: ReactNode }) {
         }}
       >
         {hasPermission(auth.identity, 'staff.access') ? (
-          <Pressable onPress={() => go('/admin')} accessibilityRole="link">
+          <Pressable onPress={() => go(staffWorkspace ? '/products' : '/admin')} accessibilityRole="link" accessibilityLabel={staffWorkspace ? 'Back to marketplace' : 'Staff console'}>
             <Row style={{ paddingLeft: 12 }}>
               <Icon name="sliders" size={15} />
-              <Txt style={{ fontSize: 11, color: c.muted }}>Staff console</Txt>
+              <Txt style={{ fontSize: 11, color: c.muted }}>{staffWorkspace ? 'Back to marketplace' : 'Staff console'}</Txt>
               <Icon name="arrow-up-right" size={13} />
             </Row>
           </Pressable>
@@ -326,7 +354,10 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="Open navigation"
-                  onPress={() => setMenu(true)}
+                  onPress={() => {
+                    menuProgress.setValue(0);
+                    setMenu(true);
+                  }}
                   style={{ padding: 8 }}
                 >
                   <Icon name="menu" color={c.ink} />
@@ -432,7 +463,8 @@ export function Shell({ children }: { children: ReactNode }) {
             </Row>
           </View>
           <ScrollView
-            key={path}
+            ref={contentScroll}
+            key={staffWorkspace ? `${path}-${adminSection ?? ''}` : path}
             contentContainerStyle={{
               padding: phone ? 18 : 32,
               paddingBottom: phone ? 100 : 32,
@@ -627,23 +659,39 @@ export function Shell({ children }: { children: ReactNode }) {
       <Modal
         visible={menu}
         transparent
-        animationType="slide"
-        onRequestClose={() => setMenu(false)}
+        animationType="none"
+        onShow={() => animateMenu(1)}
+        onRequestClose={closeMenu}
       >
         <View
           style={{
             flex: 1,
             flexDirection: 'row',
-            backgroundColor: '#17283B66',
           }}
         >
-          <View style={{ width: 280, backgroundColor: 'white' }}>
+          <Animated.View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: '#17283B66',
+              opacity: menuProgress,
+            }}
+          />
+          <Animated.View style={{
+            width: Math.min(280, width - 48),
+            backgroundColor: 'white',
+            transform: [{ translateX: menuProgress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-280, 0],
+            }) }],
+          }}>
             {sidebar}
-          </View>
+          </Animated.View>
           <Pressable
             style={{ flex: 1 }}
             accessibilityLabel="Close navigation"
-            onPress={() => setMenu(false)}
+            onPress={closeMenu}
           />
         </View>
       </Modal>

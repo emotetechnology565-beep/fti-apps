@@ -1,0 +1,1 @@
+`blueprint.sql` is a byte-for-byte copy of the FTI implementation document `14_PostgreSQL_Schema_Blueprint.sql`. It is kept in the app repository so isolated migration tests and CI do not depend on a sibling folder. The only inserts are fixed role definitions from the source schema; there is no demo business data. Apply the baseline before numbered migrations on a fresh project.
