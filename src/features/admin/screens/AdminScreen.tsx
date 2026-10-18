@@ -69,7 +69,7 @@ function ReviewCard({
           setNote(value);
           setError('');
         }}
-        placeholder="Enter the reason for approving or rejecting this business"
+        placeholder="e.g. Please upload a clearer GST certificate."
       />
       <Button secondary disabled={busy} onPress={() => setDecision('verified')}>
         Approve business

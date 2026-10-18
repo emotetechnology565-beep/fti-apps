@@ -46,7 +46,7 @@ function ContentManagement() {
  const list=usePage<Announcement[]>('content_queue',{p_offset:offset});const action=useAction();
  return <Card style={{gap:10}}><Txt style={s.h2}>Operational announcements</Txt>
  <Txt>Draft informational notices for the app home screen. Publish only approved wording.</Txt>
- <Field label="Title" value={title} onChangeText={setTitle}/><Field label="Body" value={body} onChangeText={setBody} multiline/>
+ <Field label="Title" placeholder="e.g. Holiday dispatch schedule" value={title} onChangeText={setTitle}/><Field label="Body" placeholder="e.g. Dispatches resume on the next working day." value={body} onChangeText={setBody} multiline/>
  <Button disabled={action.busy||title.trim().length<5||title.length>120||body.trim().length<10||body.length>2000}
  onPress={()=>void action.run(()=>rpc('fti_operations_content_save',{p_title:title,p_body:body}),()=>{setTitle('');setBody('');})}>Save draft</Button>
  {list.error?<Txt accessibilityRole="alert">{list.error.message}</Txt>:list.data?<>

@@ -52,13 +52,13 @@ function QuoteEditor({ detail, refresh }: { detail: SalesDetail; refresh: () => 
     </Card>))}
     {canQuote && assigned && <Card style={{ gap: 12 }}><Txt style={s.h2}>Issue a quotation revision</Txt>
       <Txt>Enter approved INR rates and totals. Tax and freight values must be decided by FTI; the app does not calculate them.</Txt>
-      {detail.items.map(i => <Field key={i.id} label={`INR per ${i.uom} for ${i.sku} (${i.qty} ${i.uom})`} numeric value={rates[i.variant_id] ?? ''} onChangeText={v => setRates(old => ({ ...old, [i.variant_id]: v }))} />)}
-      <Field label="Valid until with timezone (YYYY-MM-DDTHH:mm:ss+05:30)" value={expiry} onChangeText={setExpiry} />
-      <Field label="Approved discount in INR" numeric value={discount} onChangeText={setDiscount} />
-      <Field label="Approved GST amount in INR" numeric value={gst} onChangeText={setGst} />
-      <Field label="Approved freight in INR" numeric value={freight} onChangeText={setFreight} />
-      <Field label="Payment terms" value={terms} onChangeText={setTerms} multiline />
-      <Field label="Quote notes (optional)" value={notes} onChangeText={setNotes} multiline />
+      {detail.items.map(i => <Field key={i.id} label={`INR per ${i.uom} for ${i.sku} (${i.qty} ${i.uom})`} placeholder="e.g. 100.00" numeric value={rates[i.variant_id] ?? ''} onChangeText={v => setRates(old => ({ ...old, [i.variant_id]: v }))} />)}
+      <Field label="Valid until with timezone (YYYY-MM-DDTHH:mm:ss+05:30)" placeholder={`e.g. ${new Date().getFullYear() + 1}-01-01T18:00:00+05:30`} value={expiry} onChangeText={setExpiry} />
+      <Field label="Approved discount in INR" placeholder="e.g. 100.00" numeric value={discount} onChangeText={setDiscount} />
+      <Field label="Approved GST amount in INR" placeholder="e.g. 180.00" numeric value={gst} onChangeText={setGst} />
+      <Field label="Approved freight in INR" placeholder="e.g. 250.00" numeric value={freight} onChangeText={setFreight} />
+      <Field label="Payment terms" placeholder="e.g. Full payment before dispatch" value={terms} onChangeText={setTerms} multiline />
+      <Field label="Quote notes (optional)" placeholder="e.g. Delivery within 3 working days after payment." value={notes} onChangeText={setNotes} multiline />
       {!confirm ? <Button disabled={busy} onPress={() => setConfirm(true)}>Review issue</Button> : <>
         <Txt>Send this manually priced quotation to the buyer? A new revision supersedes the previous one.</Txt>
         <Button disabled={busy} onPress={() => void issue()}>{busy ? 'Sending…' : 'Confirm and send quotation'}</Button>

@@ -52,7 +52,7 @@ function AccountDetails() {
       {section === 'profile' ? <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>Personal profile</Txt>
         <Txt>Verified phone: {identity.profile.phone}</Txt>
-        <Field label="Full name" value={name} onChangeText={setName} />
+        <Field label="Full name" placeholder="e.g. Rahul Sharma" value={name} onChangeText={setName} />
         <Button
           disabled={busy}
           onPress={() => {

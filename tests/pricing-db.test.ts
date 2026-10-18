@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
 
-test('pricing publication is authorized, atomic, immutable and expiry-aware', async () => {
+test('pricing publication is authorized, atomic, immutable and stays active until replaced', async () => {
   const db = new PGlite();
   try {
     await db.exec(`create role anon; create role authenticated; create schema auth;
@@ -12,7 +12,7 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
       create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
       grant usage on schema auth to anon,authenticated;`);
     await db.exec(readFileSync('supabase/baseline/blueprint.sql', 'utf8').replace('create extension if not exists pgcrypto;', ''));
-    for (const file of ['202610150001_phase2_identity.sql', '202610160001_phase3_catalog.sql', '202610160003_phase4_pricing.sql']) await db.exec(readFileSync(`supabase/migrations/${file}`, 'utf8').replace(/^\uFEFF/, ''));
+    for (const file of ['202610150001_phase2_identity.sql', '202610160001_phase3_catalog.sql', '202610160003_phase4_pricing.sql','202610180003_continuous_pricing.sql']) await db.exec(readFileSync(`supabase/migrations/${file}`, 'utf8').replace(/^\uFEFF/, ''));
     const actor = '00000000-0000-0000-0000-000000000001';
     await db.exec(`insert into auth.users values('${actor}','+910000000001',now());`);
     await db.query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claims',$2,false)", [actor, '{"aal":"aal1"}']);
@@ -29,8 +29,7 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
     const variant = await value<string>("insert into catalog.product_variants(product_id,sku,uom) values($1,'TEST-1','kg') returning id as data", [product]);
     const second = await value<string>("insert into catalog.product_variants(product_id,sku,uom) values($1,'TEST-2','kg') returning id as data", [product]);
     await db.exec('set role authenticated');
-    const future = new Date(Date.now() + 3600000).toISOString();
-    const draft = (amount: string, items = [{ variant_id: variant, amount }]) => value<string>('select public.fti_pricing_draft_save(null,null,$1,$2,$3,$4) as data', [market, 'Test draft', future, JSON.stringify(items)]);
+    const draft = (amount: string, items = [{ variant_id: variant, amount }]) => value<string>('select public.fti_pricing_draft_save(null,null,$1,$2,null,$3) as data', [market, 'Test draft', JSON.stringify(items)]);
     await assert.rejects(draft('0'));
     await assert.rejects(draft('NaN'));
     await assert.rejects(draft('1.00001'));
@@ -39,7 +38,7 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
     await assert.rejects(db.query('select public.fti_pricing_publish($1,2)', [first]));
     await db.query('select public.fti_pricing_publish($1,1)', [first]);
     await assert.rejects(db.query('select public.fti_pricing_publish($1,1)', [first]));
-    await assert.rejects(db.query('select public.fti_pricing_draft_save($1,1,$2,$3,$4,$5)', [first, market, 'Attempt rewrite', future, JSON.stringify([{ variant_id: variant, amount: '1' }])]));
+    await assert.rejects(db.query('select public.fti_pricing_draft_save($1,1,$2,$3,null,$4)', [first, market, 'Attempt rewrite', JSON.stringify([{ variant_id: variant, amount: '1' }])]));
     const replacement = await draft('55.2500');
     await db.query('select public.fti_pricing_publish($1,1)', [replacement]);
     await db.exec('set role anon');
@@ -66,7 +65,7 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
     await db.exec('reset role');
     assert.equal(await value<number>('select count(*)::int as data from pricing.price_versions'), 2);
     assert.equal(await value<number>("select count(*)::int as data from platform.outbox_events where event_type='pricing.published'"), 2);
-    // Hidden tiers and future/expired versions must never leak through public reads.
+    // Private tiers and future versions remain hidden; elapsed expiry no longer hides a current rate.
     const tier = await value<string>("insert into pricing.customer_price_tiers(code,name) values('private','Private') returning id as data");
     await db.query(`insert into pricing.price_versions(variant_id,market_id,tier_id,amount,uom,rate_status,effective_at,expires_at)
       values($1,$2,$3,1,'kg','indicative',now(),now()+interval '1 hour')`, [variant, market, tier]);
@@ -74,7 +73,8 @@ test('pricing publication is authorized, atomic, immutable and expiry-aware', as
     const expired = await value<string>(`insert into pricing.price_versions(variant_id,market_id,amount,uom,rate_status,effective_at,expires_at)
       values($1,$2,10,'kg','indicative',now()-interval '2 hours',now()-interval '1 hour') returning id as data`, [variant, market]);
     await db.query("update pricing.current_prices set price_version_id=$1 where variant_id=$2 and market_id=$3 and tier_key='public'", [expired, variant, market]);
-    assert.equal((await rates()).total, 0);
+    assert.equal((await rates()).total, 1);
+    assert.equal((await rates()).items[0].amount, '10.0000');
     const scheduled = await value<string>(`insert into pricing.price_versions(variant_id,market_id,amount,uom,rate_status,effective_at,expires_at)
       values($1,$2,10,'kg','indicative',now()+interval '1 hour',now()+interval '2 hours') returning id as data`, [variant, market]);
     await db.query("update pricing.current_prices set price_version_id=$1 where variant_id=$2 and market_id=$3 and tier_key='public'", [scheduled, variant, market]);

@@ -9,6 +9,7 @@ const writeOperations = new Set([
   'fti_pricing_market_create',
   'fti_pricing_draft_save',
   'fti_pricing_publish',
+  'fti_pricing_grade_base_update',
 ]);
 
 Deno.serve(async (request: Request) => {

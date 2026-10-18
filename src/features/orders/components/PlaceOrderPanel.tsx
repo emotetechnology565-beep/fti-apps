@@ -47,10 +47,10 @@ export function PlaceOrderPanel({ quoteId, businessId }: { quoteId: string; busi
       {!available.length && <Txt>No delivery address yet. Add one below.</Txt>}
     </>}
     <Txt style={s.h2}>Add personal delivery address</Txt>
-    <Field label="Street address" value={line1} onChangeText={setLine1} />
-    <Field label="City" value={city} onChangeText={setCity} />
-    <Field label="State" value={state} onChangeText={setState} />
-    <Field label="Indian PIN code" value={pincode} onChangeText={setPincode} numeric />
+    <Field label="Street address" placeholder="e.g. 123 Industrial Road, Phase 1" value={line1} onChangeText={setLine1} />
+    <Field label="City" placeholder="e.g. Delhi" value={city} onChangeText={setCity} />
+    <Field label="State" placeholder="e.g. Delhi" value={state} onChangeText={setState} />
+    <Field label="Indian PIN code" placeholder="e.g. 110001" value={pincode} onChangeText={setPincode} numeric />
     <Button secondary disabled={busy || line1.trim().length<5 || city.trim().length<2 || state.trim().length<2 || !/^[1-9][0-9]{5}$/.test(pincode)} onPress={() => void save()}>Save address</Button>
     {!confirm ? <Button disabled={busy || !selected} onPress={() => setConfirm(true)}>Review order placement</Button> : <View style={{ gap: 8 }}>
       <Badge>CONFIRM ORDER</Badge><Txt>Place this accepted quotation as an order using the selected address? Stock availability and reservation policy will be checked by the server.</Txt>

@@ -49,19 +49,19 @@ export function Calculator() {
             ))}
           </Row>
           <Field
-            label={type === 'Square bar' ? 'Side (mm)' : 'Diameter (mm)'}
+            label={type === 'Square bar' ? 'Side (mm)' : 'Diameter (mm)'} placeholder="e.g. 12"
             numeric
             value={diameter}
             onChangeText={setDiameter}
           />
           <Field
-            label="Length (m)"
+            label="Length (m)" placeholder="e.g. 6"
             numeric
             value={length}
             onChangeText={setLength}
           />
           <Field
-            label="Number of pieces"
+            label="Number of pieces" placeholder="e.g. 10"
             numeric
             value={pieces}
             onChangeText={setPieces}

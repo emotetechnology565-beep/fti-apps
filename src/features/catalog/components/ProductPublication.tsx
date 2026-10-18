@@ -81,12 +81,12 @@ export function ProductPublication({ product, categories, disabled, refresh }: {
     {setup && !activeVariant ? <View style={{ gap: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.line }}>
       <Badge>COMPLETE PRODUCT SETUP</Badge>
       <Txt>A product needs at least one active variant to appear in the catalogue. Enter its SKU, unit and minimum order below.</Txt>
-      <Field label={`SKU for ${product.name}`} value={sku} onChangeText={setSku} />
-      <Field label={`Size / variant for ${product.name} (optional)`} value={size} onChangeText={setSize} />
+      <Field label={`SKU for ${product.name}`} placeholder="e.g. HEX-M12-50" value={sku} onChangeText={setSku} />
+      <Field label={`Size / variant for ${product.name} (optional)`} placeholder="e.g. M12 x 50 mm" value={size} onChangeText={setSize} />
       <Txt style={s.muted}>Variant unit</Txt>
       <Row style={{ flexWrap: 'wrap' }}>{(['piece','kg','MT','box','bundle'] as const).map(value =>
         <Chip key={value} selected={unit === value} onPress={() => setUnit(value)}>{value}</Chip>)}</Row>
-      <Field label={`Minimum order for ${product.name}`} numeric value={quantity} onChangeText={setQuantity} />
+      <Field label={`Minimum order for ${product.name}`} placeholder="e.g. 100" numeric value={quantity} onChangeText={setQuantity} />
       <Row style={{ flexWrap: 'wrap' }}>
         <Button disabled={disabled || busy} onPress={() => void saveAndPublish()}>{busy ? 'Saving...' : 'Save variant and publish'}</Button>
         <Button secondary disabled={busy} onPress={() => { setSetup(false); setError(''); }}>Cancel setup</Button>

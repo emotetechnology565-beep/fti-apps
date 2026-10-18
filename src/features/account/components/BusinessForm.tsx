@@ -79,12 +79,12 @@ export function BusinessForm({ business, section, onSubmitted }: { business?: Bu
       ) : null}
       {section === 'business' ? <>
       <Field
-        label="Legal business name"
+        label="Legal business name" placeholder="e.g. Acme Fasteners Pvt Ltd"
         value={legal}
         onChangeText={setLegal}
       />
-      <Field label="GSTIN (optional)" value={gstin} onChangeText={setGstin} />
-      <Field label="PAN (optional)" value={pan} onChangeText={setPan} />
+      <Field label="GSTIN (optional)" placeholder="e.g. 07ABCDE1234F1Z5" value={gstin} onChangeText={setGstin} />
+      <Field label="PAN (optional)" placeholder="e.g. ABCDE1234F" value={pan} onChangeText={setPan} />
       <Row style={{ flexWrap: 'wrap' }}>
         {(
           [
@@ -111,7 +111,7 @@ export function BusinessForm({ business, section, onSubmitted }: { business?: Bu
       {Object.keys(emptyAddress).map((field) => (
         <Field
           key={field}
-          label={`Billing ${field === 'line1' ? 'address' : field}`}
+          label={`Billing ${field === 'line1' ? 'address' : field}`} placeholder={{ line1: 'e.g. 123 Industrial Road', city: 'e.g. Delhi', state: 'e.g. Delhi', pincode: 'e.g. 110001' }[field]}
           value={billing[field as keyof typeof emptyAddress]}
           onChangeText={(v) => setBilling({ ...billing, [field]: v })}
         />
@@ -125,7 +125,7 @@ export function BusinessForm({ business, section, onSubmitted }: { business?: Bu
           {Object.keys(emptyAddress).map((field) => (
             <Field
               key={field}
-              label={`Delivery ${field === 'line1' ? 'address' : field}`}
+              label={`Delivery ${field === 'line1' ? 'address' : field}`} placeholder={{ line1: 'e.g. 123 Industrial Road', city: 'e.g. Delhi', state: 'e.g. Delhi', pincode: 'e.g. 110001' }[field]}
               value={shipping[field as keyof typeof emptyAddress]}
               onChangeText={(v) => setShipping({ ...shipping, [field]: v })}
             />

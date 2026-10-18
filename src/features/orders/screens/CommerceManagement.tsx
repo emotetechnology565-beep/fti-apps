@@ -23,7 +23,7 @@ function PolicyPanel() {
   return <Card style={{gap:10}}><Txt style={s.h2}>Order reservation policy</Txt>
     <Txt>{policy.isPending ? 'Loading policy…' : policy.error ? policy.error.message : policy.data ? `Current duration: ${policy.data.reservation_hours} hours` : 'No duration approved. Order placement is blocked.'}</Txt>
     <Txt>Enter only the duration approved by FTI operations. This controls how long unpaid orders hold tracked stock.</Txt>
-    <Field label="Approved reservation hours (1–168)" numeric value={hours} onChangeText={setHours}/>
+    <Field label="Approved reservation hours (1–168)" placeholder="e.g. 24" numeric value={hours} onChangeText={setHours}/>
     {!confirm ? <Button secondary disabled={busy || !/^\d{1,3}$/.test(hours) || Number(hours)<1 || Number(hours)>168} onPress={()=>setConfirm(true)}>Review policy change</Button> : <>
       <Txt>Set the reservation duration to {hours} hours?</Txt>
       <Button disabled={busy} onPress={()=>void save()}>Confirm approved policy</Button>
@@ -62,17 +62,17 @@ function InventoryPanel() {
       <Row style={{flexWrap:'wrap'}}>{stock.data.locations.filter(l=>l.is_active).map(l=><Chip key={l.id} selected={location===l.id} onPress={()=>setLocation(l.id)}>{l.code} · {l.name}</Chip>)}</Row>
     </>}
     <Txt style={s.h2}>Create stock location</Txt>
-    <Field label="Code (A–Z, 0–9, underscore or hyphen)" value={code} onChangeText={setCode}/>
-    <Field label="Location name" value={name} onChangeText={setName}/>
-    <Field label="City (optional)" value={city} onChangeText={setCity}/>
+    <Field label="Code (A–Z, 0–9, underscore or hyphen)" placeholder="e.g. DELHI_WH_01" value={code} onChangeText={setCode}/>
+    <Field label="Location name" placeholder="e.g. Delhi main warehouse" value={name} onChangeText={setName}/>
+    <Field label="City (optional)" placeholder="e.g. Delhi" value={city} onChangeText={setCity}/>
     <Button secondary disabled={busy || !/^[A-Z0-9_-]{2,24}$/.test(code.trim().toUpperCase()) || name.trim().length<2} onPress={()=>void createLocation()}>Create location</Button>
     <Txt style={s.h2}>Record stock movement</Txt>
-    <Field label="Find product or SKU" value={search} onChangeText={setSearch}/>
+    <Field label="Find product or SKU" placeholder="e.g. HEX-M12-50 or hex bolt" value={search} onChangeText={setSearch}/>
     {catalog.isPending ? <Txt>Loading catalogue…</Txt> : catalog.error ? <Txt accessibilityRole="alert">{catalog.error.message}</Txt> : <Row style={{flexWrap:'wrap'}}>
       {catalog.data.items.flatMap(p=>p.variants.map(v=><Chip key={v.id} selected={variant===v.id} onPress={()=>setVariant(v.id)}>{v.sku}</Chip>))}</Row>}
-    <Field label="Signed quantity (+ receipt, − correction)" value={delta} onChangeText={setDelta}/>
-    <Field label="Reason (at least 5 characters)" value={reason} onChangeText={setReason}/>
-    <Field label="Document / count reference (optional)" value={reference} onChangeText={setReference}/>
+    <Field label="Signed quantity (+ receipt, − correction)" placeholder="e.g. +100 or -5" value={delta} onChangeText={setDelta}/>
+    <Field label="Reason (at least 5 characters)" placeholder="e.g. Goods received against purchase order PO-001" value={reason} onChangeText={setReason}/>
+    <Field label="Document / count reference (optional)" placeholder="e.g. GRN-2026-001" value={reference} onChangeText={setReference}/>
     {!confirm ? <Button secondary disabled={busy || !variant || !location || !/^-?\d{1,12}(\.\d{1,3})?$/.test(delta) || Number(delta)===0 || reason.trim().length<5} onPress={()=>setConfirm(true)}>Review stock movement</Button> : <>
       <Txt>Record {delta} units for the selected variant and location? This changes order availability.</Txt>
       <Button disabled={busy} onPress={()=>void adjust()}>Confirm movement</Button>
@@ -104,7 +104,7 @@ function PaymentsPanel() {
       {!queue.data.length && <Txt>No transfers awaiting review.</Txt>}
       {queue.data.map(p=><Card key={p.id} style={{gap:6}}><Txt>{p.order_no} · INR {p.amount}</Txt>
         <Txt>UTR {p.reference} · buyer {p.buyer_id}</Txt><Txt>{new Date(p.created_at).toLocaleString()}</Txt>
-        {selected===p.id ? <><Field label="Verification note (bank statement evidence)" value={note} onChangeText={setNote} multiline/>
+        {selected===p.id ? <><Field label="Verification note (bank statement evidence)" placeholder="e.g. Match the UTR, amount and date to the bank statement." value={note} onChangeText={setNote} multiline/>
           <Row><Chip selected={decision===true} onPress={()=>setDecision(true)}>Verified in bank</Chip>
             <Chip selected={decision===false} onPress={()=>setDecision(false)}>Reject claim</Chip></Row>
           {decision!==null && <Txt>{decision?'Confirm full payment and allocate stock?':'Reject this transfer claim?'}</Txt>}

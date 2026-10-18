@@ -18,8 +18,8 @@ function DispatchEditor({order}:{order:DispatchOrder}) {
  const [carrier,setCarrier]=useState('');const [tracking,setTracking]=useState('');const [vehicle,setVehicle]=useState('');const [note,setNote]=useState('');const [confirm,setConfirm]=useState(false);const action=useAction();
  const shipped=order.status==='shipped';
  return <Card style={{gap:10}}><Txt style={s.h2}>{order.order_no} ? {order.status}</Txt><ShipmentTracking orderId={order.id}/>
- {order.status!=='delivered'&&<>{shipped?<Field label="Delivery evidence / recipient confirmation reference" value={note} onChangeText={setNote} multiline/>:<>
- <Field label="Transporter / carrier" value={carrier} onChangeText={setCarrier}/><Field label="LR / tracking reference" value={tracking} onChangeText={setTracking}/><Field label="Vehicle number (optional)" value={vehicle} onChangeText={setVehicle}/></>}
+ {order.status!=='delivered'&&<>{shipped?<Field label="Delivery evidence / recipient confirmation reference" placeholder="e.g. Signed POD reference POD-001" value={note} onChangeText={setNote} multiline/>:<>
+ <Field label="Transporter / carrier" placeholder="e.g. Acme Transport" value={carrier} onChangeText={setCarrier}/><Field label="LR / tracking reference" placeholder="e.g. LR-2026-001" value={tracking} onChangeText={setTracking}/><Field label="Vehicle number (optional)" placeholder="e.g. DL01AB1234" value={vehicle} onChangeText={setVehicle}/></>}
  {!confirm?<Button disabled={shipped?note.trim().length<5:carrier.trim().length<2||tracking.trim().length<2} onPress={()=>setConfirm(true)}>Review {shipped?'delivery':'dispatch'}</Button>:<>
  <Txt>{shipped?'Confirm receipt against the evidence entered?':'Confirm the entire order has left with this transporter? Check shipping documents before confirming.'}</Txt>
  <Button disabled={action.busy} onPress={()=>void action.run(()=>shipped?rpc('fti_operations_deliver',{p_order:order.id,p_note:note}):rpc('fti_operations_dispatch',{p_order:order.id,p_carrier:carrier,p_tracking:tracking,p_vehicle:vehicle}),()=>setConfirm(false))}>Confirm {shipped?'delivery':'dispatch'}</Button>

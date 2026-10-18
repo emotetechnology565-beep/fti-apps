@@ -122,7 +122,7 @@ export function StaffMfa({ children }: { children: ReactNode }) {
             </>
           ) : null}
           <Field
-            label="Authenticator code"
+            label="Authenticator code" placeholder="e.g. 123456"
             numeric
             value={code}
             onChangeText={setCode}

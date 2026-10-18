@@ -96,8 +96,8 @@ export function CatalogManagement() {
       <Txt style={s.muted}>Create real categories, products and variant specifications. New products remain drafts until you publish them.</Txt>
       <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>{categoryId ? 'Edit category' : 'Add category'}</Txt>
-        <Field label="Category name" value={categoryName} onChangeText={(value) => { setCategoryName(value); if (!categoryId) setCategorySlug(slugFor(value)); }} />
-        <Field label="Category URL slug" value={categorySlug} onChangeText={setCategorySlug} />
+        <Field label="Category name" placeholder="e.g. Hex bolts" value={categoryName} onChangeText={(value) => { setCategoryName(value); if (!categoryId) setCategorySlug(slugFor(value)); }} />
+        <Field label="Category URL slug" placeholder="e.g. hex-bolts" value={categorySlug} onChangeText={setCategorySlug} />
         <Row>
           <Button disabled={busy || !categoryName.trim()} onPress={() => void saveCategory()}>{categoryId ? 'Save category' : 'Create category'}</Button>
           {categoryId ? <Button secondary onPress={() => { setCategoryId(null); setCategoryName(''); setCategorySlug(''); }}>Cancel</Button> : null}
@@ -114,20 +114,20 @@ export function CatalogManagement() {
         <Txt style={s.h2}>{productId ? 'Edit product variant' : 'Add product and first variant'}</Txt>
         <Txt style={s.muted}>Category</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{data.categories.filter((item) => item.is_active).map((item) => <Chip key={item.id} selected={category === item.id} onPress={() => setCategory(item.id)}>{item.name}</Chip>)}</Row>
-        <Field label="Product name" value={name} onChangeText={(value) => { setName(value); if (!productId) setSlug(slugFor(value)); }} />
-        <Field label="Product slug" value={slug} onChangeText={setSlug} />
-        <Field label="Description" value={description} onChangeText={setDescription} multiline />
+        <Field label="Product name" placeholder="e.g. High tensile hex bolt" value={name} onChangeText={(value) => { setName(value); if (!productId) setSlug(slugFor(value)); }} />
+        <Field label="Product slug" placeholder="e.g. high-tensile-hex-bolt" value={slug} onChangeText={setSlug} />
+        <Field label="Description" placeholder="e.g. Zinc-plated hex bolt for general fastening." value={description} onChangeText={setDescription} multiline />
         <Txt style={s.muted}>Product type</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{(['steel','fastener','tractor_part','other'] as const).map((value) => <Chip key={value} selected={kind === value} onPress={() => setKind(value)}>{value.replace('_',' ')}</Chip>)}</Row>
         <Txt style={s.muted}>Purchase mode</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{(['rfq','direct','both'] as const).map((value) => <Chip key={value} selected={purchaseMode === value} onPress={() => setPurchaseMode(value)}>{value}</Chip>)}</Row>
-        <Field label="Variant SKU" value={sku} onChangeText={setSku} />
-        <Field label="Size / variant label" value={size} onChangeText={setSize} />
+        <Field label="Variant SKU" placeholder="e.g. HEX-M12-50" value={sku} onChangeText={setSku} />
+        <Field label="Size / variant label" placeholder="e.g. M12 x 50 mm" value={size} onChangeText={setSize} />
         <Txt style={s.muted}>Unit of measure</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>
-        <Field label="Minimum order quantity" numeric value={moq} onChangeText={setMoq} />
-        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" numeric value={length} onChangeText={setLength} /></View></Row>
-        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" value={brand} onChangeText={setBrand} /></View></Row>
+        <Field label="Minimum order quantity" placeholder="e.g. 100" numeric value={moq} onChangeText={setMoq} />
+        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" placeholder="e.g. 12" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" placeholder="e.g. 50" numeric value={length} onChangeText={setLength} /></View></Row>
+        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" placeholder="e.g. 8.8" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" placeholder="e.g. Unbrako" value={brand} onChangeText={setBrand} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><Button disabled={busy} onPress={() => void saveProduct()}>{productId ? 'Save product and variant' : 'Create product draft'}</Button>{productId ? <Button secondary onPress={resetProduct}>New product</Button> : null}</Row>
       </Card>
 

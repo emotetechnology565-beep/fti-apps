@@ -48,8 +48,8 @@ function Composer({ submitted }: { submitted: (id: string) => Promise<void> }) {
       {businesses.map(b => <Chip key={b.id} selected={business === b.id} onPress={() => { setBusiness(b.id); setAddress(null); }}>{b.legal_name}</Chip>)}</Row>
     {!!business && !!addresses.length && <Row style={{ flexWrap: 'wrap' }}><Chip selected={!address} onPress={() => setAddress(null)}>Confirm delivery later</Chip>
       {addresses.map(a => <Chip key={a.id} selected={address === a.id} onPress={() => setAddress(a.id)}>{a.city}, {a.state}</Chip>)}</Row>}
-    <Field label="Delivery requirements and notes" value={notes} onChangeText={setNotes} multiline />
-    <Field label="Find published product or SKU" value={search} onChangeText={v => { setSearch(v); setOffset(0); }} />
+    <Field label="Delivery requirements and notes" placeholder="e.g. Deliver to Delhi; unloading available at the warehouse." value={notes} onChangeText={setNotes} multiline />
+    <Field label="Find published product or SKU" placeholder="e.g. HEX-M12-50 or hex bolt" value={search} onChangeText={v => { setSearch(v); setOffset(0); }} />
     {catalog.isPending ? <Txt>Loading catalogue…</Txt> : catalog.error ? <Txt accessibilityRole="alert">{catalog.error.message}</Txt> : <>
       {!catalog.data.items.length && <Txt>No matching published products.</Txt>}
       {catalog.data.items.map(p => <View key={p.id} style={{ gap: 8 }}><Txt>{p.name}</Txt><Row style={{ flexWrap: 'wrap' }}>
@@ -58,8 +58,8 @@ function Composer({ submitted }: { submitted: (id: string) => Promise<void> }) {
       <Row><Button secondary disabled={!offset} onPress={() => setOffset(Math.max(0,offset-12))}>Previous</Button><Button secondary disabled={offset+12>=catalog.data.total} onPress={() => setOffset(offset+12)}>Next</Button></Row>
     </>}
     {items.map(i => <Card key={i.variant_id} style={{ gap: 8 }}><Txt>{i.name} · {i.sku}</Txt>
-      <Field label={`Quantity in ${i.uom} (minimum ${i.minimum})`} numeric value={i.qty} onChangeText={v => setItems(old => old.map(line => line.variant_id === i.variant_id ? { ...line, qty: v } : line))} />
-      <Field label="Item requirements (optional)" value={i.requirements} onChangeText={v => setItems(old => old.map(line => line.variant_id === i.variant_id ? { ...line, requirements: v } : line))} />
+      <Field label={`Quantity in ${i.uom} (minimum ${i.minimum})`} placeholder={`e.g. ${i.minimum} ${i.uom}`} numeric value={i.qty} onChangeText={v => setItems(old => old.map(line => line.variant_id === i.variant_id ? { ...line, qty: v } : line))} />
+      <Field label="Item requirements (optional)" placeholder="e.g. Grade 8.8, zinc plated" value={i.requirements} onChangeText={v => setItems(old => old.map(line => line.variant_id === i.variant_id ? { ...line, requirements: v } : line))} />
       <Button secondary onPress={() => setItems(old => old.filter(line => line.variant_id !== i.variant_id))}>Remove item</Button></Card>)}
     {!!error && <Txt accessibilityRole="alert">{error}</Txt>}
     <Button disabled={busy || !items.length} onPress={() => void submit()}>{busy ? 'Submitting…' : 'Submit request to FTI'}</Button>
@@ -97,7 +97,7 @@ function BuyerDetail({ detail, refresh }: { detail: SalesDetail; refresh: () => 
       <Txt style={s.h2}>Total INR {rev.grand_total}</Txt><Txt>Terms: {rev.payment_terms?.text ?? 'Not supplied'}</Txt>
       {!!rev.notes && <Txt>{rev.notes}</Txt>}</Card>)}
     {actionable && <Card style={{ gap: 10 }}><Txt>Only this current unexpired revision can be accepted. Acceptance records your decision; it does not place an order or take payment.</Txt>
-      {confirm === 'revision' && <Field label="Requested change" value={reason} onChangeText={setReason} multiline />}
+      {confirm === 'revision' && <Field label="Requested change" placeholder="e.g. Increase the quantity to 200 pieces." value={reason} onChangeText={setReason} multiline />}
       {!confirm ? <Row><Button secondary onPress={() => setConfirm('revision')}>Request revision</Button><Button onPress={() => setConfirm('accept')}>Review acceptance</Button></Row> : <>
         <Button disabled={busy || confirm === 'revision' && reason.trim().length < 3} onPress={() => void act()}>{busy ? 'Saving…' : confirm === 'accept' ? 'Confirm quote acceptance' : 'Send revision request'}</Button>
         <Button secondary disabled={busy} onPress={() => setConfirm(null)}>Cancel</Button></>}

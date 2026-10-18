@@ -25,7 +25,7 @@ function Thread({enquiry}: {enquiry: StockEnquiry}) {
       <StockPages offset={offset} setOffset={setOffset} count={messages.data.length}/>
     </>}
     {enquiry.status === 'open' ? <>
-      <Field label="Enquiry reply" value={body} onChangeText={setBody} multiline/>
+      <Field label="Enquiry reply" placeholder="e.g. This stock is available for dispatch tomorrow." value={body} onChangeText={setBody} multiline/>
       <Button secondary onPress={() => setClose(!close)}>{close ? 'Keep enquiry open' : 'Close enquiry with this reply'}</Button>
       {close ? <Txt>This reply will close the enquiry for both parties. It does not mark the material sold.</Txt> : null}
       <Button disabled={action.busy || body.trim().length < 1 || body.length > 2000} onPress={() => void action.run(() => stockApi.reply(enquiry,messageId.current,body,close), close ? 'Enquiry closed.' : 'Reply sent.', () => {setBody(''); setClose(false); messageId.current = newStockId();})}>{close ? 'Send reply and close enquiry' : 'Send enquiry reply'}</Button>

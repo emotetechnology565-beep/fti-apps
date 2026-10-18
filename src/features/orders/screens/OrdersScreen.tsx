@@ -40,7 +40,7 @@ function OrderPanel({ order, refresh }: { order: OrderDetail; refresh: () => Pro
       {!order.payments.length && <Txt>No transfer reference submitted.</Txt>}
       {order.payments.map(p => <View key={p.id} style={{ gap: 3 }}><Badge>{p.status.toUpperCase()}</Badge>
         <Txt>Reference {p.reference} · INR {p.amount} · {new Date(p.created_at).toLocaleString()}</Txt></View>)}
-      {canSubmit && <><Field label="Bank UTR / transfer reference" value={utr} onChangeText={setUtr} />
+      {canSubmit && <><Field label="Bank UTR / transfer reference" placeholder="e.g. HDFC123456789012" value={utr} onChangeText={setUtr} />
         {!confirm ? <Button disabled={!/^[A-Za-z0-9/-]{6,40}$/.test(utr.trim()) || busy} onPress={() => setConfirm(true)}>Review transfer reference</Button> : <>
           <Txt>Submit reference {utr.trim().toUpperCase()} for manual review?</Txt>
           <Button disabled={busy} onPress={() => void submit()}>{busy ? 'Submitting…' : 'Confirm submission'}</Button>

@@ -79,7 +79,7 @@ export function Login() {
                 setSent(false);
                 setToken('');
               }}
-              placeholder="+91"
+              placeholder="e.g. +919876543210"
             />
             <Chip selected={consent} onPress={() => setConsent(!consent)}>
               Send my verification code on WhatsApp
@@ -89,7 +89,7 @@ export function Login() {
             </Txt>
             {sent ? (
               <Field
-                label="Six-digit WhatsApp code"
+                label="Six-digit WhatsApp code" placeholder="e.g. 123456"
                 numeric
                 value={token}
                 onChangeText={setToken}

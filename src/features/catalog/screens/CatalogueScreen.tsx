@@ -28,7 +28,7 @@ export function Catalogue() {
           <Icon name="search" size={17} />
           <TextInput
             accessibilityLabel="Search catalogue"
-            placeholder="Search products, sizes or SKUs..."
+            placeholder="e.g. M12 bolts or HEX-M12-50"
             value={search}
             onChangeText={(value) => { setSearch(value); setPage(0); }}
             returnKeyType="search"

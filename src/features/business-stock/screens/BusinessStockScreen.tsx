@@ -15,8 +15,8 @@ function Browse() {
   const query = useQuery({queryKey: ['business-stock','browse',auth.session?.user.id,search,city,condition,offset], queryFn: () => stockApi.list('browse',search,city,condition,offset), retry: false, refetchInterval: 60000});
   return <View style={{gap: 14}}>
     <Row style={{flexWrap: 'wrap'}}><Button onPress={() => router.push('/sell-stock' as never)}>Sell your stock</Button><Button secondary onPress={() => router.push('/sell-stock' as never)}>My listings and enquiries</Button><Button secondary onPress={() => void query.refetch()}>Refresh business stock</Button></Row>
-    <Field label="Search business stock by material, grade or specification" value={search} onChangeText={v => {setSearch(v); setOffset(0);}}/>
-    <Field label="Filter stock city" value={city} onChangeText={v => {setCity(v); setOffset(0);}}/>
+    <Field label="Search business stock by material, grade or specification" placeholder="e.g. M12 bolts or grade 8.8" value={search} onChangeText={v => {setSearch(v); setOffset(0);}}/>
+    <Field label="Filter stock city" placeholder="e.g. Delhi" value={city} onChangeText={v => {setCity(v); setOffset(0);}}/>
     <Row style={{flexWrap: 'wrap'}}>{['','new','surplus','used'].map(v => <Chip key={v || 'all'} selected={condition === v} onPress={() => {setCondition(v); setOffset(0);}}>{v || 'All conditions'}</Chip>)}</Row>
     {query.isPending ? <Txt>Loading business stock...</Txt> : query.error ? <Empty title="Business stock unavailable" description={query.error.message} action={<Button secondary onPress={() => void query.refetch()}>Retry business stock</Button>}/> : <>
       {!query.data.length ? <Empty title="No business stock found" description="Approved, available listings from verified businesses appear here. Try another material or city."/> : null}

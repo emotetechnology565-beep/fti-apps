@@ -13,7 +13,7 @@ function Thread({ticket,staff}:{ticket:Ticket;staff:boolean}) {
  {messages.isPending?<Txt>Loading conversation?</Txt>:messages.error?<Txt accessibilityRole="alert">{messages.error.message}</Txt>:<>
  {messages.data.map(m=><Card key={m.id}><Txt>{m.author_id===auth.session?.user.id?'You':'Participant'} ? {new Date(m.created_at).toLocaleString()}</Txt><Txt>{m.body}</Txt></Card>)}
  <Pages offset={offset} setOffset={setOffset} count={messages.data.length}/></>}
- {ticket.status==='open'&&<><Field label="Reply (up to 4000 characters)" value={body} onChangeText={setBody} multiline/>
+ {ticket.status==='open'&&<><Field label="Reply (up to 4000 characters)" placeholder="e.g. Please share the invoice and a photo of the issue." value={body} onChangeText={setBody} multiline/>
  <Button disabled={action.busy||!body.trim()||body.length>4000} onPress={()=>void action.run(()=>rpc('fti_operations_reply',{p_ticket:ticket.id,p_body:body}),()=>setBody(''))}>Send reply</Button>
  {staff&&<Button secondary disabled={action.busy||!body.trim()||body.length>4000} onPress={()=>void action.run(()=>rpc('fti_operations_reply',{p_ticket:ticket.id,p_body:body,p_resolve:true}),()=>setBody(''))}>Send reply and resolve ticket</Button>}</>}
  <PrivateDocuments kind="support_ticket" entityId={ticket.id} canUpload={ticket.status==='open'}/>
@@ -33,8 +33,8 @@ export function SupportTickets({staff=false}:{staff?:boolean}) {
  <Pages offset={offset} setOffset={n=>{setSelected(null);setOffset(n);}} count={list.data.length}/></>}
  {ticket&&<Thread key={ticket.id} ticket={ticket} staff={staff}/>}
  {!staff&&<Card style={{gap:10}}><Txt style={s.h2}>Request help</Txt>
- <Field label="Subject" value={subject} onChangeText={setSubject}/><Field label="Order ID (optional, from your order details)" value={order} onChangeText={setOrder}/>
- <Field label="Describe the issue" value={body} onChangeText={setBody} multiline/>
+ <Field label="Subject" placeholder="e.g. Missing items in my delivery" value={subject} onChangeText={setSubject}/><Field label="Order ID (optional, from your order details)" placeholder="Paste the order ID from your order details" value={order} onChangeText={setOrder}/>
+ <Field label="Describe the issue" placeholder="e.g. Two boxes were missing from the delivery." value={body} onChangeText={setBody} multiline/>
  <Button disabled={action.busy||subject.trim().length<5||subject.length>160||!body.trim()||body.length>4000} onPress={()=>void action.run(()=>rpc('fti_operations_ticket_create',{p_subject:subject,p_body:body,p_order:order.trim()||null}),()=>{setSubject('');setBody('');setOrder('');setOffset(0);})}>Create ticket</Button>
  {!!action.message&&<Txt accessibilityRole="alert">{action.message}</Txt>}</Card>}
  </View>;
