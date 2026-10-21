@@ -8,7 +8,9 @@ export type CatalogSlice = {
 };
 export const createCatalogSlice: WorkspaceSlice<CatalogSlice> = (set) => ({
   catalogProducts: [],
-  setCatalogProducts: (catalogProducts) => set({ catalogProducts }),
+  setCatalogProducts: (products) => set((state) => ({
+    catalogProducts: [...state.catalogProducts.filter(product => !products.some(item => item.id === product.id)), ...products],
+  })),
   saved: [],
   toggleSaved: (id) =>
     set((s) => ({

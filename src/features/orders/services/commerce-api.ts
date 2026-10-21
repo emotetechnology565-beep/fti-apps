@@ -1,5 +1,5 @@
 import { supabase } from '@core/api/supabase-client';
-import type { DeliveryAddress, OrderDetail, OrderSummary, PaymentReview, StockLocation, StockRow } from '../model/commerce-types';
+import type { CartOrderReview, DeliveryAddress, OrderDetail, OrderSummary, PaymentReview, StockLocation, StockRow } from '../model/commerce-types';
 
 export async function commerceRpc<T>(operation: string, args: Record<string, unknown> = {}): Promise<T> {
   if (!supabase) throw new Error('Commerce service is not configured.');
@@ -16,6 +16,11 @@ export async function commerceRpc<T>(operation: string, args: Record<string, unk
 }
 
 export const commerceApi = {
+  placeCart: (requestId: string, address: string, lines: { variant_id: string; qty: string }[]) =>
+    commerceRpc<{ id: string; replayed: boolean }>('fti_commerce_cart_order', { p_request_id: requestId, p_address: address, p_lines: lines }),
+  cartQueue: () => commerceRpc<CartOrderReview[]>('fti_commerce_cart_queue'),
+  confirmCart: (order: string, items: { id: string; unit_price: string }[], gst: string, delivery: string) =>
+    commerceRpc<void>('fti_commerce_cart_confirm', { p_order: order, p_items: items, p_gst: gst, p_delivery: delivery }),
   mine: (offset = 0) => commerceRpc<OrderSummary[]>('fti_commerce_my', { p_offset: offset }),
   detail: (id: string) => commerceRpc<OrderDetail>('fti_commerce_detail', { p_id: id }),
   addresses: () => commerceRpc<DeliveryAddress[]>('fti_commerce_addresses'),

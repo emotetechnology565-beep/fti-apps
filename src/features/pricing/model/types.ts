@@ -1,7 +1,8 @@
 export type Market = { id: string; code: string; name: string; state: string };
 export type RateHistory = { id: string; amount: string; uom: string; effective_at: string; expires_at?: string | null };
 export type PublishedRate = RateHistory & {
-  variant_id: string; name: string; sku: string; size_label: string | null;
+  variant_id: string; product_id: string; name: string; sku: string; size_label: string | null;
+  attributes: Record<string, unknown>;
   currency_code: string; revision: number; previous_amount: string | null;
   previous_effective_at: string | null;
 };

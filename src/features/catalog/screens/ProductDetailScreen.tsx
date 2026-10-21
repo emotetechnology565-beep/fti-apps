@@ -4,6 +4,9 @@ import { router } from 'expo-router';
 import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { ProductReferenceCharts } from '../components/ProductReferenceCharts';
+import { TractorPrice } from '../components/TractorPrice';
+import { tractorPriceKeys } from '../model/tractor-pricing';
+import { AddToCart } from '../components/AddToCart';
 const go = (path: string) => router.push(path as never);
 export function ProductDetail({ id }: { id: string }) {
   const query = useProduct(id);
@@ -29,21 +32,23 @@ export function ProductDetail({ id }: { id: string }) {
               <Txt style={{ fontWeight: '700' }}>{variant.size_label || variant.sku}</Txt>
               <Badge>{variant.sku}</Badge>
             </Row>
+            {p.product_kind === 'tractor_part' ? <TractorPrice variant={variant} /> : null}
             {[
               ['Unit', variant.uom],
               ['Minimum order', `${variant.min_order_qty} ${variant.uom}`],
               ...(variant.diameter_mm ? [['Diameter', `${variant.diameter_mm} mm`]] : []),
               ...(variant.length_mm ? [['Length', `${variant.length_mm} mm`]] : []),
-              ...Object.entries(variant.attributes).map(([key, value]) => [key.replaceAll('_', ' '), String(value)]),
+              ...Object.entries(variant.attributes).filter(([key]) => p.product_kind !== 'tractor_part' || !tractorPriceKeys.some(priceKey => priceKey === key)).map(([key, value]) => [key.replaceAll('_', ' '), String(value)]),
             ].map(([label, value]) => (
               <Row key={`${variant.id}-${label}`} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
                 <Txt style={s.muted}>{label}</Txt>
                 <Txt style={{ fontSize: 13, fontWeight: '600', color: c.ink }}>{value}</Txt>
               </Row>
             ))}
+            <AddToCart product={p} variant={variant} />
           </Card>
         ))}
-        <Txt style={s.muted}>Prices and stock are not shown until those services are configured. Ask FTI for current availability and pricing.</Txt>
+        <Txt style={s.muted}>{p.product_kind === 'tractor_part' ? 'Prices are per listed unit. Ask FTI for current availability and a quotation.' : 'Prices and stock are not shown until those services are configured. Ask FTI for current availability and pricing.'}</Txt>
         <Button onPress={() => go('/rfqs')}>Browse quotation requests</Button>
       </Card>
     </View>

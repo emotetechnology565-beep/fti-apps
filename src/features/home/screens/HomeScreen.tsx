@@ -2,6 +2,7 @@ import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
+import { MaterialPriceBanner } from '@features/pricing/ui';
 import {
   Heading,
   Card,
@@ -14,8 +15,12 @@ import {
   s,
 } from '@shared/ui';
 export function Home() {
-  const { identity } = useAuth();
+  const { identity, session, ready, loading, error } = useAuth();
   const name = identity?.profile.full_name ?? '';
+  const business = identity?.businesses.find(
+    (item) => item.verification_status === 'verified',
+  ) ?? identity?.businesses[0];
+  const accountResolved = ready && !loading && !error && !!identity;
   const tools = [
     {
       title: 'Material catalogue',
@@ -44,12 +49,13 @@ export function Home() {
   ];
   return (
     <View>
+      <MaterialPriceBanner />
       <Heading
         eyebrow="YOUR INDUSTRIAL PROCUREMENT DESK"
         title={name ? 'Welcome, ' + name + '.' : 'Welcome to FTI.'}
         description="Manage your materials, procurement, and deliveries in one workspace."
       />
-      <Card
+      {accountResolved ? <Card
         style={{
           backgroundColor: c.dark,
           borderColor: c.dark,
@@ -60,19 +66,28 @@ export function Home() {
       >
         <Icon name="briefcase" size={28} color="white" />
         <Txt style={{ color: 'white', fontSize: 27, fontWeight: '700' }}>
-          Everything your business needs to move forward.
+          {business ? business.legal_name : 'Everything your business needs to move forward.'}
         </Txt>
         <Txt style={{ color: '#B8C6D8', fontSize: 13, lineHeight: 22 }}>
-          Set up your business profile to begin. Your catalogue, rates, and
-          activity will appear when their data sources are connected.
+          {business
+            ? business.verification_status === 'verified'
+              ? 'Your business is verified. Explore materials, market rates, and your procurement activity.'
+              : business.verification_status === 'pending'
+                ? 'Your business application is under review. You can view your submitted details in your account.'
+                : 'Your business application needs changes. Open your account to review the feedback and update your details.'
+            : 'You are signed in. Complete your business details and addresses, then submit your application for verification.'}
         </Txt>
         <Button
-          onPress={() => router.push('/account')}
+          onPress={() => router.push({ pathname: '/account', params: { section: business ? 'profile' : 'business' } })}
           style={{ alignSelf: 'flex-start' }}
         >
-          Set up business profile
+          {business ? 'View business profile' : 'Set up business profile'}
         </Button>
-      </Card>
+      </Card> : !session && ready ? <Card style={{ gap: 16, marginBottom: 24 }}>
+        <Txt style={s.h2}>Sign in to your FTI account</Txt>
+        <Txt style={s.muted}>Sign in to manage your business profile and procurement activity.</Txt>
+        <Button onPress={() => router.push('/login')}>Sign in</Button>
+      </Card> : null}
       <Section title="Your procurement tools" />
       <View
         style={{

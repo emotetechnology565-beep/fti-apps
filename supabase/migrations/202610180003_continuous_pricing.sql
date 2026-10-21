@@ -31,7 +31,8 @@ end $$;
 create or replace function public.fti_pricing_rates(p_market uuid,p_search text default '',p_offset integer default 0)
 returns jsonb language sql stable security definer set search_path='' as $$
  with eligible as (
- select v.id,v.variant_id,p.name,s.sku,s.size_label,v.amount::text as amount,v.uom,v.currency_code,
+ select v.id,v.variant_id,p.id as product_id,p.name,s.sku,s.size_label,
+ coalesce(attrs.value,'{}'::jsonb) as attributes,v.amount::text as amount,v.uom,v.currency_code,
  v.effective_at,null::timestamptz as expires_at,c.revision,previous.amount::text as previous_amount,
  previous.effective_at as previous_effective_at
  from pricing.current_prices c
@@ -41,6 +42,8 @@ returns jsonb language sql stable security definer set search_path='' as $$
  join catalog.product_variants s on s.id=c.variant_id and s.is_active
  join catalog.products p on p.id=s.product_id and p.status='published'
  join catalog.categories cat on cat.id=p.category_id and cat.is_active
+ left join lateral (select jsonb_object_agg(a.attribute_key,a.value_json) as value
+  from catalog.variant_attributes a where a.variant_id=s.id) attrs on true
  left join pricing.price_versions previous on previous.id=v.supersedes_id
   and previous.tier_id is null and previous.market_id=v.market_id and previous.variant_id=v.variant_id
   and previous.effective_at<=now() and previous.uom=v.uom and previous.currency_code=v.currency_code

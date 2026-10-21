@@ -2,6 +2,7 @@ import { useAuth } from '@features/auth/ui';
 import { hasPermission } from '@features/auth';
 import { AdminNavigation } from '@features/admin/ui';
 import { AccountNavigation } from '@features/account/ui';
+import { StaffOrderAlert } from '@features/operations/ui';
 import { pricingApi } from '@features/pricing/export';
 import { useQuery } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
@@ -495,6 +496,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   Business services awaiting connection
                 </Txt>
               </View>
+              <StaffOrderAlert />
               {children}
               <View
                 style={{

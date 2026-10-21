@@ -8,7 +8,7 @@ import { CatalogManagement } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
 import { SalesManagement } from '@features/quotations/ui';
 import { OperationsManagement } from '@features/operations/ui';
-import { CommerceManagement } from '@features/orders/ui';
+import { CartOrderQueue, CommerceManagement } from '@features/orders/ui';
 import { StockReviewPanel } from '@features/business-stock/ui';
 import { Heading, Card, Txt, Button, Field, Empty, Badge } from '@shared/ui';
 import { selectedStaffSection } from '../model/sections';
@@ -154,6 +154,7 @@ function StaffWorkspace() {
       case 'pricing': return <PricingManagement/>;
       case 'sales': return <SalesManagement/>;
       case 'inventory': return <CommerceManagement section="inventory"/>;
+      case 'tractor-orders': return <CartOrderQueue/>;
       case 'payments': return <CommerceManagement section="payments"/>;
       case 'order-policy': return <CommerceManagement section="policy"/>;
       case 'reservations': return <CommerceManagement section="expiry"/>;

@@ -11,6 +11,9 @@ export function Catalogue() {
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(0);
   const [savedOnly, setSavedOnly] = useState(false);
+  const [gridWidth, setGridWidth] = useState(0);
+  const columns = gridWidth >= 720 ? Math.max(3, Math.floor((gridWidth + 12) / 252)) : 2;
+  const cardWidth = gridWidth > 0 ? (gridWidth - 12 * (columns - 1)) / columns : undefined;
   const savedIds = useStore((state) => state.saved);
   const query = useProducts({ search: search.trim(), category, limit: pageSize, offset: page * pageSize, ids: savedOnly ? savedIds : undefined });
   const items = query.data?.items ?? [];
@@ -62,8 +65,8 @@ export function Catalogue() {
             </Row>
           </Row>
           {items.length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 18 }}>
-              {items.map((product) => <View key={product.id} style={{ flexGrow: 1, flexBasis: 260, maxWidth: 400 }}><ProductCard product={product} /></View>)}
+            <View onLayout={(event) => setGridWidth(event.nativeEvent.layout.width)} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+              {items.map((product) => <View key={product.id} style={{ width: cardWidth ?? '48%' }}><ProductCard product={product} /></View>)}
             </View>
           ) : (
             <Empty title={total ? 'No saved items on this page' : 'No products available'} description={total ? 'Save a product or change the filter.' : 'Published products will appear here once FTI adds them. The catalogue contains no demo records.'} action={search || category || savedOnly ? <Button secondary onPress={() => { setSearch(''); setCategory(''); setSavedOnly(false); setPage(0); }}>Clear filters</Button> : undefined} />

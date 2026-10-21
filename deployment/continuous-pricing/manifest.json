@@ -1,5 +1,5 @@
 {
-  "01_continuous_pricing.sql": "3f966c81f6d3614748f431ae41c253e83a798d0e75c95718c3240945a475bdbc",
+  "01_continuous_pricing.sql": "c89408c12cf47f940be48b236a938a4fc28dae09df480e02140721e9253b4a1e",
   "02_grade_base_pricing.sql": "3685fa3dc3a92c0ce71564be5a2039d2fa4110a97721ba30d3ce2ab5f8ebd7e7",
   "03_pricing.ts": "98c7a0b0be8636f79e8ff8fba8d27dfcf8835ba36cf08f1ef3b1dd8e041081c2",
   "README.md": "03b8400eb7e536fd58701a253743228cbf0c7fc0d4b9e4020e5bda6d3a7a74f5"

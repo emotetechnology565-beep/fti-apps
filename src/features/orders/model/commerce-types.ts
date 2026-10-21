@@ -1,6 +1,6 @@
 export type OrderSummary = {
   id: string; order_no: string; status: string; grand_total: string; amount_due: string;
-  created_at: string; updated_at: string; quotation_revision_id: string;
+  created_at: string; updated_at: string; quotation_revision_id: string | null;
   reservation_expires_at: string | null;
 };
 export type OrderDetail = OrderSummary & {
@@ -21,3 +21,8 @@ export type StockRow = { variant_id: string; sku: string; location_id: string; o
   reserved: string; available: string };
 export type PaymentReview = { id: string; order_id: string; order_no: string; buyer_id: string;
   reference: string; amount: string; status: string; created_at: string };
+export type CartOrderReview = {
+  id: string; order_no: string; created_at: string; subtotal: string;
+  delivery_address_snapshot: { line1: string; city: string; state: string; pincode: string };
+  items: { id: string; name: string; sku: string; qty: string; uom: string; unit_price: string }[];
+};

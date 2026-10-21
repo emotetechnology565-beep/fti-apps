@@ -7,6 +7,7 @@ import { ProductImages } from '../components/ProductImages';
 import { ProductReferenceCharts } from '../components/ProductReferenceCharts';
 import { chartsForProduct } from '../model/product-references';
 import { ProductPublication } from '../components/ProductPublication';
+import { tractorPricingError } from '../model/tractor-pricing';
 
 const slugFor = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const adminKey = ['catalog', 'admin'] as const;
@@ -33,6 +34,9 @@ export function CatalogManagement() {
   const [length, setLength] = useState('');
   const [grade, setGrade] = useState('');
   const [brand, setBrand] = useState('');
+  const [basePrice, setBasePrice] = useState('');
+  const [discountedPrice, setDiscountedPrice] = useState('');
+  const [variantAttributes, setVariantAttributes] = useState<Record<string, unknown>>({});
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [photosFor, setPhotosFor] = useState<string | null>(null);
@@ -50,12 +54,16 @@ export function CatalogManagement() {
     setLength(variant?.length_mm ? String(variant.length_mm) : '');
     setGrade(typeof variant?.attributes.grade === 'string' ? variant.attributes.grade : '');
     setBrand(typeof variant?.attributes.brand === 'string' ? variant.attributes.brand : '');
+    setVariantAttributes(variant?.attributes ?? {});
+    setBasePrice(variant?.attributes.base_price != null ? String(variant.attributes.base_price) : '');
+    setDiscountedPrice(variant?.attributes.discounted_price != null ? String(variant.attributes.discounted_price) : '');
     setNote('');
   }
   function resetProduct() {
     setProductId(null); setVariantId(null); setCategory(''); setName(''); setSlug('');
     setDescription(''); setKind('steel'); setPurchaseMode('rfq'); setSku(''); setSize('');
     setUom('kg'); setMoq('1'); setDiameter(''); setLength(''); setGrade(''); setBrand('');
+    setBasePrice(''); setDiscountedPrice(''); setVariantAttributes({});
   }
   async function saveCategory() {
     setBusy(true); setNote('');
@@ -74,9 +82,22 @@ export function CatalogManagement() {
   }
   async function saveProduct() {
     if (!category || !name.trim() || !sku.trim() || Number(moq) <= 0) { setNote('Choose a category and enter a product name, SKU and valid minimum quantity.'); return; }
+    if (kind === 'tractor_part') {
+      const error = tractorPricingError(basePrice, discountedPrice);
+      if (error) { setNote(error); return; }
+    }
+    const attributes = { ...variantAttributes };
+    delete attributes.grade; delete attributes.brand;
+    if (grade.trim()) attributes.grade = grade.trim();
+    if (brand.trim()) attributes.brand = brand.trim();
+    if (kind === 'tractor_part') {
+      delete attributes.base_price; delete attributes.discounted_price;
+      if (basePrice.trim()) attributes.base_price = Number(basePrice).toFixed(2);
+      if (discountedPrice.trim()) attributes.discounted_price = Number(discountedPrice).toFixed(2);
+    }
     setBusy(true); setNote('');
     try {
-      await catalogApi.saveProduct({ id: productId, category_id: category, name, slug: slug || slugFor(name), description, product_kind: kind, purchase_mode: purchaseMode }, [{ id: variantId, sku, size_label: size, uom, min_order_qty: Number(moq), diameter_mm: diameter || null, length_mm: length || null, attributes: { ...(grade ? { grade } : {}), ...(brand ? { brand } : {}) }, is_active: true }]);
+      await catalogApi.saveProduct({ id: productId, category_id: category, name, slug: slug || slugFor(name), description, product_kind: kind, purchase_mode: purchaseMode }, [{ id: variantId, sku, size_label: size, uom, min_order_qty: Number(moq), diameter_mm: diameter || null, length_mm: length || null, attributes, is_active: true }]);
       resetProduct(); setNote('Product and variant saved as catalogue data.');
       await client.invalidateQueries({ queryKey: adminKey });
       await client.invalidateQueries({ queryKey: ['catalog'] });
@@ -126,6 +147,13 @@ export function CatalogManagement() {
         <Txt style={s.muted}>Unit of measure</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>
         <Field label="Minimum order quantity" placeholder="e.g. 100" numeric value={moq} onChangeText={setMoq} />
+        {kind === 'tractor_part' ? (
+          <View style={{ gap: 12 }}>
+            <Txt style={s.muted}>Optional prices in INR per {uom}. Leave both blank for price on request.</Txt>
+            <Field label="Base price (₹)" placeholder="e.g. 1000.00" numeric value={basePrice} onChangeText={setBasePrice} />
+            <Field label="Price after discount (₹, optional)" placeholder="e.g. 800.00" numeric value={discountedPrice} onChangeText={setDiscountedPrice} />
+          </View>
+        ) : null}
         <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" placeholder="e.g. 12" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" placeholder="e.g. 50" numeric value={length} onChangeText={setLength} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" placeholder="e.g. 8.8" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" placeholder="e.g. Unbrako" value={brand} onChangeText={setBrand} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><Button disabled={busy} onPress={() => void saveProduct()}>{productId ? 'Save product and variant' : 'Create product draft'}</Button>{productId ? <Button secondary onPress={resetProduct}>New product</Button> : null}</Row>

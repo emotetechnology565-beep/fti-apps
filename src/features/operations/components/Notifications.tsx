@@ -7,7 +7,7 @@ import { operationsRpc as rpc, type Notice, type Announcement } from '../service
 export function Notifications() {
  const [offset,setOffset]=useState(0);const list=usePage<Notice[]>('notifications',{p_offset:offset});const preference=usePage<{enabled:boolean}>('whatsapp_preferences');const action=useAction();
  return <Card style={{gap:10}}><Txt style={s.h2}>Your updates</Txt><Button secondary onPress={()=>void list.refetch()}>Refresh updates</Button>
- <Txt>Opt in to WhatsApp confirmations and updates for business applications, quotations, orders, payments, support and stock requests. Staff also receive alerts for requests they can review. You can turn these updates off at any time.</Txt>
+ <Txt>Opt in to WhatsApp confirmations and updates for business applications, quotations, orders, payments, support and stock requests. All active staff receive new-order alerts. Other staff alerts follow assigned permissions. You can turn these updates off at any time.</Txt>
  {preference.error?<Txt accessibilityRole="alert">{preference.error.message}</Txt>:preference.data?
  <Button secondary disabled={action.busy} onPress={()=>void action.run(()=>rpc('fti_operations_whatsapp_opt_in',{p_enabled:!preference.data.enabled}))}>
  {preference.data.enabled?'Turn off WhatsApp updates':'Opt in to WhatsApp updates'}</Button>:<Txt>Loading WhatsApp preference...</Txt>}

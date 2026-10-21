@@ -10,7 +10,27 @@ const operations = new Set([
   'fti_commerce_address_save','fti_commerce_quote_order','fti_commerce_my',
   'fti_commerce_detail','fti_commerce_bank_submit','fti_commerce_payment_queue',
   'fti_commerce_payment_decide','fti_commerce_expire',
+  'fti_commerce_cart_order','fti_commerce_cart_queue','fti_commerce_cart_confirm',
 ]);
+
+async function wakeOrderAlerts(url: string, workerSecret: string) {
+  // Drain bounded batches promptly; the scheduled worker remains the fallback.
+  // Jobs are claimed atomically and retain existing consent/permission checks.
+  try {
+    for (let batch = 0; batch < 10; batch++) {
+      const response = await fetch(`${url}/functions/v1/operations-whatsapp`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Worker-Secret': workerSecret },
+        body: '{}', signal: AbortSignal.timeout(120000),
+      });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (typeof result.claimed !== 'number' || result.claimed < 10) return;
+    }
+  } catch {
+    // Sending failures must not turn a committed order into an apparent failure.
+    // Pending jobs remain available to the existing scheduled worker.
+  }
+}
 Deno.serve(async (request: Request) => {
   const requestId = crypto.randomUUID();
   const json = (body: unknown, status: number) => Response.json(body, {
@@ -48,6 +68,11 @@ Deno.serve(async (request: Request) => {
       const message = ['42501','22023','P0002'].includes(code) ? String(data.message)
         : code === '23505' ? 'This request or bank reference already exists.' : 'Commerce request could not be completed.';
       return json({ code, message, requestId }, status);
+    }
+    if (['fti_commerce_cart_order', 'fti_commerce_quote_order'].includes(String(body.operation)) && data?.replayed === false) {
+      const workerSecret = Deno.env.get('OPERATIONS_WORKER_SECRET');
+      const runtime = (globalThis as { EdgeRuntime?: { waitUntil: (task: Promise<unknown>) => void } }).EdgeRuntime;
+      if (workerSecret && runtime) runtime.waitUntil(wakeOrderAlerts(url, workerSecret));
     }
     return json({ data, requestId }, 200);
   } catch { return json({ code: 'UNAVAILABLE', message: 'Unable to process commerce request', requestId }, 503); }

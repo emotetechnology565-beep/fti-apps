@@ -13,6 +13,6 @@ test('staff section navigation shows only assigned tools and rejects unavailable
   assert.deepEqual(availableStaffSections(identity(['staff.access','sales.manage'],'blocked')),[]);
   assert.equal(selectedStaffSection(identity(['staff.access']),'sales'),undefined);
   const superAdmin = identity(['staff.access',...staffSections.flatMap(s => [...s.permissions])]);
-  assert.equal(availableStaffSections(superAdmin).length,14);
+  assert.equal(availableStaffSections(superAdmin).length,15);
   assert.equal(selectedStaffSection(superAdmin,'business-stock')?.id,'business-stock');
 });

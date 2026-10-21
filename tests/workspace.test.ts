@@ -8,6 +8,7 @@ import {
   persistedWorkspace,
 } from '@core/state/persistence';
 import type { WorkspaceState } from '@core/state/types';
+import type { Product } from '@features/catalog';
 import { unconfiguredCatalogRepository } from '@features/catalog/data/unconfigured-catalog-repository';
 
 test('new installations have no seeded business records', async () => {
@@ -34,6 +35,28 @@ test('unknown product IDs cannot create cart records', () => {
   store.getState().add('unknown');
   assert.deepEqual(store.getState().cart, []);
   assert.equal(store.getState().business, before);
+});
+
+test('cart keeps variants separate, respects MOQ and retains products across catalogue pages', () => {
+  const store = createStore(createWorkspaceState);
+  const product = { id: 'tractor', moq: 1, variants: [
+    { id: 'small', min_order_qty: 2 }, { id: 'large', min_order_qty: 5 },
+  ] } as Product;
+  store.getState().setCatalogProducts([product]);
+  store.getState().add('tractor', undefined, 'small');
+  store.getState().add('tractor', undefined, 'large');
+  store.getState().add('tractor', undefined, 'small');
+  store.getState().add('tractor', 1, 'unknown');
+  store.getState().add('tractor', NaN, 'small');
+  assert.deepEqual(store.getState().cart, [
+    { productId: 'tractor', variantId: 'small', quantity: 4 },
+    { productId: 'tractor', variantId: 'large', quantity: 5 },
+  ]);
+  store.getState().setCatalogProducts([{ id: 'next-page', variants: [] } as unknown as Product]);
+  store.getState().quantity('tractor', 1, 'large');
+  assert.equal(store.getState().cart[1].quantity, 5);
+  store.getState().quantity('tractor', 0, 'small');
+  assert.deepEqual(store.getState().cart, [{ productId: 'tractor', variantId: 'large', quantity: 5 }]);
 });
 test('persisted user records survive the feature refactor', async () => {
   const oldState = {

@@ -1,1 +1,1 @@
-export type CartLine = { productId: string; quantity: number };
+export type CartLine = { productId: string; variantId?: string; quantity: number };
