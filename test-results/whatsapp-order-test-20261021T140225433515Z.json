@@ -1,0 +1,10 @@
+{
+  "recipient_last_four": "2951",
+  "template": "fti_admin_request_v1",
+  "parameters": [
+    "TEST order - no real order",
+    "TEST-20261021T140225433515Z"
+  ],
+  "status": "rejected",
+  "error": "Meta HTTP 400, code 100: Unsupported post request. Object with ID '1240861092453026' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api"
+}

@@ -78,7 +78,7 @@ with sync_playwright() as p:
     assert len(submitted) == 1
     assert submitted[0]['p_lines'] == [{'variant_id': variant['id'], 'qty': '2'}]
     page.get_by_role('button', name='View orders', exact=True).click()
-    expect(page.get_by_text('1 new order alert', exact=True)).to_be_visible(timeout=15000)
+    expect(page.get_by_role('alert').filter(has_text='1 new order alert')).to_be_visible(timeout=15000)
     expect(page.get_by_text('Item prices, GST and delivery charges awaiting admin confirmation', exact=True)).to_be_visible()
     page.get_by_role('button', name='View order and payment', exact=True).click()
     expect(page.get_by_text('Awaiting admin confirmation of item prices, GST and delivery charges. No payment is due yet.', exact=True)).to_be_visible()
