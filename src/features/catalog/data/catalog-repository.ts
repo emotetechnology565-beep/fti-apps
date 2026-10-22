@@ -1,9 +1,12 @@
 import { supabase } from '@core/api/supabase-client';
 import type { CatalogImage, CatalogPage, Category, Product, Variant } from '../model/types';
+import type { GradeSheet } from '../model/grade-sheet';
 
 export type CatalogQuery = {
   search?: string;
   category?: string;
+  size?: number;
+  grade?: string;
   limit?: number;
   offset?: number;
   ids?: string[];
@@ -65,6 +68,11 @@ async function catalogRpc<T>(operation: string, args: Record<string, unknown> = 
 export const catalogApi = {
   rpc: catalogRpc,
   admin: () => catalogRpc<AdminCatalog>('fti_catalog_admin_list'),
+  gradeSheet: (categoryId: string) => catalogRpc<GradeSheet | null>('fti_catalog_grade_sheet_get', { p_category: categoryId }),
+  saveGradeSheet: (categoryId: string, revision: number | null, sheet: Pick<GradeSheet, 'product_kind' | 'uom' | 'min_order_qty' | 'rows' | 'gst_included' | 'gst_rate'>) =>
+    catalogRpc<GradeSheet>('fti_catalog_grade_sheet_save', { p_category: categoryId, p_revision: revision, p_sheet: sheet }),
+  publishGradeSheet: (categoryId: string, revision: number) =>
+    catalogRpc<GradeSheet>('fti_catalog_grade_sheet_publish', { p_category: categoryId, p_revision: revision }),
   saveCategory: (category: Record<string, unknown>) =>
     catalogRpc<string>('fti_catalog_category_upsert', { p_category: category }),
   saveProduct: (product: Record<string, unknown>, variants: Record<string, unknown>[]) =>
@@ -107,11 +115,13 @@ export const supabaseCatalogRepository: CatalogRepository = {
       items: RawProduct[];
       total: number;
       categories: Category[];
-    }>('fti_catalog_list', {
+      grades?: string[];
+    }>('fti_catalog_filtered_list', {
       p_search: query.search ?? '',
       p_category: query.category || null,
       p_limit: query.limit ?? 24,
       p_offset: query.offset ?? 0,
+      p_size: query.size ?? null, p_grade: query.grade || null,
       p_ids: query.ids === undefined ? null : query.ids.filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)),
     });
     const images = raw.items.length ? await catalogApi.publicImages(raw.items.map(item => item.id)) : [];
@@ -119,6 +129,7 @@ export const supabaseCatalogRepository: CatalogRepository = {
       items: raw.items.map(item => ({ ...mapProduct(item), images: images.filter(image => image.product_id === item.id) })),
       total: raw.total,
       categories: raw.categories,
+      grades: raw.grades ?? [],
     };
   },
   async getProduct(id) {

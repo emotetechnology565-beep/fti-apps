@@ -39,4 +39,5 @@ export type CatalogPage = {
   items: Product[];
   total: number;
   categories: Category[];
+  grades?: string[];
 };

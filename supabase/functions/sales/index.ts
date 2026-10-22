@@ -6,8 +6,27 @@ const cors = {
 };
 const operations = new Set([
   'fti_sales_submit', 'fti_sales_my', 'fti_sales_queue', 'fti_sales_detail',
+  'fti_sales_category_quote_catalog','fti_sales_category_quote_request','fti_sales_category_quote_requests','fti_sales_submit_with_pdfs',
   'fti_sales_assign', 'fti_sales_quote', 'fti_sales_revision_request', 'fti_sales_accept',
 ]);
+async function wakeQuotationAlerts(url: string, workerSecret: string) {
+  // Drain bounded batches promptly; the scheduled worker remains the fallback.
+  // Jobs are claimed atomically and retain existing consent/permission checks.
+  try {
+    for (let batch = 0; batch < 10; batch++) {
+      const response = await fetch(`${url}/functions/v1/operations-whatsapp`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Worker-Secret': workerSecret },
+        body: '{}', signal: AbortSignal.timeout(120000),
+      });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (typeof result.claimed !== 'number' || result.claimed < 10) return;
+    }
+  } catch {
+    // Sending failures must not turn a committed order into an apparent failure.
+    // Pending jobs remain available to the existing scheduled worker.
+  }
+}
 Deno.serve(async (request: Request) => {
   const requestId = crypto.randomUUID();
   const json = (body: unknown, status: number) => Response.json(body, {
@@ -46,6 +65,11 @@ Deno.serve(async (request: Request) => {
       const message = code === '42501' || code === '22023' || code === 'P0002'
         ? String(data.message) : code === '23505' ? 'Request changed or was already processed.' : 'Sales request could not be completed.';
       return json({ code, message, requestId }, status);
+    }
+    if (['fti_sales_category_quote_request','fti_sales_submit_with_pdfs'].includes(String(body.operation)) && (data?.replayed === false || data?.pdf_requests_queued > 0)) {
+      const secret = Deno.env.get('OPERATIONS_WORKER_SECRET');
+      const runtime = (globalThis as { EdgeRuntime?: { waitUntil: (task: Promise<unknown>) => void } }).EdgeRuntime;
+      if (secret && runtime) runtime.waitUntil(wakeQuotationAlerts(url, secret));
     }
     return json({ data, requestId }, 200);
   } catch {

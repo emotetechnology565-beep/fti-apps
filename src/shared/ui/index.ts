@@ -2,6 +2,7 @@ export { s } from '../theme/styles';
 export { c } from '../theme/tokens';
 export { Badge } from './Badge';
 export { Button } from './Button';
+export { WhatsAppButton } from './WhatsAppButton';
 export { Card } from './Card';
 export { Chip } from './Chip';
 export { Empty } from './Empty';

@@ -10,6 +10,9 @@ const writeOperations = new Set([
   'fti_catalog_product_upsert',
   'fti_catalog_product_status',
   'fti_catalog_media_admin',
+  'fti_catalog_grade_sheet_get',
+  'fti_catalog_grade_sheet_save',
+  'fti_catalog_grade_sheet_publish',
 ]);
 
 Deno.serve(async (request: Request) => {
@@ -31,7 +34,7 @@ Deno.serve(async (request: Request) => {
 
   try {
     const raw = await request.text();
-    if (raw.length > 65536)
+    if (raw.length > 262144)
       return json({ code: 'INVALID_INPUT', message: 'Request too large' }, 413);
     const body = JSON.parse(raw);
     const operation = body.operation;
@@ -55,6 +58,7 @@ Deno.serve(async (request: Request) => {
 
     const allowed =
       operation === 'fti_catalog_list' ||
+      operation === 'fti_catalog_filtered_list' ||
       operation === 'fti_catalog_product_get' ||
       operation === 'fti_catalog_media_public' ||
       writeOperations.has(operation);

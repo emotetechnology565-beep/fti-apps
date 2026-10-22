@@ -7,6 +7,7 @@ import { Badge, Button, Card, Empty, Field, Row, Txt, s } from '@shared/ui';
 import { salesApi } from '../services/sales-api';
 import type { SalesDetail } from '../model/sales-types';
 import { AttachmentsPanel } from '../components/AttachmentsPanel';
+import { CategoryQuotationPdfs } from '../components/CategoryQuotationPdfs';
 
 const amount = /^\d{1,15}(\.\d{1,4})?$/;
 function QuoteEditor({ detail, refresh }: { detail: SalesDetail; refresh: () => Promise<void> }) {
@@ -79,6 +80,7 @@ export function SalesManagement() {
   async function refresh() { await client.invalidateQueries({ queryKey: ['sales'] }); }
   if (!permitted) return null;
   return <View style={{ gap: 14 }}><Txt style={{ fontSize: 24, fontWeight: '700' }}>RFQ and quotation management</Txt>
+    {!selected ? <CategoryQuotationPdfs admin /> : null}
     <Button secondary onPress={() => void refresh()}>Refresh requests</Button>
     {selected ? <><Button secondary onPress={() => setSelected(null)}>Back to sales queue</Button>
       {detail.isPending ? <Txt>Loading request…</Txt> : detail.error ? <Empty title="Request unavailable" description={detail.error.message} /> : <QuoteEditor key={detail.data.id} detail={detail.data} refresh={refresh} />}</> : <>

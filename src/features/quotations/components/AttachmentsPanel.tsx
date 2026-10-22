@@ -22,9 +22,10 @@ export function AttachmentsPanel({ detail, refresh }: { detail: SalesDetail; ref
       if (!asset || !asset.mimeType || !supported.includes(asset.mimeType) || !asset.size || asset.size > 3*1024*1024)
         throw new Error('Choose a PDF, JPEG or PNG file up to 3 MB.');
       setBusy(true);
-      const base64 = Platform.OS === 'web' ? asset.base64 ?? await asset.file?.arrayBuffer().then(buffer => {
+      const encoded = Platform.OS === 'web' ? asset.base64 ?? await asset.file?.arrayBuffer().then(buffer => {
         const bytes = new Uint8Array(buffer); let raw = ''; bytes.forEach(b => { raw += String.fromCharCode(b); }); return btoa(raw);
       }) : await new File(asset.uri).base64();
+      const base64 = encoded?.replace(/^data:[^,]*;base64,/i, '');
       if (!base64) throw new Error('Could not read this file. Please choose it again.');
       await salesApi.uploadAttachment(detail.id, asset.mimeType, base64);
       await refresh();

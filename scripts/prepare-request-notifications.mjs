@@ -12,7 +12,11 @@ const sources = {
 };
 const manifest = {};
 for (const [name, path] of Object.entries(sources)) {
-  const content = (await readFile(path, 'utf8')).replace(/^\uFEFF/, '');
+  let content = (await readFile(path, 'utf8')).replace(/^\uFEFF/, '');
+  if (path.endsWith('operations-whatsapp/index.ts')) {
+    const crypto = (await readFile('supabase/functions/operations-whatsapp/crypto.ts', 'utf8')).replace(/export /g, '');
+    content = crypto + '\n' + content.replace(/^import .*from '\.\/crypto\.ts';\r?\n/m, '');
+  }
   await writeFile(`${directory}/${name}`, content);
   manifest[name] = createHash('sha256').update(content).digest('hex');
 }

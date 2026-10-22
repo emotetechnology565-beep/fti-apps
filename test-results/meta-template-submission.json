@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-21T15:38:57.352926+00:00",
+  "existing_notification_templates_status": "APPROVED",
+  "existing_notification_templates_count": 7,
+  "quotation_pdf_template": {
+    "name": "fti_category_quotation_v1",
+    "id": "2198892627328825",
+    "status": "PENDING"
+  },
+  "customer_messages_sent": 0
+}

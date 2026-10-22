@@ -8,6 +8,7 @@ import { ProductReferenceCharts } from '../components/ProductReferenceCharts';
 import { chartsForProduct } from '../model/product-references';
 import { ProductPublication } from '../components/ProductPublication';
 import { tractorPricingError } from '../model/tractor-pricing';
+import { GradeSheetEditor } from '../components/GradeSheetEditor';
 
 const slugFor = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const adminKey = ['catalog', 'admin'] as const;
@@ -41,11 +42,14 @@ export function CatalogManagement() {
   const [busy, setBusy] = useState(false);
   const [photosFor, setPhotosFor] = useState<string | null>(null);
   const [referencesFor, setReferencesFor] = useState<string | null>(null);
+  const [gradeCategory, setGradeCategory] = useState('');
+  const [individualProducts, setIndividualProducts] = useState(false);
 
   function editCategory(item: AdminCategory) {
     setCategoryId(item.id); setCategoryName(item.name); setCategorySlug(item.slug);
   }
   function editVariant(product: AdminProduct, variant?: AdminVariant) {
+    setIndividualProducts(true);
     setProductId(product.id); setVariantId(variant?.id ?? null); setCategory(product.category_id);
     setName(product.name); setSlug(product.slug); setDescription(product.description ?? '');
     setKind(product.product_kind); setPurchaseMode(product.purchase_mode);
@@ -68,15 +72,21 @@ export function CatalogManagement() {
   async function saveCategory() {
     setBusy(true); setNote('');
     try {
-      await catalogApi.saveCategory({ id: categoryId, name: categoryName, slug: categorySlug || slugFor(categoryName), sort_order: 0, is_active: true });
+      const savedId = await catalogApi.saveCategory({ id: categoryId, name: categoryName, slug: categorySlug || slugFor(categoryName), sort_order: 0, is_active: true });
+      if (!gradeCategory) setGradeCategory(savedId);
       setCategoryId(null); setCategoryName(''); setCategorySlug(''); setNote('Category saved.');
       await client.invalidateQueries({ queryKey: adminKey });
+      await client.invalidateQueries({ queryKey: ['catalog', 'supabase-catalog-v1', 'products'] });
     } catch (error) { setNote((error as Error).message); }
     finally { setBusy(false); }
   }
   async function setCategoryActive(item: AdminCategory, is_active: boolean) {
     setBusy(true); setNote('');
-    try { await catalogApi.saveCategory({ ...item, is_active }); await client.invalidateQueries({ queryKey: adminKey }); }
+    try {
+      await catalogApi.saveCategory({ ...item, is_active });
+      await client.invalidateQueries({ queryKey: adminKey });
+      await client.invalidateQueries({ queryKey: ['catalog', 'supabase-catalog-v1', 'products'] });
+    }
     catch (error) { setNote((error as Error).message); }
     finally { setBusy(false); }
   }
@@ -114,10 +124,10 @@ export function CatalogManagement() {
   return (
     <View style={{ gap: 18 }}>
       <Txt style={s.h2}>Catalogue management</Txt>
-      <Txt style={s.muted}>Create real categories, products and variant specifications. New products remain drafts until you publish them.</Txt>
+      <Txt style={s.muted}>Create a category once, then maintain its brands, grades and price list. Save a draft before publishing.</Txt>
       <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>{categoryId ? 'Edit category' : 'Add category'}</Txt>
-        <Field label="Category name" placeholder="e.g. Hex bolts" value={categoryName} onChangeText={(value) => { setCategoryName(value); if (!categoryId) setCategorySlug(slugFor(value)); }} />
+        <Field label="Category name" placeholder="e.g. As Rolled Round Bar, Round Bright Bar, Flat, Sheet, Square or TMT Bar" value={categoryName} onChangeText={(value) => { setCategoryName(value); if (!categoryId) setCategorySlug(slugFor(value)); }} />
         <Field label="Category URL slug" placeholder="e.g. hex-bolts" value={categorySlug} onChangeText={setCategorySlug} />
         <Row>
           <Button disabled={busy || !categoryName.trim()} onPress={() => void saveCategory()}>{categoryId ? 'Save category' : 'Create category'}</Button>
@@ -131,7 +141,9 @@ export function CatalogManagement() {
         ))}
       </Card>
 
-      <Card style={{ gap: 12 }}>
+      <GradeSheetEditor categories={data.categories} selected={gradeCategory} onSelect={setGradeCategory} />
+      <Button secondary onPress={() => setIndividualProducts(!individualProducts)}>{individualProducts ? 'Hide individual product form' : 'Manage individual products'}</Button>
+      {individualProducts ? <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>{productId ? 'Edit product variant' : 'Add product and first variant'}</Txt>
         <Txt style={s.muted}>Category</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{data.categories.filter((item) => item.is_active).map((item) => <Chip key={item.id} selected={category === item.id} onPress={() => setCategory(item.id)}>{item.name}</Chip>)}</Row>
@@ -157,14 +169,16 @@ export function CatalogManagement() {
         <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" placeholder="e.g. 12" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" placeholder="e.g. 50" numeric value={length} onChangeText={setLength} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" placeholder="e.g. 8.8" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" placeholder="e.g. Unbrako" value={brand} onChangeText={setBrand} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><Button disabled={busy} onPress={() => void saveProduct()}>{productId ? 'Save product and variant' : 'Create product draft'}</Button>{productId ? <Button secondary onPress={resetProduct}>New product</Button> : null}</Row>
-      </Card>
+      </Card> : null}
 
       <View style={{ gap: 12 }}>
         <Txt style={s.h2}>Products ({data.products.length})</Txt>
         {data.products.length ? data.products.map((item) => (
           <Card key={item.id} style={{ gap: 10 }}>
             <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><View><Txt style={{ fontWeight: '700' }}>{item.name}</Txt><Txt style={s.muted}>{item.category} · {item.slug}</Txt></View><Badge>{item.status.toUpperCase()}</Badge></Row>
-            {item.variants.map((variant) => <Row key={variant.id} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{variant.sku} · {variant.size_label || 'No size'} · MOQ {variant.min_order_qty} {variant.uom}</Txt><Button secondary onPress={() => editVariant(item, variant)}>Edit variant</Button></Row>)}
+            {item.variants.some(variant => variant.attributes.grade_list_price !== undefined)
+              ? <Txt style={s.muted}>Edit grades and prices by selecting this category under Category publishing above.</Txt>
+              : item.variants.map((variant) => <Row key={variant.id} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{variant.sku} · {variant.size_label || 'No size'} · MOQ {variant.min_order_qty} {variant.uom}</Txt><Button secondary onPress={() => editVariant(item, variant)}>Edit variant</Button></Row>)}
             {!item.variants.length ? <><Txt style={s.muted}>Add a variant with its SKU, unit and minimum order before publishing.</Txt><Button secondary onPress={() => editVariant(item)}>Add first variant</Button></> : null}
             <ProductPublication product={item} categories={data.categories} disabled={busy} refresh={refreshCatalogue} />
             <Button secondary onPress={() => setPhotosFor(photosFor === item.id ? null : item.id)}>{photosFor === item.id ? 'Hide photos' : 'Manage photos'}</Button>

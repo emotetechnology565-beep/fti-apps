@@ -1,0 +1,23 @@
+{
+  "name": "fti_category_quotation_v1",
+  "category": "UTILITY",
+  "components": [
+    {
+      "type": "HEADER",
+      "format": "DOCUMENT"
+    },
+    {
+      "type": "BODY",
+      "text": "FTI quotation for {{1}} is attached, as requested. PDF updated: {{2}}. Request reference: {{3}}. Please contact FTI if you need any changes.",
+      "example": {
+        "body_text": [
+          [
+            "Hex bolts",
+            "21 Oct 2026 15:30 IST",
+            "FTI-Q-123456789ABC"
+          ]
+        ]
+      }
+    }
+  ]
+}

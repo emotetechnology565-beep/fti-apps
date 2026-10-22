@@ -9,6 +9,7 @@ import { salesApi } from '../services/sales-api';
 import type { SalesDetail } from '../model/sales-types';
 import { AttachmentsPanel } from '../components/AttachmentsPanel';
 import { PlaceOrderPanel } from '@features/orders/ui';
+import { CategoryQuotationPdfs } from '../components/CategoryQuotationPdfs';
 
 type Line = { variant_id: string; sku: string; name: string; qty: string; uom: string; minimum: number; requirements: string };
 const newId = () => globalThis.crypto?.randomUUID?.() ?? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, ch => {
@@ -24,6 +25,7 @@ function Composer({ submitted }: { submitted: (id: string) => Promise<void> }) {
   const [search, setSearch] = useState('');
   const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<Line[]>([]);
+  const [sendCategoryPdfs, setSendCategoryPdfs] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const catalog = useQuery({ queryKey: ['sales','picker',search,offset], queryFn: () => supabaseCatalogRepository.listProducts({ search, offset, limit: 12 }), retry: false });
@@ -37,7 +39,7 @@ function Composer({ submitted }: { submitted: (id: string) => Promise<void> }) {
     setBusy(true);
     try {
       const result = await salesApi.submit(requestId.current, business, address, notes,
-        items.map(({ variant_id, qty, uom, requirements }) => ({ variant_id, qty, uom, requirements })));
+        items.map(({ variant_id, qty, uom, requirements }) => ({ variant_id, qty, uom, requirements })), sendCategoryPdfs);
       requestId.current = newId(); setItems([]); setNotes(''); await submitted(result.id);
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
@@ -62,6 +64,8 @@ function Composer({ submitted }: { submitted: (id: string) => Promise<void> }) {
       <Field label="Item requirements (optional)" placeholder="e.g. Grade 8.8, zinc plated" value={i.requirements} onChangeText={v => setItems(old => old.map(line => line.variant_id === i.variant_id ? { ...line, requirements: v } : line))} />
       <Button secondary onPress={() => setItems(old => old.filter(line => line.variant_id !== i.variant_id))}>Remove item</Button></Card>)}
     {!!error && <Txt accessibilityRole="alert">{error}</Txt>}
+    <Chip selected={sendCategoryPdfs} onPress={() => setSendCategoryPdfs(value => !value)}>Send fastener category PDFs to my WhatsApp</Chip>
+    <Txt style={s.muted}>Selected category PDFs will be sent to your verified phone number. Staff are notified of this quotation request.</Txt>
     <Button disabled={busy || !items.length} onPress={() => void submit()}>{busy ? 'Submitting…' : 'Submit request to FTI'}</Button>
   </Card>;
 }
@@ -119,6 +123,7 @@ export function RFQs() {
   const detail = useQuery({ queryKey: ['sales','detail',auth.session?.user.id,selected], queryFn: () => salesApi.detail(selected!), enabled: !!selected, retry: false });
   async function refresh() { await client.invalidateQueries({ queryKey: ['sales'] }); }
   return <View style={{ gap: 18 }}><Heading eyebrow="YOUR MATERIAL REQUIREMENTS" title="Requests & quotations" description="Send multi-item requirements to FTI and review your quotations." action={<Button onPress={() => setOpen(!open)}>{open ? 'Close form' : 'New request'}</Button>} />
+    {!selected ? <CategoryQuotationPdfs /> : null}
     {open && <Composer submitted={async id => { setOpen(false); setSelected(id); await refresh(); }} />}
     {selected ? <><Button secondary onPress={() => setSelected(null)}>Back to requests</Button>
       {detail.isPending ? <Txt>Loading request…</Txt> : detail.error ? <Empty title="Request unavailable" description={detail.error.message} /> : <BuyerDetail detail={detail.data} refresh={refresh} />}</> : <>

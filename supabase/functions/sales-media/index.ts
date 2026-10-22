@@ -49,6 +49,24 @@ const rpc = (operation: string, args: object, key: string, authorization: string
   method: 'POST', headers: { apikey: key, Authorization: authorization, 'Content-Type': 'application/json' },
   body: JSON.stringify(args), signal: AbortSignal.timeout(12000),
 });
+async function wakeQuotationAlerts(url: string, workerSecret: string) {
+  // Drain bounded batches promptly; the scheduled worker remains the fallback.
+  // Jobs are claimed atomically and retain existing consent/permission checks.
+  try {
+    for (let batch = 0; batch < 10; batch++) {
+      const response = await fetch(`${url}/functions/v1/operations-whatsapp`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Worker-Secret': workerSecret },
+        body: '{}', signal: AbortSignal.timeout(120000),
+      });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (typeof result.claimed !== 'number' || result.claimed < 10) return;
+    }
+  } catch {
+    // Sending failures must not turn a committed order into an apparent failure.
+    // Pending jobs remain available to the existing scheduled worker.
+  }
+}
 Deno.serve(async (request: Request) => {
   const requestId = crypto.randomUUID();
   const json = (body: unknown, status: number) => Response.json(body, { status, headers: { ...cors, 'X-Request-Id': requestId } });
@@ -67,13 +85,15 @@ Deno.serve(async (request: Request) => {
     let body: Record<string, unknown>;
     try { body = JSON.parse(raw); } catch { return json({ code: 'INVALID_INPUT', message: 'Expected JSON' }, 400); }
     if (!body || typeof body !== 'object' || Array.isArray(body)) return json({ code: 'INVALID_INPUT', message: 'Expected object' }, 400);
-    if (body.operation === 'download') {
+    const categoryQuote = body.operation === 'category_download' || body.operation === 'category_upload';
+    const validPath = (key: unknown) => typeof key === 'string' && (categoryQuote ? /^category-quote-files\/[0-9a-f-]+\/[0-9a-f-]+\.pdf$/ : /^rfq-files\/[0-9a-f-]+\/[0-9a-f-]+\.(pdf|jpg|png)$/).test(key);
+    if (body.operation === 'download' || body.operation === 'category_download') {
       if (typeof body.assetId !== 'string' || !uuid.test(body.assetId)) return json({ code: 'INVALID_INPUT', message: 'Invalid attachment ID' }, 400);
-      const allowed = await rpc('fti_sales_media_access', { p_id: body.assetId }, config.anon, authorization);
+      const allowed = await rpc(categoryQuote ? 'fti_sales_category_quote_access' : 'fti_sales_media_access', { p_id: body.assetId }, config.anon, authorization);
       if (!allowed.ok) return json({ code: 'DENIED', message: 'Attachment unavailable' }, allowed.status === 403 ? 403 : 404);
       const asset = await allowed.json();
       if (asset.storage_zone !== config.zone || typeof asset.object_key !== 'string' ||
-        !/^rfq-files\/[0-9a-f-]+\/[0-9a-f-]+\.(pdf|jpg|png)$/.test(asset.object_key))
+        !validPath(asset.object_key))
         return json({ code: 'UNAVAILABLE', message: 'Attachment metadata is invalid' }, 502);
       const file = await fetch(`${config.endpoint}/${config.zone}/${asset.object_key}`, {
         headers: { AccessKey: config.key }, signal: AbortSignal.timeout(15000),
@@ -87,20 +107,21 @@ Deno.serve(async (request: Request) => {
         return json({ code: 'UNAVAILABLE', message: 'Attachment integrity check failed' }, 502);
       return json({ data: { mimeType: asset.mime_type, base64: encode(bytes) }, requestId }, 200);
     }
-    if (body.operation !== 'upload' || typeof body.rfqId !== 'string' || !uuid.test(body.rfqId) || typeof body.mimeType !== 'string')
+    const entityId = categoryQuote ? body.categoryId : body.rfqId;
+    if (!['upload','category_upload'].includes(String(body.operation)) || typeof entityId !== 'string' || !uuid.test(entityId) || typeof body.mimeType !== 'string' || (categoryQuote && body.mimeType !== 'application/pdf'))
       return json({ code: 'INVALID_INPUT', message: 'Invalid attachment request' }, 400);
     const bytes = decode(body.base64);
     if (!bytes || !validSignature(bytes, body.mimeType)) return json({ code: 'INVALID_INPUT', message: 'Only PDF, JPEG or PNG files up to 3 MB are supported' }, 400);
     const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))).map(b => b.toString(16).padStart(2,'0')).join('');
-    const prepared = await rpc('fti_sales_media_prepare', {
-      p_rfq: body.rfqId, p_size_bytes: bytes.length, p_mime: body.mimeType, p_sha256_hex: hash,
+    const prepared = await rpc(categoryQuote ? 'fti_sales_category_quote_prepare' : 'fti_sales_media_prepare', {
+      ...(categoryQuote ? { p_category: entityId } : { p_rfq: entityId, p_mime: body.mimeType }), p_size_bytes: bytes.length, p_sha256_hex: hash,
     }, config.anon, authorization);
     if (!prepared.ok) return json({ code: 'DENIED', message: 'Attachment is not allowed for this request' }, prepared.status === 403 ? 403 : 422);
     const asset = await prepared.json();
     if (!uuid.test(asset.id) || typeof asset.object_key !== 'string' ||
-      !/^rfq-files\/[0-9a-f-]+\/[0-9a-f-]+\.(pdf|jpg|png)$/.test(asset.object_key))
+      !validPath(asset.object_key))
       return json({ code: 'UNAVAILABLE', message: 'Attachment metadata is invalid' }, 502);
-    const complete = (status: 'verified' | 'rejected') => rpc('fti_sales_media_complete', {
+    const complete = (status: 'verified' | 'rejected') => rpc(categoryQuote ? 'fti_sales_category_quote_complete' : 'fti_sales_media_complete', {
       p_id: asset.id, p_status: status, p_storage_zone: status === 'verified' ? config.zone : null,
     }, config.service, `Bearer ${config.service}`);
     const storageUrl = `${config.endpoint}/${config.zone}/${asset.object_key}`;
@@ -119,6 +140,11 @@ Deno.serve(async (request: Request) => {
       await fetch(storageUrl, { method: 'DELETE', headers: { AccessKey: config.key }, signal: AbortSignal.timeout(10000) }).catch(() => undefined);
       await complete('rejected').catch(() => undefined);
       return json({ code: 'UNAVAILABLE', message: 'Attachment metadata could not be saved' }, 502);
+    }
+    if (categoryQuote) {
+      const secret = Deno.env.get('OPERATIONS_WORKER_SECRET');
+      const runtime = (globalThis as { EdgeRuntime?: { waitUntil: (task: Promise<unknown>) => void } }).EdgeRuntime;
+      if (secret && runtime) runtime.waitUntil(wakeQuotationAlerts(config.url, secret));
     }
     return json({ data: { id: asset.id }, requestId }, 200);
   } catch { return json({ code: 'UNAVAILABLE', message: 'Private document service is temporarily unavailable' }, 503); }

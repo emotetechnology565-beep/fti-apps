@@ -6,10 +6,13 @@ import { Image } from 'expo-image';
 import { useStore } from '@core/state/workspace-store';
 import { TractorPrice } from './TractorPrice';
 import { AddToCart } from './AddToCart';
-export function ProductCard({ product: p }: { product: Product }) {
+import { getCategoryImage } from './category-images';
+export function ProductCard({ product: p, filters }: { product: Product; filters?: { size: string; grade: string } }) {
   const saved = useStore((state) => state.saved);
   const toggleSaved = useStore((state) => state.toggleSaved);
   const first = p.variants[0];
+  const categoryImage = getCategoryImage(p.category);
+  const productImage = p.images[0] ? { uri: p.images[0].url } : undefined;
   return (
     <Card
       style={{
@@ -30,7 +33,7 @@ export function ProductCard({ product: p }: { product: Product }) {
       <Pressable
         accessibilityRole="link"
         accessibilityLabel={`View ${p.name}`}
-        onPress={() => router.push(`/product/${p.id}` as never)}
+        onPress={() => router.push({ pathname: '/product/[id]', params: { id: p.id, ...(filters?.size ? { size: filters.size } : {}), ...(filters?.grade ? { grade: filters.grade } : {}) } })}
         style={{
           minHeight: 150,
           backgroundColor: '#E7F2FF',
@@ -38,10 +41,11 @@ export function ProductCard({ product: p }: { product: Product }) {
           justifyContent: 'flex-end',
         }}
       >
-        {p.images[0] ? (
+        {categoryImage || productImage ? (
           <Image
-            source={{ uri: p.images[0].url }}
+            source={categoryImage ?? productImage!}
             contentFit="cover"
+            accessibilityLabel={`${p.category} category image`}
             style={{
               width: '100%',
               height: 145,
@@ -81,9 +85,9 @@ export function ProductCard({ product: p }: { product: Product }) {
             />
           </Pressable>
         </Row>
-        <Txt style={{ fontSize: 11, color: c.red, fontWeight: '700' }}>
+        {p.product_kind !== 'steel' ? <Txt style={{ fontSize: 11, color: c.red, fontWeight: '700' }}>
           {p.product_kind.replace('_', ' ').toUpperCase()}
-        </Txt>
+        </Txt> : null}
         {p.product_kind === 'tractor_part' && first ? <TractorPrice variant={first} /> : null}
         <Txt style={s.muted} numberOfLines={3}>
           {p.description || 'Product specifications available on request.'}
