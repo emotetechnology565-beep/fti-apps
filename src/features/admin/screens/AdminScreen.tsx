@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { AccessGate, StaffMfa, useAuth } from '@features/auth/ui';
 import { identityRpc, hasPermission } from '@features/auth';
-import { CatalogManagement } from '@features/catalog';
+import { CatalogManagement, RawMaterialAdmin } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
 import { SalesManagement } from '@features/quotations/ui';
 import { OperationsManagement } from '@features/operations/ui';
@@ -155,6 +155,7 @@ function StaffWorkspace() {
       case 'sales': return <SalesManagement/>;
       case 'inventory': return <CommerceManagement section="inventory"/>;
       case 'tractor-orders': return <CartOrderQueue/>;
+      case 'raw-material-orders': return <RawMaterialAdmin/>;
       case 'payments': return <CommerceManagement section="payments"/>;
       case 'order-policy': return <CommerceManagement section="policy"/>;
       case 'reservations': return <CommerceManagement section="expiry"/>;

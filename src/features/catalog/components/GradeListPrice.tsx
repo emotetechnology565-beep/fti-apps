@@ -5,7 +5,9 @@ import { priceUnitLabel } from '../model/shared-material-options';
 export function GradeListPrice({ variant }: { variant: Variant }) {
   const value = variant.attributes.grade_list_price;
   const base = variant.attributes.grade_list_base_price;
-  if (typeof value !== 'string' || !/^\d+(\.\d+)?$/.test(value)) return null;
+  if (typeof value !== 'string' || !/^\d+(\.\d+)?$/.test(value)) {
+    return variant.attributes.quote_only === true ? <Txt style={s.h2}>Request quote</Txt> : null;
+  }
   const money = (amount: string) => `INR ${Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 4 })} / ${priceUnitLabel(variant.uom)}`;
   const included = variant.attributes.grade_list_gst_included;
   const rate = variant.attributes.grade_list_gst_rate;

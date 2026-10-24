@@ -8,6 +8,8 @@ from playwright.sync_api import sync_playwright, expect
 categories = [
     {'id': '00000000-0000-0000-0000-000000000001', 'name': 'As Rolled Round Bar', 'slug': 'round-bar-as-rolled'},
     {'id': '00000000-0000-0000-0000-000000000002', 'name': 'TMT Bar', 'slug': 'tmt'},
+    {'id': '00000000-0000-0000-0000-000000000005', 'name': 'Industrial Fasteners', 'slug': 'industrial-fasteners'},
+    {'id': '00000000-0000-0000-0000-000000000006', 'name': 'Agricultural Parts', 'slug': 'agricultural-parts'},
 ]
 def variant(number, grade, label, price):
     return {'id': f'00000000-0000-0000-0000-{number:012}', 'sku': f'ROUND-{number}', 'size_label': grade + ' / ' + label, 'diameter_mm': None, 'length_mm': None, 'uom': 'MT', 'min_order_qty': 1, 'pack_qty': None,
@@ -19,6 +21,10 @@ products = [
      'variants': [variant(12, 'FE-500', '16MM TO 80MM', '64000')]},
 ]
 calls, errors = [], []
+for number, kind, name, category_index in [(7, 'fastener', 'Hex Bolt', 2), (8, 'tractor_part', 'Tractor Pin', 3)]:
+    products.append({**products[0], 'id': f'00000000-0000-0000-0000-{number:012}',
+        'name': name, 'product_kind': kind, 'category_id': categories[category_index]['id'],
+        'category': categories[category_index]['name'], 'slug': name.lower().replace(' ', '-')})
 def api(route):
     result = []
     if route.request.method != 'OPTIONS':
@@ -53,6 +59,19 @@ with sync_playwright() as p:
     page.goto(base + '/products', timeout=60000)
     expect(page.get_by_role('button', name='1. Category: All categories', exact=True)).to_be_visible(timeout=30000)
     expect(page.get_by_role('button', name='2. Size (mm): All sizes', exact=True)).to_be_disabled()
+    expect(page.get_by_role('tab', name='Raw Materials')).to_have_attribute('aria-selected', 'true')
+    page.get_by_role('button', name='1. Category: All categories', exact=True).click()
+    expect(page.get_by_role('radio', name='Industrial Fasteners', exact=True)).to_have_count(0)
+    expect(page.get_by_role('radio', name='Agricultural Parts', exact=True)).to_have_count(0)
+    page.get_by_role('radio', name='All categories', exact=True).click()
+    page.get_by_role('tab', name='Fasteners', exact=True).click()
+    expect(page.get_by_role('link', name='View Hex Bolt', exact=True)).to_be_visible()
+    expect(page.get_by_role('link', name='View Round Bar', exact=True)).to_have_count(0)
+    expect(page.get_by_role('button', name='1. Category: All categories', exact=True)).to_have_count(0)
+    page.get_by_role('tab', name='Tractor Parts', exact=True).click()
+    expect(page.get_by_role('link', name='View Tractor Pin', exact=True)).to_be_visible()
+    expect(page.get_by_role('link', name='View Hex Bolt', exact=True)).to_have_count(0)
+    page.get_by_role('tab', name='Raw Materials', exact=True).click()
     def choose(trigger, option):
         page.get_by_role('button', name=trigger, exact=True).click()
         page.get_by_role('radio', name=option, exact=True).click()
@@ -62,7 +81,8 @@ with sync_playwright() as p:
     expect(page.get_by_role('button', name='3. Grade: All grades', exact=True)).to_be_enabled()
     page.get_by_role('button', name='3. Grade: All grades', exact=True).click()
     expect(page.get_by_role('radio', name='EN-19', exact=True)).to_be_visible()
-    expect(page.get_by_role('radio', name='EN-8D', exact=True)).to_be_visible()
+    expect(page.get_by_role('radio', name='EN-8D', exact=True)).to_have_count(0)
+    expect(page.get_by_role('radio', name='FE-500', exact=True)).to_have_count(0)
     page.get_by_role('radio', name='EN-19', exact=True).click()
     expect(page.get_by_role('button', name='3. Grade: EN-19', exact=True)).to_be_visible()
     expect(page.get_by_role('link', name='View Round Bar', exact=True)).to_be_visible()
@@ -77,14 +97,17 @@ with sync_playwright() as p:
     expect(page.get_by_text('INR 53,500 / PMT', exact=True)).to_be_visible()
     page.goto(base + '/products')
     choose('1. Category: All categories', 'As Rolled Round Bar')
-    choose('2. Size (mm): All sizes', '51 mm')
-    expect(page.get_by_text('No matching products', exact=True)).to_be_visible()
+    page.get_by_role('button', name='2. Size (mm): All sizes', exact=True).click()
+    expect(page.get_by_role('radio', name='51 mm', exact=True)).to_have_count(0)
+    expect(page.get_by_role('radio', name='8 mm', exact=True)).to_have_count(0)
+    expect(page.get_by_role('radio', name='16 mm', exact=True)).to_be_visible()
+    page.get_by_role('radio', name='All sizes', exact=True).click()
     choose('1. Category: As Rolled Round Bar', 'TMT Bar')
     expect(page.get_by_role('button', name='2. Size (mm): All sizes', exact=True)).to_be_visible()
     expect(page.get_by_role('button', name='3. Grade: All grades', exact=True)).to_be_enabled()
     page.get_by_role('button', name='3. Grade: All grades', exact=True).click()
     expect(page.get_by_role('radio', name='FE-500', exact=True)).to_be_visible()
-    expect(page.get_by_role('radio', name='EN-19', exact=True)).to_be_visible()
+    expect(page.get_by_role('radio', name='EN-19', exact=True)).to_have_count(0)
     page.get_by_role('radio', name='FE-500', exact=True).click()
     page.set_viewport_size({'width': 1366, 'height': 900})
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')

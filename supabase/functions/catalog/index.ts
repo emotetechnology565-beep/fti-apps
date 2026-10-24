@@ -5,6 +5,10 @@ const cors = {
   'Cache-Control': 'private, no-store',
 };
 const writeOperations = new Set([
+  'fti_catalog_selection_request_submit', 'fti_catalog_selection_admin',
+  'fti_catalog_selection_spec_save', 'fti_catalog_selection_size_save', 'fti_catalog_selection_option_save',
+  'fti_catalog_raw_order_submit', 'fti_catalog_raw_orders', 'fti_catalog_raw_recipients',
+  'fti_catalog_raw_recipient_save', 'fti_catalog_raw_recipient_remove', 'fti_catalog_raw_delivery_replay',
   'fti_catalog_admin_list',
   'fti_catalog_category_upsert',
   'fti_catalog_product_upsert',
@@ -59,6 +63,7 @@ Deno.serve(async (request: Request) => {
     const allowed =
       operation === 'fti_catalog_list' ||
       operation === 'fti_catalog_filtered_list' ||
+      operation === 'fti_catalog_selection_options' ||
       operation === 'fti_catalog_product_get' ||
       operation === 'fti_catalog_media_public' ||
       writeOperations.has(operation);

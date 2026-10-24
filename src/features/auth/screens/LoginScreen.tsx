@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { loginReturnPath } from '../model/login-return';
 import { supabase } from '@core/api/supabase-client';
 import { useAuth } from '../components/AuthProvider';
 import { requestOtp, verifyOtp } from '../services/phone-auth';
 import { Heading, Card, Field, Button, Txt, Chip, s, c } from '@shared/ui';
 export function Login() {
   const auth = useAuth();
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const returnPath = loginReturnPath(returnTo);
   const [phone, setPhone] = useState('+91');
   const [token, setToken] = useState('');
   const [sent, setSent] = useState(false);
@@ -41,7 +44,7 @@ export function Login() {
     setMessage('');
     try {
       await verifyOtp(phone, token);
-      router.replace('/account');
+      router.replace(returnPath);
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -59,8 +62,8 @@ export function Login() {
         {auth.session ? (
           <>
             <Txt>You are signed in.</Txt>
-            <Button onPress={() => router.replace('/account')}>
-              Continue to account
+            <Button onPress={() => router.replace(returnPath)}>
+              {returnPath === '/products' ? 'Continue material request' : 'Continue to account'}
             </Button>
             <Button
               secondary

@@ -7,12 +7,14 @@ import { useStore } from '@core/state/workspace-store';
 import { TractorPrice } from './TractorPrice';
 import { AddToCart } from './AddToCart';
 import { getCategoryImage } from './category-images';
+import { availableCatalogFilters } from '../model/available-filters';
 export function ProductCard({ product: p, filters }: { product: Product; filters?: { size: string; grade: string } }) {
   const saved = useStore((state) => state.saved);
   const toggleSaved = useStore((state) => state.toggleSaved);
   const first = p.variants[0];
   const categoryImage = getCategoryImage(p.category);
   const productImage = p.images[0] ? { uri: p.images[0].url } : undefined;
+  const options = p.product_kind === 'steel' ? availableCatalogFilters(p.variants) : null;
   return (
     <Card
       style={{
@@ -92,14 +94,14 @@ export function ProductCard({ product: p, filters }: { product: Product; filters
         <Txt style={s.muted} numberOfLines={3}>
           {p.description || 'Product specifications available on request.'}
         </Txt>
-        {first ? (
+        {first && !options ? (
           <Txt style={{ fontSize: 12, color: c.ink }}>
             {first.size_label || first.sku} · MOQ {first.min_order_qty}{' '}
             {first.uom}
           </Txt>
         ) : null}
         <Txt style={{ fontSize: 11, color: c.muted }}>
-          {p.variants.length} active variant{p.variants.length === 1 ? '' : 's'}
+          {options ? `${options.sizes.length} sizes · ${options.grades.length} grades` : `${p.variants.length} active variant${p.variants.length === 1 ? '' : 's'}`}
         </Txt>
         <AddToCart product={p} variant={p.variants.length === 1 ? first : undefined} />
       </View>

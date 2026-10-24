@@ -7,6 +7,7 @@ export const staffSections = [
   {id: 'sales', label: 'RFQs & quotations', icon: 'file-text', permissions: ['sales.manage']},
   {id: 'inventory', label: 'FTI inventory', icon: 'package', permissions: ['inventory.manage']},
   {id: 'tractor-orders', label: 'Tractor order confirmation', icon: 'shopping-cart', permissions: ['order.manage']},
+  {id: 'raw-material-orders', label: 'Raw-material orders', icon: 'package', permissions: ['order.manage']},
   {id: 'payments', label: 'Payment review', icon: 'credit-card', permissions: ['payment.review']},
   {id: 'order-policy', label: 'Order settings', icon: 'settings', permissions: ['order.policy']},
   {id: 'reservations', label: 'Order reservations', icon: 'clock', permissions: ['order.manage']},

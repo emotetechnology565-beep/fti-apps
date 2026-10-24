@@ -12,6 +12,7 @@ const parameterCounts: Record<string,number> = {
  fti_order_status_v1:2,fti_support_reply_v1:1,fti_request_received_v1:2,fti_admin_request_v1:2,
  fti_request_approved_v1:2,fti_request_rejected_v1:2,fti_request_update_v1:3,
  fti_category_quotation_v1:3,
+ fti_raw_material_received_v1:6,fti_raw_material_admin_v1:9,
 };
 const names = Object.keys(parameterCounts);
 type Job = { id:string; template:string; parameters:string[]; phone:string };
@@ -67,17 +68,22 @@ Deno.serve(async(request:Request)=>{
   const approved=await approvedTemplates();
   if(!approved.length)return Response.json({claimed:0,sent:0,approved:[]});
   const jobs=await rpc<Job[]>('fti_operations_whatsapp_claim',{p_templates:approved,p_limit:10});
+  const rawApproved=approved.filter(name=>name.startsWith('fti_raw_material_'));
+  if(rawApproved.length) jobs.push(...await rpc<Job[]>('fti_raw_material_claim',{p_templates:rawApproved,p_limit:10}));
   let sent=0,attention=0;
   for(const job of jobs){
-   const allowed=await rpc<boolean>('fti_operations_whatsapp_can_send',{p_id:job.id});
+   const raw=job.template.startsWith('fti_raw_material_');
+   const canSend=raw?'fti_raw_material_can_send':'fti_operations_whatsapp_can_send';
+   const finish=raw?'fti_raw_material_finish':'fti_operations_whatsapp_finish';
+   const allowed=await rpc<boolean>(canSend,{p_id:job.id});
    if(!allowed){
-    await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable, consent withdrawn or staff permission removed'});
+    await rpc(finish,{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable, consent withdrawn or staff permission removed'});
     attention++;continue;
    }
    if(!names.includes(job.template)||!/^\+[1-9][0-9]{7,14}$/.test(job.phone)||
     !Array.isArray(job.parameters)||job.parameters.length!==parameterCounts[job.template]||
     job.parameters.some(v=>typeof v!=='string'||!v||v.length>100)){
-    await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'failed',p_error:'Invalid job parameters'});
+    await rpc(finish,{p_id:job.id,p_result:'failed',p_error:'Invalid job parameters'});
     attention++;continue;
    }
    const components: Record<string,unknown>[] = [{type:'body',parameters:job.parameters.map(text=>({type:'text',text}))}];
@@ -87,12 +93,12 @@ Deno.serve(async(request:Request)=>{
      components.unshift({type:'header',parameters:[{type:'document',document:{id:mediaId,filename:'FTI-quotation.pdf'}}]});
     } catch {
      // No message has been sent yet, so retrying document preparation is safe.
-     await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'retry',p_error:'Quotation PDF preparation failed; no message sent'});
+     await rpc(finish,{p_id:job.id,p_result:'retry',p_error:'Quotation PDF preparation failed; no message sent'});
      attention++;continue;
     }
     // Consent/account state may change while fetching the PDF.
     if (!await rpc<boolean>('fti_operations_whatsapp_can_send',{p_id:job.id})) {
-     await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable before PDF send'});
+     await rpc(finish,{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable before PDF send'});
      attention++;continue;
     }
    }
@@ -105,16 +111,16 @@ Deno.serve(async(request:Request)=>{
     if(result.ok){
      const data=await result.json();const providerId=data.messages?.[0]?.id;
      if(typeof providerId==='string'&&providerId.startsWith('wamid.')){
-      await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'sent',p_provider_id:providerId});sent++;continue;
+      await rpc(finish,{p_id:job.id,p_result:'sent',p_provider_id:providerId});sent++;continue;
      }
-     await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'manual_review',p_error:'Provider accepted request without message ID'});
+     await rpc(finish,{p_id:job.id,p_result:'manual_review',p_error:'Provider accepted request without message ID'});
     }else{
      const state=result.status===429?'retry':result.status>=500?'manual_review':'failed';
-     await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:state,p_error:`Meta HTTP ${result.status}`});
+     await rpc(finish,{p_id:job.id,p_result:state,p_error:`Meta HTTP ${result.status}`});
     }
    }catch{
     // A timeout may mean Meta accepted the message. Never resend automatically.
-    await rpc('fti_operations_whatsapp_finish',{p_id:job.id,p_result:'manual_review',p_error:'Provider response unknown; reconcile before replay'});
+    await rpc(finish,{p_id:job.id,p_result:'manual_review',p_error:'Provider response unknown; reconcile before replay'});
    }
    attention++;
   }

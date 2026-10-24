@@ -8,6 +8,7 @@ export function Field({
   placeholder,
   multiline = false,
   numeric = false,
+  editable = true,
 }: {
   label: string;
   value: string;
@@ -15,6 +16,7 @@ export function Field({
   placeholder?: string;
   multiline?: boolean;
   numeric?: boolean;
+  editable?: boolean;
 }) {
   return (
     <View style={{ gap: 8, marginBottom: 16 }}>
@@ -22,6 +24,7 @@ export function Field({
       <TextInput
         accessibilityLabel={label}
         value={value}
+        editable={editable}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="#98A3B2"

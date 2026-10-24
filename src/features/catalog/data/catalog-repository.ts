@@ -1,6 +1,7 @@
 import { supabase } from '@core/api/supabase-client';
 import type { CatalogImage, CatalogPage, Category, Product, Variant } from '../model/types';
 import type { GradeSheet } from '../model/grade-sheet';
+import type { SelectionOptions } from '../model/material-selection';
 
 export type CatalogQuery = {
   search?: string;
@@ -10,6 +11,7 @@ export type CatalogQuery = {
   limit?: number;
   offset?: number;
   ids?: string[];
+  productKind?: Product['product_kind'];
 };
 export interface CatalogRepository {
   readonly scope: string;
@@ -45,6 +47,11 @@ function mapProduct(raw: RawProduct): Product {
   };
 }
 
+export class CatalogRequestError extends Error {
+  constructor(message: string, public readonly code?: string) { super(message); }
+  get rejected() { return !!this.code && ['22023', '42501', 'P0002', '23505', 'PGRST202', 'INVALID_OPERATION', 'UNAUTHENTICATED'].includes(this.code); }
+}
+
 async function catalogRpc<T>(operation: string, args: Record<string, unknown> = {}) {
   if (!supabase) throw new Error('Catalogue service is not configured.');
   const { data, error } = await supabase.functions.invoke('catalog', {
@@ -52,21 +59,51 @@ async function catalogRpc<T>(operation: string, args: Record<string, unknown> = 
   });
   if (error) {
     let message = 'Catalogue service is unavailable. Please try again later.';
+    let code: string | undefined;
     if (error.context instanceof Response) {
       try {
         const body = await error.context.json();
-        if (typeof body.message === 'string') message = body.message;
+        code = typeof body.code === 'string' ? body.code : undefined;
+        // Older deployed gateways reject these new operations before forwarding.
+        // SQL functions enforce the same verified sign-in and staff MFA checks.
+        if (body.code === 'INVALID_OPERATION' && rawMaterialOperations.has(operation)) {
+          // The gateway rejected routing, but the fallback may reach the database.
+          // A transport failure after that point is ambiguous, not a definite rejection.
+          code = undefined;
+          const result = await supabase.rpc(operation, args);
+          if (result.error) {
+            code = result.error.code;
+            message = result.error.code === 'PGRST202'
+              ? 'Raw-material ordering needs the latest database migration. Contact the FTI administrator.'
+              : result.error.message;
+          } else return result.data as T;
+        } else if (body.code === 'PGRST202') message = 'Material selection needs the latest database migration. Contact the FTI administrator.';
+        else if (typeof body.message === 'string') message = body.message;
       } catch {
         // The gateway returned no structured error body.
       }
     }
-    throw new Error(message);
+    throw new CatalogRequestError(message, code);
   }
   return data.data as T;
 }
 
+const rawMaterialOperations = new Set([
+  'fti_catalog_selection_options', 'fti_catalog_selection_request_submit',
+  'fti_catalog_selection_admin', 'fti_catalog_selection_spec_save', 'fti_catalog_selection_size_save', 'fti_catalog_selection_option_save',
+  'fti_catalog_raw_order_submit', 'fti_catalog_raw_orders', 'fti_catalog_raw_recipients',
+  'fti_catalog_raw_recipient_save', 'fti_catalog_raw_recipient_remove', 'fti_catalog_raw_delivery_replay',
+]);
+
 export const catalogApi = {
   rpc: catalogRpc,
+  selectionOptions: (category?: string, sizeId?: string, productId?: string) => catalogRpc<SelectionOptions>('fti_catalog_selection_options', {
+    p_category: category || null, p_size_id: sizeId || null, p_product: productId || null,
+  }),
+  submitSelection: (id: string, optionId: string, quantity: string, buyer: Record<string, unknown>) =>
+    catalogRpc<{ id: string; reference: string; replayed: boolean }>('fti_catalog_selection_request_submit', {
+      p_id: id, p_option_id: optionId, p_quantity: quantity, p_buyer: buyer,
+    }),
   admin: () => catalogRpc<AdminCatalog>('fti_catalog_admin_list'),
   gradeSheet: (categoryId: string) => catalogRpc<GradeSheet | null>('fti_catalog_grade_sheet_get', { p_category: categoryId }),
   saveGradeSheet: (categoryId: string, revision: number | null, sheet: Pick<GradeSheet, 'product_kind' | 'uom' | 'min_order_qty' | 'rows' | 'gst_included' | 'gst_rate'>) =>
@@ -111,7 +148,7 @@ export type AdminCatalog = { categories: AdminCategory[]; products: AdminProduct
 export const supabaseCatalogRepository: CatalogRepository = {
   scope: 'supabase-catalog-v1',
   async listProducts(query = {}) {
-    const raw = await catalogApi.rpc<{
+    const fetchPage = (offset: number, limit: number) => catalogApi.rpc<{
       items: RawProduct[];
       total: number;
       categories: Category[];
@@ -119,11 +156,26 @@ export const supabaseCatalogRepository: CatalogRepository = {
     }>('fti_catalog_filtered_list', {
       p_search: query.search ?? '',
       p_category: query.category || null,
-      p_limit: query.limit ?? 24,
-      p_offset: query.offset ?? 0,
+      p_limit: limit,
+      p_offset: offset,
       p_size: query.size ?? null, p_grade: query.grade || null,
       p_ids: query.ids === undefined ? null : query.ids.filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)),
     });
+    let raw = await fetchPage(query.productKind ? 0 : query.offset ?? 0, query.productKind ? 50 : query.limit ?? 24);
+    if (query.productKind) {
+      // The deployed API has no kind parameter. Read its pages before filtering
+      // so tab totals and pagination include matches beyond the first page.
+      const all = [...raw.items];
+      for (let offset = raw.items.length; offset < raw.total;) {
+        const next = await fetchPage(offset, 50);
+        if (!next.items.length) break;
+        all.push(...next.items);
+        offset += next.items.length;
+      }
+      const matching = all.filter(item => item.product_kind === query.productKind);
+      const offset = query.offset ?? 0;
+      raw = { ...raw, items: matching.slice(offset, offset + (query.limit ?? 24)), total: matching.length };
+    }
     const images = raw.items.length ? await catalogApi.publicImages(raw.items.map(item => item.id)) : [];
     return {
       items: raw.items.map(item => ({ ...mapProduct(item), images: images.filter(image => image.product_id === item.id) })),

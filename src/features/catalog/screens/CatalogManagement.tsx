@@ -9,6 +9,8 @@ import { chartsForProduct } from '../model/product-references';
 import { ProductPublication } from '../components/ProductPublication';
 import { tractorPricingError } from '../model/tractor-pricing';
 import { GradeSheetEditor } from '../components/GradeSheetEditor';
+import { isSheetFlatCategory, sheetFlatPricing } from '../model/sheet-flat-pricing';
+import { MaterialAvailabilityAdmin } from '../components/MaterialAvailabilityAdmin';
 
 const slugFor = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const adminKey = ['catalog', 'admin'] as const;
@@ -37,6 +39,8 @@ export function CatalogManagement() {
   const [brand, setBrand] = useState('');
   const [basePrice, setBasePrice] = useState('');
   const [discountedPrice, setDiscountedPrice] = useState('');
+  const [materialBase, setMaterialBase] = useState('');
+  const [vadha, setVadha] = useState('');
   const [variantAttributes, setVariantAttributes] = useState<Record<string, unknown>>({});
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -44,6 +48,10 @@ export function CatalogManagement() {
   const [referencesFor, setReferencesFor] = useState<string | null>(null);
   const [gradeCategory, setGradeCategory] = useState('');
   const [individualProducts, setIndividualProducts] = useState(false);
+  const selectedCategory = query.data?.categories.find(item => item.id === category);
+  const sheetFlat = kind === 'steel' && !!selectedCategory &&
+    (isSheetFlatCategory(selectedCategory.slug) || isSheetFlatCategory(selectedCategory.name));
+  const materialPrice = sheetFlatPricing(materialBase, vadha);
 
   function editCategory(item: AdminCategory) {
     setCategoryId(item.id); setCategoryName(item.name); setCategorySlug(item.slug);
@@ -61,6 +69,8 @@ export function CatalogManagement() {
     setVariantAttributes(variant?.attributes ?? {});
     setBasePrice(variant?.attributes.base_price != null ? String(variant.attributes.base_price) : '');
     setDiscountedPrice(variant?.attributes.discounted_price != null ? String(variant.attributes.discounted_price) : '');
+    setMaterialBase(String(variant?.attributes.sheet_flat_base_rate_pmt ?? ''));
+    setVadha(String(variant?.attributes.sheet_flat_vadha ?? ''));
     setNote('');
   }
   function resetProduct() {
@@ -68,6 +78,7 @@ export function CatalogManagement() {
     setDescription(''); setKind('steel'); setPurchaseMode('rfq'); setSku(''); setSize('');
     setUom('kg'); setMoq('1'); setDiameter(''); setLength(''); setGrade(''); setBrand('');
     setBasePrice(''); setDiscountedPrice(''); setVariantAttributes({});
+    setMaterialBase(''); setVadha('');
   }
   async function saveCategory() {
     setBusy(true); setNote('');
@@ -92,6 +103,9 @@ export function CatalogManagement() {
   }
   async function saveProduct() {
     if (!category || !name.trim() || !sku.trim() || Number(moq) <= 0) { setNote('Choose a category and enter a product name, SKU and valid minimum quantity.'); return; }
+    if (sheetFlat && (!/^\d+(\.\d+)?\s*MM$/i.test(size.trim()) || parseFloat(size) <= 0 || !materialPrice)) {
+      setNote('Enter Size Thickness in mm (e.g. 2MM), a positive Base Rate PMT and non-negative Vadha with up to 2 decimals.'); return;
+    }
     if (kind === 'tractor_part') {
       const error = tractorPricingError(basePrice, discountedPrice);
       if (error) { setNote(error); return; }
@@ -100,6 +114,15 @@ export function CatalogManagement() {
     delete attributes.grade; delete attributes.brand;
     if (grade.trim()) attributes.grade = grade.trim();
     if (brand.trim()) attributes.brand = brand.trim();
+    if (sheetFlat && materialPrice) {
+      attributes.sheet_flat_base_rate_pmt = materialPrice.base;
+      attributes.sheet_flat_vadha = materialPrice.vadha;
+      attributes.sheet_flat_total = materialPrice.total;
+      attributes.sheet_flat_gst = materialPrice.gst;
+      attributes.sheet_flat_net_prate = materialPrice.net;
+      attributes.grade = grade.trim() || 'MS';
+      attributes.size_group = size.trim().toUpperCase();
+    }
     if (kind === 'tractor_part') {
       delete attributes.base_price; delete attributes.discounted_price;
       if (basePrice.trim()) attributes.base_price = Number(basePrice).toFixed(2);
@@ -107,7 +130,7 @@ export function CatalogManagement() {
     }
     setBusy(true); setNote('');
     try {
-      await catalogApi.saveProduct({ id: productId, category_id: category, name, slug: slug || slugFor(name), description, product_kind: kind, purchase_mode: purchaseMode }, [{ id: variantId, sku, size_label: size, uom, min_order_qty: Number(moq), diameter_mm: diameter || null, length_mm: length || null, attributes, is_active: true }]);
+      await catalogApi.saveProduct({ id: productId, category_id: category, name, slug: slug || slugFor(name), description, product_kind: kind, purchase_mode: purchaseMode }, [{ id: variantId, sku, size_label: size, uom: sheetFlat ? 'MT' : uom, min_order_qty: Number(moq), diameter_mm: sheetFlat ? null : diameter || null, length_mm: length || null, attributes, is_active: true }]);
       resetProduct(); setNote('Product and variant saved as catalogue data.');
       await client.invalidateQueries({ queryKey: adminKey });
       await client.invalidateQueries({ queryKey: ['catalog'] });
@@ -142,10 +165,18 @@ export function CatalogManagement() {
       </Card>
 
       <GradeSheetEditor categories={data.categories} selected={gradeCategory} onSelect={setGradeCategory} />
+      <MaterialAvailabilityAdmin categories={data.categories} products={data.products} />
+      <Row style={{ flexWrap: 'wrap' }}>{data.categories.filter(item => item.is_active && (isSheetFlatCategory(item.slug) || isSheetFlatCategory(item.name))).map(item =>
+        <Button key={item.id} secondary onPress={() => { resetProduct(); setIndividualProducts(true); setCategory(item.id); setName(`${item.name} MS`); setSlug(slugFor(`${item.name} MS`)); setGrade('MS'); setUom('MT'); }}>Add {item.name} product</Button>)}</Row>
       <Button secondary onPress={() => setIndividualProducts(!individualProducts)}>{individualProducts ? 'Hide individual product form' : 'Manage individual products'}</Button>
       {individualProducts ? <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>{productId ? 'Edit product variant' : 'Add product and first variant'}</Txt>
-        <Txt style={s.muted}>Category</Txt>
+        {sheetFlat ? <Txt style={s.muted}>SR.NO.: {(() => {
+          const variants = data.products.filter(item => item.category_id === category).flatMap(item => item.variants);
+          const index = variants.findIndex(item => item.id === variantId);
+          return index < 0 ? variants.length + 1 : index + 1;
+        })()}</Txt> : null}
+        <Txt style={s.muted}>{sheetFlat ? 'CATEGORY' : 'Category'}</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{data.categories.filter((item) => item.is_active).map((item) => <Chip key={item.id} selected={category === item.id} onPress={() => setCategory(item.id)}>{item.name}</Chip>)}</Row>
         <Field label="Product name" placeholder="e.g. High tensile hex bolt" value={name} onChangeText={(value) => { setName(value); if (!productId) setSlug(slugFor(value)); }} />
         <Field label="Product slug" placeholder="e.g. high-tensile-hex-bolt" value={slug} onChangeText={setSlug} />
@@ -155,9 +186,18 @@ export function CatalogManagement() {
         <Txt style={s.muted}>Purchase mode</Txt>
         <Row style={{ flexWrap: 'wrap' }}>{(['rfq','direct','both'] as const).map((value) => <Chip key={value} selected={purchaseMode === value} onPress={() => setPurchaseMode(value)}>{value}</Chip>)}</Row>
         <Field label="Variant SKU" placeholder="e.g. HEX-M12-50" value={sku} onChangeText={setSku} />
-        <Field label="Size / variant label" placeholder="e.g. M12 x 50 mm" value={size} onChangeText={setSize} />
+        <Field label={sheetFlat ? 'SIZE THICKNESS' : 'Size / variant label'} placeholder={sheetFlat ? 'e.g. 2MM' : 'e.g. M12 x 50 mm'} value={size} onChangeText={setSize} />
+        {sheetFlat ? <View style={{ gap: 12 }}>
+          <Txt style={s.h2}>SHEET MS / FLAT MS RATE</Txt>
+          <Field label="BASE RATE PMT" placeholder="e.g. 52900" numeric value={materialBase} onChangeText={setMaterialBase} />
+          <Field label="VADHA" placeholder="e.g. 3300" numeric value={vadha} onChangeText={setVadha} />
+          <Txt>TOTAL: {materialPrice?.total ?? '—'}</Txt>
+          <Txt>GST (18%): {materialPrice?.gst ?? '—'}</Txt>
+          <Txt style={s.h2}>NET PRATE: {materialPrice?.net ?? '—'}</Txt>
+          <Txt style={s.muted}>INR per metric tonne. Total = Base Rate PMT + Vadha; Net Prate = Total + GST.</Txt>
+        </View> : null}
         <Txt style={s.muted}>Unit of measure</Txt>
-        <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>
+        {sheetFlat ? <Badge>PMT (per metric tonne)</Badge> : <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>}
         <Field label="Minimum order quantity" placeholder="e.g. 100" numeric value={moq} onChangeText={setMoq} />
         {kind === 'tractor_part' ? (
           <View style={{ gap: 12 }}>
@@ -166,7 +206,7 @@ export function CatalogManagement() {
             <Field label="Price after discount (₹, optional)" placeholder="e.g. 800.00" numeric value={discountedPrice} onChangeText={setDiscountedPrice} />
           </View>
         ) : null}
-        <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" placeholder="e.g. 12" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" placeholder="e.g. 50" numeric value={length} onChangeText={setLength} /></View></Row>
+        {!sheetFlat ? <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Diameter (mm)" placeholder="e.g. 12" numeric value={diameter} onChangeText={setDiameter} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Length (mm)" placeholder="e.g. 50" numeric value={length} onChangeText={setLength} /></View></Row> : null}
         <Row style={{ flexWrap: 'wrap' }}><View style={{ flex: 1, minWidth: 140 }}><Field label="Grade" placeholder="e.g. 8.8" value={grade} onChangeText={setGrade} /></View><View style={{ flex: 1, minWidth: 140 }}><Field label="Brand" placeholder="e.g. Unbrako" value={brand} onChangeText={setBrand} /></View></Row>
         <Row style={{ flexWrap: 'wrap' }}><Button disabled={busy} onPress={() => void saveProduct()}>{productId ? 'Save product and variant' : 'Create product draft'}</Button>{productId ? <Button secondary onPress={resetProduct}>New product</Button> : null}</Row>
       </Card> : null}

@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-10-23T12:09:03.602Z",
+  "receipts": [
+    {
+      "job_id": "024c1c6c-e171-4da9-8bde-129e5b633d61",
+      "result": "sent",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSOEIzQzlFM0I0ODQ2OTI2OUNCAA=="
+    },
+    {
+      "job_id": "197c3735-07ce-4656-8b8f-d7896ac11a08",
+      "result": "sent",
+      "provider_message_id": "wamid.HBgMOTE5NzgwODMwMzMzFQIAERgSODQ1MjUyMTE4OEU1RTc5NTlDAA=="
+    },
+    {
+      "job_id": "d6e10e9a-d833-4ef7-ab19-db44dd8af141",
+      "result": "sent",
+      "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSMjFCNzQ2NDVCRjQ1RjcxMEU2AA=="
+    }
+  ]
+}

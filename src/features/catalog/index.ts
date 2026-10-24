@@ -3,3 +3,4 @@ export type { CatalogImage } from './model/types';
 export { formatTractorPrice } from './model/tractor-pricing';
 export { catalogApi } from './data/catalog-repository';
 export { CatalogManagement } from './screens/CatalogManagement';
+export { RawMaterialAdmin } from './components/RawMaterialAdmin';

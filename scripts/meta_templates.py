@@ -8,6 +8,18 @@ import urllib.request
 from pathlib import Path
 
 NAMES = {
+    'fti_raw_material_received_v1': {
+        'name': 'fti_raw_material_received_v1', 'category': 'UTILITY',
+        'components': [{'type': 'BODY',
+            'text': 'Hello {{1}}, FTI has received your raw material order request.\nReference: {{2}}\nMaterial: {{3}}\nSize: {{4}}\nGrade: {{5}}\nQuantity: {{6}}\nOur team will contact you to confirm availability, pricing and delivery. This acknowledgment does not confirm the order.',
+            'example': {'body_text': [['Sample Buyer', 'FTI-RM-1001', 'Sheet MS', '6 mm', 'MS', '2 MT']]}}],
+    },
+    'fti_raw_material_admin_v1': {
+        'name': 'fti_raw_material_admin_v1', 'category': 'UTILITY',
+        'components': [{'type': 'BODY',
+            'text': 'FTI staff notification: a new raw material order request has been submitted.\nReference: {{1}}\nMaterial: {{2}}\nSize: {{3}}\nGrade: {{4}}\nQuantity: {{5}}\nBuyer name: {{6}}\nBusiness: {{7}}\nBuyer phone: {{8}}\nDelivery location: {{9}}\nPlease review the request and contact the buyer to confirm availability, pricing and delivery.',
+            'example': {'body_text': [['FTI-RM-1001', 'Sheet MS', '6 mm', 'MS', '2 MT', 'Sample Buyer', 'Sample Engineering', '+919000000001', 'Sample Industrial Area, Pune, Maharashtra 411001']]}}],
+    },
     'fti_request_received_v1': {
         'name': 'fti_request_received_v1', 'category': 'UTILITY',
         'components': [{'type': 'BODY',

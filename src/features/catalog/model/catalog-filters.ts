@@ -2,6 +2,9 @@ import type { Variant } from './types';
 
 export function matchesSize(variant: Pick<Variant, 'diameter_mm' | 'size_label' | 'attributes'>, size?: number): boolean {
   if (size === undefined) return true;
+  const available = variant.attributes.available_sizes;
+  if (Array.isArray(available) && !available.includes(size)) return false;
+  if (variant.attributes.quote_only === true) return Array.isArray(available) && available.includes(size);
   if (variant.diameter_mm !== null && variant.diameter_mm !== undefined) return Number(variant.diameter_mm) === size;
   const label = String(variant.attributes.size_group ?? variant.size_label ?? '').trim().toUpperCase();
   if (label === 'ALL SIZES') return true;
