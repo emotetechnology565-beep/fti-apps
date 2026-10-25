@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@features/auth/ui';
 import { Button, Card, Chip, Field, Row, Txt, c, s } from '@shared/ui';
-import { catalogApi, CatalogRequestError } from '../data/catalog-repository';
+import { catalogApi, CatalogRequestError, type CatalogQuery } from '../data/catalog-repository';
 import { createSelectionDraftStorage } from '../data/selection-draft';
 import { useMaterialSelectionOptions } from '../hooks/use-material-selection-options';
 import {
@@ -36,6 +36,7 @@ type Props = {
   initialSize?: string;
   initialGrade?: string;
   renderAdapter?: (kind: 'fastener' | 'tractor_part') => ReactNode;
+  renderMaterials?: (filters: Pick<CatalogQuery, 'category' | 'ids'>) => ReactNode;
 };
 
 export function MaterialSelection(props: Props) {
@@ -54,6 +55,7 @@ function SelectionForm({
   initialSize = '',
   initialGrade = '',
   renderAdapter,
+  renderMaterials,
 }: Props) {
   const auth = useAuth();
   const owner = auth.session?.user.id ?? null;
@@ -869,6 +871,18 @@ function SelectionForm({
           ) : null}
         </>
       )}
+      {!productId && !adapter && !manualActive ? (
+        draft.sizeId && query.isFetching ? (
+          <Txt style={s.muted}>Loading matching materials…</Txt>
+        ) : renderMaterials?.({
+          category: draft.category && draft.category !== 'steel' ? draft.category : undefined,
+          ids: draft.sizeId
+            ? [...new Set((data?.options ?? [])
+                .filter(item => !draft.grade || item.grade === draft.grade)
+                .map(item => item.product_id))]
+            : undefined,
+        })
+      ) : null}
       {message ? (
         <Txt accessibilityRole="alert" style={{ color: c.red }}>
           {message}

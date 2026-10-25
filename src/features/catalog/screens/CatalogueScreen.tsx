@@ -6,16 +6,23 @@ import { Button, Card, Chip, Empty, Icon, Row, Txt, c, s } from '@shared/ui';
 import { ProductCard } from '../components/ProductCard';
 import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
+import type { CatalogQuery } from '../data/catalog-repository';
 
 export function Catalogue() {
   return <View>
     <StockSourceDropdown source="fti" />
-    <MaterialSelection renderAdapter={kind => <PartsCatalogue key={kind} kind={kind} />} />
+    <MaterialSelection
+      renderAdapter={kind => <ProductsCatalogue key={kind} kind={kind} />}
+      renderMaterials={filters => <ProductsCatalogue key={JSON.stringify(filters)} kind="steel" filters={filters} />}
+    />
   </View>;
 }
 
 // These categories retain their existing quotation and cart behavior.
-function PartsCatalogue({ kind }: { kind: 'fastener' | 'tractor_part' }) {
+function ProductsCatalogue({ kind, filters = {} }: {
+  kind: 'steel' | 'fastener' | 'tractor_part';
+  filters?: Pick<CatalogQuery, 'category' | 'ids'>;
+}) {
   const [search, setSearch] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
   const [page, setPage] = useState(0);
@@ -23,16 +30,17 @@ function PartsCatalogue({ kind }: { kind: 'fastener' | 'tractor_part' }) {
   const savedIds = useStore(state => state.saved);
   const columns = gridWidth >= 720 ? Math.max(3, Math.floor((gridWidth + 12) / 252)) : 2;
   const cardWidth = gridWidth > 0 ? (gridWidth - 12 * (columns - 1)) / columns : undefined;
-  const query = useProducts({ productKind: kind, search: search.trim(), limit: 24, offset: page * 24, ids: savedOnly ? savedIds : undefined });
+  const ids = savedOnly ? savedIds.filter(id => !filters.ids || filters.ids.includes(id)) : filters.ids;
+  const query = useProducts({ ...filters, productKind: kind, search: search.trim(), limit: 24, offset: page * 24, ids });
   const total = query.data?.total ?? 0;
   const items = query.data?.items ?? [];
   return <View style={{ gap: 16 }}>
     <Row style={{ flexWrap: 'wrap' }}>
-      <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>
+      {kind !== 'steel' ? <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>
         <Icon name="search" size={17} />
         <TextInput accessibilityLabel="Search catalogue" placeholder={kind === 'fastener' ? 'Search fasteners' : 'Search tractor parts'}
           value={search} onChangeText={value => { setSearch(value); setPage(0); }} returnKeyType="search" style={{ height: 48, flex: 1, fontSize: 13, color: c.ink }} />
-      </Row>
+      </Row> : null}
       <Chip selected={savedOnly} onPress={() => { setSavedOnly(!savedOnly); setPage(0); }}>Saved materials</Chip>
     </Row>
     {query.isPending ? <Card><Txt style={s.muted}>Loading catalogue…</Txt></Card> : query.error ?
