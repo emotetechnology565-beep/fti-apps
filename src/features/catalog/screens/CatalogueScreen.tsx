@@ -36,11 +36,11 @@ function ProductsCatalogue({ kind, filters = {} }: {
   const items = query.data?.items ?? [];
   return <View style={{ gap: 16 }}>
     {kind !== 'steel' ? <Row style={{ flexWrap: 'wrap' }}>
-      {kind !== 'steel' ? <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>
+      <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>
         <Icon name="search" size={17} />
         <TextInput accessibilityLabel="Search catalogue" placeholder={kind === 'fastener' ? 'Search fasteners' : 'Search tractor parts'}
           value={search} onChangeText={value => { setSearch(value); setPage(0); }} returnKeyType="search" style={{ height: 48, flex: 1, fontSize: 13, color: c.ink }} />
-      </Row> : null}
+      </Row>
       <Chip selected={savedOnly} onPress={() => { setSavedOnly(!savedOnly); setPage(0); }}>Saved materials</Chip>
     </Row> : null}
     {query.isPending ? <Card><Txt style={s.muted}>Loading catalogue…</Txt></Card> : query.error ?

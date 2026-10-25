@@ -1,4 +1,5 @@
 import type { Variant } from './types';
+import { hasOrderConfirmationCharges, orderConfirmationChargesNote } from './price-disclosure';
 
 export type SelectionCategory = { id: string; slug: string; name: string; product_kind: 'steel'; dimension_label: string; dimension_keys?: string[] };
 export type SelectionSize = { id: string; label: string; dimensions: Record<string, number> };
@@ -45,6 +46,6 @@ export function selectionPrice(option: SelectionOption): { amount: string; unit:
   return {
     amount: Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 4 }),
     unit: sheet != null || option.uom === 'MT' ? 'PMT' : option.uom,
-    tax: sheet != null ? 'Including 18% GST' : attrs.grade_list_gst_included === true ? `Including ${attrs.grade_list_gst_rate}% GST` : attrs.grade_list_gst_included === false ? 'Excluding GST' : 'GST inclusion to be confirmed',
+    tax: hasOrderConfirmationCharges(attrs) ? orderConfirmationChargesNote : sheet != null ? 'Including 18% GST' : attrs.grade_list_gst_included === true ? `Including ${attrs.grade_list_gst_rate}% GST` : attrs.grade_list_gst_included === false ? 'Excluding GST' : 'GST inclusion to be confirmed',
   };
 }

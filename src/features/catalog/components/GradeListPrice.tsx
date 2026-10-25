@@ -1,6 +1,7 @@
 import { Row, Txt, s } from '@shared/ui';
 import type { Variant } from '../model/types';
 import { priceUnitLabel } from '../model/shared-material-options';
+import { hasOrderConfirmationCharges, orderConfirmationChargesNote } from '../model/price-disclosure';
 
 export function GradeListPrice({ variant }: { variant: Variant }) {
   const value = variant.attributes.grade_list_price;
@@ -20,5 +21,6 @@ export function GradeListPrice({ variant }: { variant: Variant }) {
       <Txt style={{ fontWeight: '700' }}>Net Price</Txt><Txt style={s.h2}>{money(value)}</Txt>
     </Row>
     <Txt style={s.muted}>{included === true ? `Price including GST (${rate}%)` : included === false ? 'Price excluding GST' : 'GST inclusion not specified'} | MOQ {variant.min_order_qty} {variant.uom}</Txt>
+    {hasOrderConfirmationCharges(variant.attributes) ? <Txt style={s.muted}>{orderConfirmationChargesNote}</Txt> : null}
   </>;
 }

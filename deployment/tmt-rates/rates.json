@@ -1,0 +1,702 @@
+[
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 8,
+    "base_price": 41500,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51975
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 10,
+    "base_price": 41500,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49975
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 12,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 16,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 20,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 25,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZARA TMT",
+    "slug": "zara-tmt",
+    "size_mm": 32,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 8,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 10,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 12,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 16,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 20,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 25,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "STAR TMT",
+    "slug": "star-tmt",
+    "size_mm": 32,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 8,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 10,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 12,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 16,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 20,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 25,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "ZEE CON TMT",
+    "slug": "zee-con-tmt",
+    "size_mm": 32,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 8,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 10,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 12,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 16,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 20,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 25,
+    "base_price": 41400,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49875
+  },
+  {
+    "brand": "AWADH TMT",
+    "slug": "awadh-tmt",
+    "size_mm": 32,
+    "base_price": 41400,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51875
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 8,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 10,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 12,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 16,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 20,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 25,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "MAJHI TMT",
+    "slug": "majhi-tmt",
+    "size_mm": 32,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 8,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 10,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 12,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 16,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 20,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 25,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "SUPERX TMT",
+    "slug": "superx-tmt",
+    "size_mm": 32,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 8,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 10,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 12,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 16,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 20,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 25,
+    "base_price": 41300,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49775
+  },
+  {
+    "brand": "HR PLATINUM",
+    "slug": "hr-platinum",
+    "size_mm": 32,
+    "base_price": 41300,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51775
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 8,
+    "base_price": 41200,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 10,
+    "base_price": 41200,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 12,
+    "base_price": 41200,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 16,
+    "base_price": 41200,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 20,
+    "base_price": 41200,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 25,
+    "base_price": 41200,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 49675
+  },
+  {
+    "brand": "SMS TMT",
+    "slug": "sms-tmt",
+    "size_mm": 32,
+    "base_price": 41200,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51675
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 8,
+    "base_price": 41800,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 52275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 10,
+    "base_price": 41800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 50275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 12,
+    "base_price": 41800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 50275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 16,
+    "base_price": 41800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 50275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 20,
+    "base_price": 41800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 50275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 25,
+    "base_price": 41800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 50275
+  },
+  {
+    "brand": "BALSHALI 550D",
+    "slug": "balshali-550d",
+    "size_mm": 32,
+    "base_price": 41800,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 52275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 8,
+    "base_price": 42800,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 53275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 10,
+    "base_price": 42800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 12,
+    "base_price": 42800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 16,
+    "base_price": 42800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 20,
+    "base_price": 42800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 25,
+    "base_price": 42800,
+    "rolling": 6000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 51275
+  },
+  {
+    "brand": "RATHI TMT",
+    "slug": "rathi-tmt",
+    "size_mm": 32,
+    "base_price": 42800,
+    "rolling": 8000,
+    "profile": 2000,
+    "loading": 475,
+    "net_price": 53275
+  }
+]
