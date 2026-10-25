@@ -9,12 +9,11 @@ function paise(value: string): bigint | null {
 }
 const decimal = (value: bigint) => `${value / 100n}.${String(value % 100n).padStart(2, '0')}`;
 
-// The supplied rate sheet adds 18% GST to base rate plus Vadha.
+// Catalogue rates exclude GST, which is added during order confirmation.
 export function sheetFlatPricing(base: string, vadha: string) {
   const baseAmount = paise(base);
   const charge = paise(vadha);
   if (baseAmount === null || baseAmount <= 0n || charge === null) return null;
   const total = baseAmount + charge;
-  const gst = (total * 18n + 50n) / 100n;
-  return { base: decimal(baseAmount), vadha: decimal(charge), total: decimal(total), gst: decimal(gst), net: decimal(total + gst) };
+  return { base: decimal(baseAmount), vadha: decimal(charge), total: decimal(total), gst: '0.00', net: decimal(total) };
 }

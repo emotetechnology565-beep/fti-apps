@@ -130,9 +130,12 @@ test('manual requests match explicit ±2mm sizes, preserve intent and use real p
       [product],
     );
     await db.query(
-      "insert into catalog.variant_attributes values($1,'grade','\"MS\"'),($1,'size_group','\"13MM TO 25MM\"'),($1,'sheet_flat_net_prate','\"65000\"')",
+      "insert into catalog.variant_attributes values($1,'grade','\"MS\"'),($1,'size_group','\"13MM TO 25MM\"'),($1,'sheet_flat_base_rate_pmt','\"60000\"'),($1,'sheet_flat_vadha','\"5000\"'),($1,'sheet_flat_total','\"65000\"'),($1,'sheet_flat_gst','\"11700\"'),($1,'sheet_flat_net_prate','\"76700\"')",
       [pricingVariant],
     );
+    const gstExclusion = readFileSync('supabase/migrations/202610250003_sheet_flat_exclude_gst.sql', 'utf8');
+    await db.exec(gstExclusion);
+    await db.exec(gstExclusion);
     for (const size of [13, 17, 25]) {
       const sid = await value<string>(
         'insert into catalog.category_sizes(category_id,label,dimensions) values($1,$2,$3) returning id as v',
@@ -275,7 +278,12 @@ test('manual requests match explicit ±2mm sizes, preserve intent and use real p
     assert.equal(saved.price_state, 'estimated');
     assert.equal(saved.estimated_unit_price, 65000);
     assert.equal(saved.estimated_total, 65000);
+    assert.equal(saved.gst_included, false);
     assert.equal(saved.contact, '9780830333');
+    await db.exec(gstExclusion);
+    assert.deepEqual(await value<Record<string, unknown>>(
+      'select details as v from sales.raw_material_requests where id=$1', [id(10)],
+    ), saved, 'Reapplying the tax change preserves existing request snapshots');
     assert.equal(
       await value<number>(
         'select count(*)::int as v from sales.raw_material_jobs',

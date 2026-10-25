@@ -13,7 +13,6 @@ declare
   product_uuid uuid;
   variant_uuid uuid;
   total_rate numeric;
-  gst_amount numeric;
 begin
   for r in
     select * from (values
@@ -72,7 +71,6 @@ begin
     end if;
 
     total_rate := r.base_rate + r.vadha;
-    gst_amount := round(total_rate * 0.18, 2);
 
     insert into catalog.variant_attributes (variant_id, attribute_key, value_json)
     select variant_uuid, key, value
@@ -82,8 +80,13 @@ begin
       'sheet_flat_base_rate_pmt', r.base_rate::text,
       'sheet_flat_vadha', r.vadha::text,
       'sheet_flat_total', total_rate::text,
-      'sheet_flat_gst', gst_amount::text,
-      'sheet_flat_net_prate', (total_rate + gst_amount)::text
+      'sheet_flat_gst', '0.00',
+      'sheet_flat_net_prate', total_rate::text,
+      'sheet_flat_gst_included', false,
+      'grade_list_base_price', r.base_rate::text,
+      'grade_list_price', total_rate::text,
+      'grade_list_gst_included', false,
+      'grade_list_gst_rate', null
     ))
     on conflict (variant_id, attribute_key)
     do update set value_json = excluded.value_json;

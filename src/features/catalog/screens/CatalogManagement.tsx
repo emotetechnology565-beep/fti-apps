@@ -120,6 +120,11 @@ export function CatalogManagement() {
       attributes.sheet_flat_total = materialPrice.total;
       attributes.sheet_flat_gst = materialPrice.gst;
       attributes.sheet_flat_net_prate = materialPrice.net;
+      attributes.sheet_flat_gst_included = false;
+      attributes.grade_list_base_price = materialPrice.base;
+      attributes.grade_list_price = materialPrice.net;
+      attributes.grade_list_gst_included = false;
+      attributes.grade_list_gst_rate = null;
       attributes.grade = grade.trim() || 'MS';
       attributes.size_group = size.trim().toUpperCase();
     }
@@ -192,9 +197,8 @@ export function CatalogManagement() {
           <Field label="BASE RATE PMT" placeholder="e.g. 52900" numeric value={materialBase} onChangeText={setMaterialBase} />
           <Field label="VADHA" placeholder="e.g. 3300" numeric value={vadha} onChangeText={setVadha} />
           <Txt>TOTAL: {materialPrice?.total ?? '—'}</Txt>
-          <Txt>GST (18%): {materialPrice?.gst ?? '—'}</Txt>
           <Txt style={s.h2}>NET PRATE: {materialPrice?.net ?? '—'}</Txt>
-          <Txt style={s.muted}>INR per metric tonne. Total = Base Rate PMT + Vadha; Net Prate = Total + GST.</Txt>
+          <Txt style={s.muted}>INR per metric tonne. Net Prate = Base Rate PMT + Vadha. GST is excluded and will be added during order confirmation.</Txt>
         </View> : null}
         <Txt style={s.muted}>Unit of measure</Txt>
         {sheetFlat ? <Badge>PMT (per metric tonne)</Badge> : <Row style={{ flexWrap: 'wrap' }}>{(['kg','MT','piece','box','bundle'] as const).map((value) => <Chip key={value} selected={uom === value} onPress={() => setUom(value)}>{value}</Chip>)}</Row>}

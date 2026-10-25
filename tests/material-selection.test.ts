@@ -113,6 +113,13 @@ test('price presentation preserves missing-price and Sheet GST behavior', () => 
     })?.tax,
     'Excluding GST',
   );
+  assert.deepEqual(selectionPrice({
+    ...option,
+    attributes: { sheet_flat_net_prate: '56200', sheet_flat_gst_included: false },
+  }), {
+    amount: '56,200', unit: 'PMT',
+    tax: 'Excluding GST. GST will be added during order confirmation.',
+  });
 });
 
 test('login return accepts only the catalogue purpose, never a supplied URL', () => {
@@ -157,6 +164,12 @@ test('manual-size pricing calculates totals and converts kg to tonnes without ch
   };
   assert.equal(manualEstimate(sheet, '500')?.total, '32,500');
   assert.equal(manualEstimate(sheet, '500')?.tax, 'Including 18% GST');
+  const excludingGst = {
+    ...sheet,
+    option: { ...sheet.option, attributes: { sheet_flat_net_prate: '56200', sheet_flat_gst_included: false } },
+  };
+  assert.equal(manualEstimate(excludingGst, '500')?.total, '28,100');
+  assert.equal(manualEstimate(excludingGst, '500')?.tax, 'Excluding GST. GST will be added during order confirmation.');
   assert.equal(
     manualEstimate(
       { ...preview, option: { ...option, attributes: { quote_only: true } } },

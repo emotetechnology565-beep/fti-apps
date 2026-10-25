@@ -46,6 +46,6 @@ export function selectionPrice(option: SelectionOption): { amount: string; unit:
   return {
     amount: Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 4 }),
     unit: sheet != null || option.uom === 'MT' ? 'PMT' : option.uom,
-    tax: hasOrderConfirmationCharges(attrs) ? orderConfirmationChargesNote : sheet != null ? 'Including 18% GST' : attrs.grade_list_gst_included === true ? `Including ${attrs.grade_list_gst_rate}% GST` : attrs.grade_list_gst_included === false ? 'Excluding GST' : 'GST inclusion to be confirmed',
+    tax: hasOrderConfirmationCharges(attrs) ? orderConfirmationChargesNote : sheet != null ? (attrs.sheet_flat_gst_included === false ? 'Excluding GST. GST will be added during order confirmation.' : 'Including 18% GST') : attrs.grade_list_gst_included === true ? `Including ${attrs.grade_list_gst_rate}% GST` : attrs.grade_list_gst_included === false ? 'Excluding GST' : 'GST inclusion to be confirmed',
   };
 }
