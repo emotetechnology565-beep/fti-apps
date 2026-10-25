@@ -40,6 +40,7 @@ def api(route):
             calls.append((operation, args))
             if operation == 'fti_identity_me': result = identity
             elif operation == 'fti_catalog_admin_list': result = {'categories': categories, 'products': products}
+            elif operation == 'fti_catalog_selection_options': result = {'categories': [], 'category': None, 'sizes': [], 'options': []}
             elif operation == 'fti_catalog_product_upsert':
                 product = next(p for p in products if p['id'] == args['p_product']['id'])
                 assert args['p_product']['description'] == 'Preserve this description'
@@ -57,7 +58,7 @@ def api(route):
                     return
                 product['status'] = args['p_status']
                 result = None
-            elif operation == 'fti_catalog_list':
+            elif operation in ('fti_catalog_list', 'fti_catalog_filtered_list'):
                 visible = [p for p in products if p['status'] == 'published']
                 result = {'items': visible, 'total': len(visible), 'categories': categories}
             result = {'data': result}
@@ -73,6 +74,13 @@ with sync_playwright() as playwright:
     base = 'http://127.0.0.1:' + (sys.argv[1] if len(sys.argv) > 1 else '8101')
     page.goto(base + '/admin?section=catalogue', timeout=60000)
     page.wait_for_load_state('networkidle', timeout=60000)
+    page.get_by_role('button', name='Fasteners', exact=True).click()
+    def open_category(id):
+        page.get_by_test_id('catalog-category-' + id).get_by_role('button', name='Open category', exact=True).click()
+    def manage_product(id):
+        page.get_by_test_id('catalog-product-' + id).get_by_role('button', name='Manage product', exact=True).click()
+    open_category('active')
+    manage_product('0')
     imported = page.get_by_test_id('product-publication-0')
     expect(imported.get_by_role('button', name='Publish', exact=True)).to_be_visible(timeout=60000)
     imported.get_by_role('button', name='Publish', exact=True).click()
@@ -91,15 +99,22 @@ with sync_playwright() as playwright:
     expect(imported.get_by_role('button', name='Unpublish', exact=True)).to_be_visible()
     assert sum(op == 'fti_catalog_product_upsert' and args['p_product']['id'] == '0' for op, args in calls) == 1
 
+    page.get_by_role('button', name='Back to categories', exact=True).click()
+    open_category('inactive')
+    manage_product('2')
     blocked = page.get_by_test_id('product-publication-2')
     blocked.get_by_role('button', name='Publish', exact=True).click()
     expect(blocked.get_by_text('Activate this product’s category before publishing.', exact=True)).to_be_visible()
     assert not any(op == 'fti_catalog_product_status' and args['p_id'] == '2' for op, args in calls)
+    page.get_by_role('button', name='Back to categories', exact=True).click()
+    open_category('active')
+    manage_product('1')
     ready = page.get_by_test_id('product-publication-1')
     ready.get_by_role('button', name='Publish', exact=True).click()
     expect(ready.get_by_text('Ready product is now published and visible in the catalogue.', exact=True)).to_be_visible()
     assert not any(op == 'fti_catalog_product_upsert' and args['p_product']['id'] == '1' for op, args in calls)
 
+    manage_product('3')
     fresh = page.get_by_test_id('product-publication-3')
     fresh.get_by_role('button', name='Publish', exact=True).click()
     fresh.get_by_role('textbox', name='SKU for New publish product', exact=True).fill('SECOND-TEST-SKU')
@@ -108,6 +123,8 @@ with sync_playwright() as playwright:
     expect(fresh.get_by_text('New publish product is now published and visible in the catalogue.', exact=True)).to_be_visible()
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
     page.goto(base + '/products', timeout=60000)
+    page.get_by_role('button', name='Category: Choose category', exact=True).click()
+    page.get_by_role('radio', name='Fasteners', exact=True).click()
     expect(page.get_by_text('Imported product', exact=True)).to_be_visible(timeout=60000)
     expect(page.get_by_text('Ready product', exact=True)).to_be_visible()
     expect(page.get_by_text('New publish product', exact=True)).to_be_visible()

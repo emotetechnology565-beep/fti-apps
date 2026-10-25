@@ -128,6 +128,7 @@ with sync_playwright() as p:
         expect(page.get_by_test_id('catalog-product-1')).to_be_visible()
         button('Product status: Published').click()
         page.get_by_role('radio', name='All statuses', exact=True).click()
+        expect(button('Close filter')).not_to_be_visible()
         page.screenshot(path='artifacts/admin-category-products-' + str(width) + '.png', full_page=True)
         no_overflow()
 
@@ -158,7 +159,7 @@ with sync_playwright() as p:
         button('Back to categories').click()
         expect(page.get_by_text('Leave unsaved edits?', exact=True)).to_be_visible()
         button('Keep editing').click()
-        button('Save draft').click()
+        button('Save list draft').click()
         expect(page.get_by_text('Draft saved. Review and publish when all prices are complete.', exact=True)).to_be_visible()
 
         button('Sizes & Grades').click()

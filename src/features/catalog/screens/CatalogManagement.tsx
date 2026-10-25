@@ -511,7 +511,7 @@ export function CatalogManagement() {
             onChangeText={setCategorySearch}
           />
           <Txt style={s.muted}>
-            {categories.length} categories ? Choose one to view its products
+            {categories.length} categories · Choose one to view its products
           </Txt>
           <Card style={{ gap: 0 }}>
             {categories.map((item, index) => {
@@ -539,13 +539,13 @@ export function CatalogManagement() {
                   <View style={{ flex: 1, minWidth: 150, gap: 4 }}>
                     <Txt style={{ fontWeight: '700' }}>{item.name}</Txt>
                     <Txt style={s.muted}>
-                      {members.length} products ?{' '}
+                      {members.length} products ·{' '}
                       {
                         members.filter(
                           (product) => product.status === 'published',
                         ).length
                       }{' '}
-                      published ? {item.is_active ? 'Active' : 'Inactive'}
+                      published · {item.is_active ? 'Active' : 'Inactive'}
                     </Txt>
                   </View>
                   <Button secondary onPress={() => chooseCategory(item.id)}>
@@ -594,7 +594,7 @@ export function CatalogManagement() {
             <View style={{ flex: 1, minWidth: 150, gap: 6 }}>
               <Txt style={s.h2}>{workspace.name}</Txt>
               <Txt style={s.muted}>
-                {categoryProducts.length} products ?{' '}
+                {categoryProducts.length} products ·{' '}
                 {
                   categoryProducts.filter((item) => item.status === 'published')
                     .length
@@ -1004,7 +1004,7 @@ export function CatalogManagement() {
               <Txt style={s.muted}>
                 {matching.length}{' '}
                 {tab === 'Photos'
-                  ? 'products ? Select a product to manage its photos'
+                  ? 'products · Select a product to manage its photos'
                   : 'matching products'}
               </Txt>
               {visibleProducts.map((item) => (
@@ -1023,7 +1023,7 @@ export function CatalogManagement() {
                     <View style={{ flex: 1, minWidth: 140, gap: 4 }}>
                       <Txt style={{ fontWeight: '700' }}>{item.name}</Txt>
                       <Txt style={s.muted}>
-                        {item.variants.length} variants ? {item.slug}
+                        {item.variants.length} variants · {item.slug}
                       </Txt>
                     </View>
                     <Badge>{item.status.toUpperCase()}</Badge>
@@ -1078,8 +1078,8 @@ export function CatalogManagement() {
                           >
                             <View style={{ flex: 1, minWidth: 140 }}>
                               <Txt style={s.muted}>
-                                {variant.sku} ?{' '}
-                                {variant.size_label || 'No size'} ? MOQ{' '}
+                                {variant.sku} ·{' '}
+                                {variant.size_label || 'No size'} · MOQ{' '}
                                 {variant.min_order_qty} {variant.uom}
                               </Txt>
                             </View>

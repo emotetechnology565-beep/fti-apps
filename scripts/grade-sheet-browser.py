@@ -56,6 +56,15 @@ def api(route):
                         net = sum(float(row[key]) for key in ['base_price', 'base_charge', 'profile', 'rolling']) + float(group['add_price'])
                         product['variants'].append({'id': group['id'], 'sku': 'GL-' + group['id'], 'size_label': row['grade'] + ' / ' + group['label'], 'uom': result['uom'], 'min_order_qty': 1, 'attributes': {'grade': row['grade'], 'size_group': group['label'], 'grade_list_base_price': row['base_price'], 'grade_list_price': f'{net:.4f}'}})
             elif operation == 'fti_catalog_product_get': result = product
+            elif operation == 'fti_catalog_selection_options':
+                cat = next(item for item in categories if item['id'] == product['category_id'])
+                selected_category = {**cat, 'product_kind': 'steel', 'dimension_label': 'Size group'}
+                variants = product['variants']
+                result = {'categories': [selected_category], 'category': selected_category,
+                          'sizes': [{'id': item['id'], 'label': item['attributes']['size_group'], 'dimensions': {}} for item in variants],
+                          'options': [{'id': item['id'], 'product_id': product['id'], 'product_name': product['name'],
+                                       'grade': item['attributes']['grade'], 'uom': item['uom'], 'min_order_qty': item['min_order_qty'],
+                                       'variant_id': item['id'], 'attributes': item['attributes']} for item in variants if item['id'] == args.get('p_size_id')]}
             result = {'data': result}
     route.fulfill(status=200, content_type='application/json', body=json.dumps(result), headers={'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'})
 
@@ -68,8 +77,11 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     base = 'http://127.0.0.1:' + (sys.argv[1] if len(sys.argv) > 1 else '8102')
     page.goto(base + '/admin?section=catalogue', timeout=60000)
-    expect(page.get_by_text('Category publishing', exact=True)).to_be_visible(timeout=60000)
-    page.get_by_role('button', name='As Rolled Round Bar', exact=True).click()
+    def open_category(name):
+        cid = next(item['id'] for item in categories if item['name'] == name)
+        page.get_by_test_id('catalog-category-' + cid).get_by_role('button', name='Open category', exact=True).click()
+        page.get_by_role('button', name='Prices', exact=True).click()
+    open_category('As Rolled Round Bar')
     expect(page.get_by_label('Brand / grade 1', exact=True)).to_be_visible()
     page.get_by_label('Brand / grade 1', exact=True).fill('EN-8D')
     for name, value in [('Base price', '40000'), ('BASE charge', '4000'), ('Profile', '1000')]:
@@ -85,8 +97,8 @@ with sync_playwright() as p:
     page.get_by_label('Size group 2 — entry 1', exact=True).fill('53MM TO 80MM')
     page.get_by_label('Add price 2 — entry 1 (INR / PMT)', exact=True).fill('1000')
     expect(page.get_by_text('Final price: INR 54500.0000 / PMT', exact=True)).to_be_visible()
-    page.get_by_role('button', name='TMT Bar', exact=True).click()
-    expect(page.get_by_text('Discard unsaved edits and switch category?', exact=True)).to_be_visible()
+    page.get_by_role('button', name='Back to categories', exact=True).click()
+    expect(page.get_by_text('Leave unsaved edits?', exact=True)).to_be_visible()
     page.get_by_role('button', name='Keep editing', exact=True).click()
     expect(page.get_by_label('Rolling — entry 1 (INR / PMT)', exact=True)).to_have_value('8500')
     page.get_by_role('button', name='Save list draft', exact=True).click()
@@ -98,20 +110,27 @@ with sync_playwright() as p:
     page.screenshot(path='artifacts/category-grade-sheet-mobile.png', full_page=True)
     page.get_by_role('button', name='Publish category list', exact=True).click()
     expect(page.get_by_text('As Rolled Round Bar list published. Customers can see its grades, sizes, base prices and net prices.', exact=True)).to_be_visible()
-    page.get_by_role('button', name='TMT Bar', exact=True).click()
+    page.get_by_role('button', name='Back to categories', exact=True).click()
+    open_category('TMT Bar')
     expect(page.get_by_label('Brand / grade 1', exact=True)).to_have_value('')
-    page.get_by_role('button', name='As Rolled Round Bar', exact=True).click()
+    page.get_by_role('button', name='Back to categories', exact=True).click()
+    open_category('As Rolled Round Bar')
     expect(page.get_by_label('Brand / grade 1', exact=True)).to_have_value('EN-8D')
     expect(page.get_by_label('Add price 2 — entry 1 (INR / PMT)', exact=True)).to_have_value('1000')
     page.set_viewport_size({'width': 1366, 'height': 900})
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'desktop overflow'
     page.screenshot(path='artifacts/category-grade-sheet-desktop.png', full_page=True)
     page.goto(base + '/product/' + product['id'], timeout=60000)
-    expect(page.get_by_text('INR 54,500 / PMT', exact=True)).to_be_visible(timeout=30000)
+    page.get_by_role('button', name='Size group: Choose size', exact=True).click()
+    page.get_by_role('radio', name='53MM TO 80MM', exact=True).click()
+    page.get_by_role('button', name='Grade: Choose grade', exact=True).click()
+    page.get_by_role('radio', name='EN-8D', exact=True).click()
+    expect(page.get_by_text('INR 54,500 / PMT', exact=True)).to_be_visible()
+    page.get_by_role('button', name='Size group: 53MM TO 80MM', exact=True).click()
+    page.get_by_role('radio', name='16MM TO 50MM', exact=True).click()
+    page.get_by_role('button', name='Grade: Choose grade', exact=True).click()
+    page.get_by_role('radio', name='EN-8D', exact=True).click()
     expect(page.get_by_text('INR 53,500 / PMT', exact=True)).to_be_visible()
-    expect(page.get_by_text('Base Price', exact=True)).to_have_count(2)
-    expect(page.get_by_text('Net Price', exact=True)).to_have_count(2)
-    expect(page.get_by_text('INR 40,000 / PMT', exact=True)).to_have_count(2)
     assert not page.get_by_text('base charge', exact=True).count()
     assert writes.count('fti_catalog_grade_sheet_save') == 2
     assert writes.count('fti_catalog_grade_sheet_publish') == 1
