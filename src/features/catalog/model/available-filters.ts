@@ -8,8 +8,12 @@ export function matchesCatalogSize(variant: Variant, size: number): boolean {
 }
 
 export function availableCatalogFilters(variants: Variant[], size?: number) {
+  const explicitSizes = variants.flatMap(variant => Array.isArray(variant.attributes.available_sizes)
+    ? variant.attributes.available_sizes.filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0)
+    : []);
+  const candidates = [...new Set<number>([...sharedMaterialSizes, ...explicitSizes])].sort((a, b) => a - b);
   return {
-    sizes: sharedMaterialSizes.filter(candidate => variants.some(variant => matchesCatalogSize(variant, candidate))),
+    sizes: candidates.filter(candidate => variants.some(variant => matchesCatalogSize(variant, candidate))),
     grades: [...new Set(variants.filter(variant => size === undefined || matchesCatalogSize(variant, size))
       .map(variant => String(variant.attributes.grade ?? '').trim().toUpperCase()).filter(Boolean))].sort(),
   };

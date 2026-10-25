@@ -17,6 +17,7 @@ import {
   type SelectionDraft,
 } from '../model/material-selection';
 import { CatalogFilter } from './CatalogFilter';
+import { ProductReferenceCharts } from './ProductReferenceCharts';
 import {
   manualEstimate,
   manualQuantityError,
@@ -871,6 +872,7 @@ function SelectionForm({
           ) : null}
         </>
       )}
+      {!productId && draft.category === 'square' ? <ProductReferenceCharts product={{ slug: 'square' }} /> : null}
       {!productId && !adapter && !manualActive ? (
         draft.sizeId && query.isFetching ? (
           <Txt style={s.muted}>Loading matching materials…</Txt>

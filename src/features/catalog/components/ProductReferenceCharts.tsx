@@ -4,10 +4,8 @@ import * as Linking from 'expo-linking';
 import { Badge, Button, Card, Chip, Field, Row, Txt, c, s } from '@shared/ui';
 import { chartsForProduct, referenceRows, referenceSizes } from '../model/product-references';
 
-const pageSize = 6;
-
-export function ProductReferenceCharts({ product }: { product: { slug: string } }) {
-  const charts = chartsForProduct(product.slug);
+export function ProductReferenceCharts({ product }: { product: { slug: string; category?: string } }) {
+  const charts = chartsForProduct(product.slug, product.category);
   const [chartId, setChartId] = useState('');
   const [groupId, setGroupId] = useState('');
   const [size, setSize] = useState('');
@@ -17,6 +15,8 @@ export function ProductReferenceCharts({ product }: { product: { slug: string } 
   const [error, setError] = useState('');
   const chart = charts.find(item => item.id === chartId) ?? charts[0];
   if (!chart) return null;
+  const square = chart.id === 'square-bar-sizes';
+  const pageSize = square ? 8 : 6;
   const group = chart.groups.find(item => item.id === groupId) ?? chart.groups[0];
   const rows = referenceRows(chart.id, group.id, size, length);
   const sizes = referenceSizes(chart.id, group.id);
@@ -33,14 +33,15 @@ export function ProductReferenceCharts({ product }: { product: { slug: string } 
       </Row> : null}
       <Txt style={{ fontWeight: '700' }}>{chart.title}</Txt>
       <Txt style={s.muted}>{group.standard ?? chart.standard}</Txt>
-      <Badge>{chart.unit === 'mm' ? 'DIMENSIONS IN MM' : 'APPROX. KG PER 1,000 PIECES'}</Badge>
+      <Badge>{square ? 'MM · MM² · APPROX. KG / M' : chart.unit === 'mm' ? 'DIMENSIONS IN MM' : 'APPROX. KG PER 1,000 PIECES'}</Badge>
       {chart.date ? <Txt style={s.muted}>Source chart dated 1 January 2026</Txt> : null}
       {chart.groups.length > 1 ? <Row style={{ flexWrap: 'wrap' }}>
         {chart.groups.map(item => <Chip key={item.id} selected={item.id === group.id} onPress={() => {
           setGroupId(item.id); resetFilters();
         }}>{item.label}</Chip>)}
       </Row> : <Txt>{group.label}</Txt>}
-      <Field label="Reference size" value={size} placeholder={chart.id === 'unc-weights' ? 'e.g. 1/2 or 1 1/4' : 'e.g. M12'} onChangeText={value => { setSize(value); setOffset(0); }} />
+      <Field label="Reference size" value={size} placeholder={square ? 'e.g. 25 or 25 × 25' : chart.id === 'unc-weights' ? 'e.g. 1/2 or 1 1/4' : 'e.g. M12'} onChangeText={value => { setSize(value); setOffset(0); }} />
+      {square ? <Txt style={s.muted}>MS rate: Request quote · Alloy rate: Request quote</Txt> : null}
       {hasLengths ? <Field label={`Reference length (${chart.id === 'unc-weights' ? 'inches' : 'mm'})`} value={length} placeholder={chart.id === 'unc-weights' ? 'e.g. 2 or 1 1/2' : 'e.g. 100'} onChangeText={value => { setLength(value); setOffset(0); }} /> : null}
       <Txt style={s.muted}>Chart sizes: {sizes.join(', ')}</Txt>
       {size || length ? <Button secondary onPress={resetFilters}>Clear reference filters</Button> : null}
@@ -51,7 +52,11 @@ export function ProductReferenceCharts({ product }: { product: { slug: string } 
           <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <Txt style={{ fontWeight: '700' }}>{row.size}{row.length ? ` × ${row.length}` : ''}</Txt>
             {row.weightKgPer1000 !== undefined ? <Txt style={{ fontWeight: '700' }}>{row.weightKgPer1000.toFixed(2)} kg / 1,000 pcs</Txt> : null}
+            {row.weightKgPerMetre !== undefined ? <Txt style={{ fontWeight: '700' }}>{row.weightKgPerMetre} kg/m</Txt> : null}
           </Row>
+          {row.areaMm2 !== undefined ? <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <Txt style={s.muted}>Cross-sectional area</Txt><Txt>{row.areaMm2.toLocaleString('en-IN')} mm²</Txt>
+          </Row> : null}
           {Object.entries(row.dimensions ?? {}).map(([label, value]) => <Row key={label} style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <Txt style={s.muted}>{label}</Txt><Txt>{value} mm</Txt>
           </Row>)}

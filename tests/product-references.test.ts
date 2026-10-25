@@ -48,3 +48,19 @@ test('charts attach only to matching imported product families and washer types'
     assert.deepEqual(chartsForProduct(slug),[],slug);
   }
 });
+
+test('square bar references preserve printed areas and kg per metre with side and dimension filtering', () => {
+  assert.equal(chartsForProduct('square-bar')[0].id, 'square-bar-sizes');
+  assert.equal(chartsForProduct('custom-square-product', 'Square')[0].unit, 'kg/m');
+  assert.deepEqual(chartsForProduct('square-head-bolt'), []);
+  const rows = referenceRows('square-bar-sizes', 'square-bar');
+  assert.equal(rows.length, 40);
+  assert.deepEqual(rows[0], { chartId: 'square-bar-sizes', groupId: 'square-bar', size: '10 × 10', areaMm2: 100, weightKgPerMetre: 0.785 });
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '25')[0].weightKgPerMetre, 4.906);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '25 x 25 mm')[0].areaMm2, 625);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '25×25')[0].weightKgPerMetre, 4.906);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '150')[0].weightKgPerMetre, 176.625);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '25 x 30').length, 0);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '26').length, 0);
+  assert.equal(referenceRows('square-bar-sizes', 'square-bar', '25', '6000').length, 0);
+});
