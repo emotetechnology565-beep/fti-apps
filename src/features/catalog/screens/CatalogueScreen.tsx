@@ -8,6 +8,8 @@ import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
 import type { CatalogQuery } from '../data/catalog-repository';
 
+const PRODUCTS_PER_PAGE = 8;
+
 export function Catalogue() {
   return <View>
     <StockSourceDropdown source="fti" />
@@ -31,7 +33,7 @@ function ProductsCatalogue({ kind, filters = {} }: {
   const columns = gridWidth >= 720 ? Math.max(3, Math.floor((gridWidth + 12) / 252)) : 2;
   const cardWidth = gridWidth > 0 ? (gridWidth - 12 * (columns - 1)) / columns : undefined;
   const ids = savedOnly ? savedIds.filter(id => !filters.ids || filters.ids.includes(id)) : filters.ids;
-  const query = useProducts({ ...filters, productKind: kind, search: search.trim(), limit: 24, offset: page * 24, ids });
+  const query = useProducts({ ...filters, productKind: kind, search: search.trim(), limit: PRODUCTS_PER_PAGE, offset: page * PRODUCTS_PER_PAGE, ids });
   const total = query.data?.total ?? 0;
   const items = query.data?.items ?? [];
   return <View style={{ gap: 16 }}>
@@ -45,15 +47,16 @@ function ProductsCatalogue({ kind, filters = {} }: {
     </Row> : null}
     {query.isPending ? <Card><Txt style={s.muted}>Loading catalogue…</Txt></Card> : query.error ?
       <Empty title="Catalogue unavailable" description={query.error.message} action={<Button secondary onPress={() => void query.refetch()}>Try again</Button>} /> : <>
-        <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{total} products</Txt>
-          <Row><Button secondary disabled={!page} onPress={() => setPage(page - 1)}>Previous</Button>
-            <Txt style={s.muted}>Page {page + 1} of {Math.max(1, Math.ceil(total / 24))}</Txt>
-            <Button secondary disabled={(page + 1) * 24 >= total} onPress={() => setPage(page + 1)}>Next</Button></Row>
-        </Row>
+        <Txt style={s.muted}>{total} products</Txt>
         {items.length ? <View onLayout={event => setGridWidth(event.nativeEvent.layout.width)} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
           {items.map(product => <View key={product.id} style={{ width: cardWidth ?? '48%' }}><ProductCard product={product} /></View>)}
         </View> : <Empty title="No products available" description={search || savedOnly ? 'Try another search or clear your filters.' : 'Published products will appear here once FTI adds them.'}
           action={search || savedOnly ? <Button secondary onPress={() => { setSearch(''); setSavedOnly(false); setPage(0); }}>Clear filters</Button> : undefined} />}
+        <Row style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Button secondary disabled={!page} onPress={() => setPage(page - 1)}>Previous</Button>
+          <Txt style={s.muted}>Page {page + 1} of {Math.max(1, Math.ceil(total / PRODUCTS_PER_PAGE))}</Txt>
+          <Button secondary disabled={(page + 1) * PRODUCTS_PER_PAGE >= total} onPress={() => setPage(page + 1)}>Next</Button>
+        </Row>
       </>}
   </View>;
 }
