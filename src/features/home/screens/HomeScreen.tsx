@@ -1,122 +1,157 @@
-import { View, Pressable } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
 import { MaterialPriceBanner } from '@features/pricing/ui';
-import {
-  Heading,
-  Card,
-  Section,
-  Txt,
-  Icon,
-  Row,
-  Button,
-  c,
-  s,
-} from '@shared/ui';
+import { Heading, Txt, Icon, c } from '@shared/ui';
+
+const shortcuts = [
+  { title: 'Market rates', icon: 'trending-up', path: '/rates' },
+  { title: 'Requests & quotations', icon: 'file-text', path: '/rfqs' },
+  { title: 'Orders & dispatch', icon: 'truck', path: '/orders' },
+  { title: 'Weight calculator', icon: 'cpu', path: '/calculator' },
+] as const;
+
 export function Home() {
   const { identity, session, ready, loading, error } = useAuth();
   const name = identity?.profile.full_name ?? '';
-  const business = identity?.businesses.find(
-    (item) => item.verification_status === 'verified',
-  ) ?? identity?.businesses[0];
+  const business =
+    identity?.businesses.find(
+      (item) => item.verification_status === 'verified',
+    ) ?? identity?.businesses[0];
   const accountResolved = ready && !loading && !error && !!identity;
-  const tools = [
-    {
-      title: 'Material catalogue',
-      description: 'Find materials and specifications',
-      icon: 'box' as const,
-      path: '/products',
-    },
-    {
-      title: 'Market rates',
-      description: 'View published supplier prices',
-      icon: 'trending-up' as const,
-      path: '/rates',
-    },
-    {
-      title: 'Weight calculator',
-      description: 'Calculate theoretical steel weight',
-      icon: 'cpu' as const,
-      path: '/calculator',
-    },
-    {
-      title: 'Requests & quotations',
-      description: 'Prepare your material requirements',
-      icon: 'file-text' as const,
-      path: '/rfqs',
-    },
-  ];
+  const accountTitle = business ? business.legal_name : 'Set up your business';
+  const accountDescription = business
+    ? business.verification_status === 'verified'
+      ? 'Verified business · View profile'
+      : business.verification_status === 'pending'
+        ? 'Application under review · View details'
+        : 'Application needs changes · Review feedback'
+    : 'Add your business details to get verified.';
+
   return (
     <View>
-      <MaterialPriceBanner />
       <Heading
-        eyebrow="YOUR INDUSTRIAL PROCUREMENT DESK"
         title={name ? 'Welcome, ' + name + '.' : 'Welcome to FTI.'}
-        description="Manage your materials, procurement, and deliveries in one workspace."
+        description="What would you like to do?"
       />
-      {accountResolved ? <Card
-        style={{
-          backgroundColor: c.dark,
-          borderColor: c.dark,
-          gap: 16,
-          marginBottom: 24,
-          padding: 26,
-        }}
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel="Browse materials"
+        onPress={() => router.push('/products')}
+        style={({ pressed }) => [styles.browse, pressed && styles.pressed]}
       >
-        <Icon name="briefcase" size={28} color="white" />
-        <Txt style={{ color: 'white', fontSize: 27, fontWeight: '700' }}>
-          {business ? business.legal_name : 'Everything your business needs to move forward.'}
-        </Txt>
-        <Txt style={{ color: '#B8C6D8', fontSize: 13, lineHeight: 22 }}>
-          {business
-            ? business.verification_status === 'verified'
-              ? 'Your business is verified. Explore materials, market rates, and your procurement activity.'
-              : business.verification_status === 'pending'
-                ? 'Your business application is under review. You can view your submitted details in your account.'
-                : 'Your business application needs changes. Open your account to review the feedback and update your details.'
-            : 'You are signed in. Complete your business details and addresses, then submit your application for verification.'}
-        </Txt>
-        <Button
-          onPress={() => router.push({ pathname: '/account', params: { section: business ? 'profile' : 'business' } })}
-          style={{ alignSelf: 'flex-start' }}
-        >
-          {business ? 'View business profile' : 'Set up business profile'}
-        </Button>
-      </Card> : !session && ready ? <Card style={{ gap: 16, marginBottom: 24 }}>
-        <Txt style={s.h2}>Sign in to your FTI account</Txt>
-        <Txt style={s.muted}>Sign in to manage your business profile and procurement activity.</Txt>
-        <Button onPress={() => router.push('/login')}>Sign in</Button>
-      </Card> : null}
-      <Section title="Your procurement tools" />
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 16,
-          marginBottom: 28,
-        }}
-      >
-        {tools.map((tool) => (
+        <Icon name="box" size={24} color="white" />
+        <View style={styles.label}>
+          <Txt style={styles.browseTitle}>Browse materials</Txt>
+          <Txt style={styles.browseDescription}>
+            Find materials and specifications
+          </Txt>
+        </View>
+        <Icon name="arrow-right" size={20} color="white" />
+      </Pressable>
+
+      <View style={styles.shortcuts}>
+        {shortcuts.map((item, index) => (
           <Pressable
-            key={tool.path}
-            accessibilityRole="button"
-            accessibilityLabel={tool.title}
-            onPress={() => router.push(tool.path as never)}
-            style={{ flexGrow: 1, flexBasis: 210 }}
+            key={item.path}
+            accessibilityRole="link"
+            accessibilityLabel={item.title}
+            onPress={() => router.push(item.path)}
+            style={({ pressed }) => [
+              styles.shortcut,
+              index > 0 && styles.divider,
+              pressed && styles.pressed,
+            ]}
           >
-            <Card style={{ gap: 18, height: 160 }}>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Icon name={tool.icon} color={c.red} />
-                <Icon name="arrow-up-right" size={16} />
-              </Row>
-              <Txt style={s.h2}>{tool.title}</Txt>
-              <Txt style={s.muted}>{tool.description}</Txt>
-            </Card>
+            <Icon name={item.icon} size={21} color={c.red} />
+            <Txt style={styles.shortcutTitle}>{item.title}</Txt>
+            <Icon name="chevron-right" size={18} />
           </Pressable>
         ))}
       </View>
+
+      {accountResolved || (!session && ready) ? (
+        <Pressable
+          accessibilityRole="link"
+          onPress={() =>
+            router.push(
+              accountResolved
+                ? {
+                    pathname: '/account',
+                    params: { section: business ? 'profile' : 'business' },
+                  }
+                : '/login',
+            )
+          }
+          accessibilityLabel={
+            accountResolved
+              ? `${accountTitle}. ${accountDescription}`
+              : 'Sign in to your FTI account'
+          }
+          style={({ pressed }) => [styles.account, pressed && styles.pressed]}
+        >
+          <Icon name={accountResolved ? 'briefcase' : 'user'} size={21} />
+          <View style={styles.label}>
+            <Txt style={styles.accountTitle}>
+              {accountResolved ? accountTitle : 'Sign in to your FTI account'}
+            </Txt>
+            <Txt style={styles.accountDescription}>
+              {accountResolved
+                ? accountDescription
+                : 'Manage your business and orders.'}
+            </Txt>
+          </View>
+          <Icon name="chevron-right" size={18} />
+        </Pressable>
+      ) : null}
+
+      <MaterialPriceBanner />
       <Announcements />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  browse: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    padding: 20,
+    minHeight: 96,
+    borderRadius: 12,
+    backgroundColor: c.red,
+    marginBottom: 16,
+  },
+  label: { flex: 1, minWidth: 0, gap: 5 },
+  browseTitle: { color: 'white', fontSize: 20, fontWeight: '700' },
+  browseDescription: { color: 'white', fontSize: 13, lineHeight: 20 },
+  shortcuts: {
+    borderWidth: 1,
+    borderColor: c.line,
+    borderRadius: 12,
+    backgroundColor: c.paper,
+    marginBottom: 16,
+  },
+  shortcut: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    minHeight: 64,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  divider: { borderTopWidth: 1, borderTopColor: c.line },
+  shortcutTitle: { flex: 1, fontSize: 15, lineHeight: 22, fontWeight: '600' },
+  account: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 72,
+    paddingVertical: 16,
+    marginBottom: 20,
+  },
+  accountTitle: { fontSize: 14, fontWeight: '600', lineHeight: 21 },
+  accountDescription: { color: '#526277', fontSize: 12, lineHeight: 19 },
+  pressed: { opacity: 0.7 },
+});
