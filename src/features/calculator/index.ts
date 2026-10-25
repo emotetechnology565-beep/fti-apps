@@ -1,1 +1,1 @@
-export { roundBarWeight } from './model/weight';
+export { roundBarWeight, squareBarWeight } from './model/weight';

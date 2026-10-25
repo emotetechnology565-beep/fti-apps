@@ -1,4 +1,4 @@
-import { roundBarWeight } from '@features/calculator';
+import { roundBarWeight, squareBarWeight } from '@features/calculator';
 import {
   Button,
   c,
@@ -24,13 +24,10 @@ export function Calculator() {
   const d = Number(diameter),
     l = Number(length),
     n = Number(pieces);
-  const round = roundBarWeight(d, l, n);
-  const weight =
-    round === null
-      ? null
-      : type === 'Square bar'
-        ? ((d * d) / 1e6) * l * 7850 * n
-        : round;
+  const square = type === 'Square bar';
+  const calculate = square ? squareBarWeight : roundBarWeight;
+  const perMetre = calculate(d, 1, 1);
+  const weight = calculate(d, l, n);
   return (
     <View>
       <Heading
@@ -79,6 +76,9 @@ export function Calculator() {
               padding: 30,
             }}
           >
+            {perMetre !== null ? <Txt style={{ color: '#ADC0D4', marginBottom: 12 }}>
+              Weight per metre: {perMetre.toLocaleString('en-IN', { maximumFractionDigits: 3 })} kg/m
+            </Txt> : null}
             <Txt style={{ fontSize: 10, color: '#ADC0D4', letterSpacing: 1.4 }}>
               THEORETICAL TOTAL WEIGHT
             </Txt>
@@ -116,10 +116,14 @@ export function Calculator() {
             <View style={s.divider} />
             <Txt style={{ fontSize: 12, fontWeight: '600' }}>Formula</Txt>
             <Txt style={{ ...s.muted, marginTop: 8 }}>
-              {type === 'Square bar'
-                ? 'Side² × length × density × pieces'
+              {square
+                ? 'Weight (kg/m) = S × S × 0.00785'
                 : 'π / 4 × diameter² × length × density × pieces'}
             </Txt>
+            {square ? <>
+              <Txt style={{ ...s.muted, marginTop: 8 }}>S is the side dimension in millimetres. Total weight (kg) = weight per metre × length (m) × pieces.</Txt>
+              <Txt style={{ ...s.muted, marginTop: 8 }}>Example: 50 × 50 mm = 19.625 kg/m. One 6-metre bar weighs approximately 117.75 kg.</Txt>
+            </> : null}
           </Card>
           <Button onPress={() => go('/products')} icon="arrow-right">
             Find your material
