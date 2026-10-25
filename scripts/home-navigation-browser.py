@@ -31,6 +31,10 @@ def api(route):
             result = identity
         elif op == 'fti_pricing_rates':
             result = {'items': [], 'total': 0, 'disclosure': ''}
+        elif op == 'fti_catalog_filtered_list':
+            result = {'items': [], 'total': 0, 'categories': [], 'grades': []}
+        elif op == 'fti_catalog_selection_options':
+            result = {'categories': [], 'category': None, 'sizes': [], 'options': []}
         result = {'data': result}
     route.fulfill(status=200, content_type='application/json', body=json.dumps(result), headers={'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'})
 
@@ -76,7 +80,7 @@ with sync_playwright() as p:
     page = context.new_page()
     page.on('pageerror', lambda error: errors.append(str(error)))
     for status in [None, 'pending', 'verified', 'rejected']:
-        identity['businesses'] = [] if status is None else [{'id': 'test-business', 'legal_name': 'Long business name for checking mobile wrapping and navigation', 'verification_status': status}]
+        identity['businesses'] = [] if status is None else [{'id': 'test-business', 'legal_name': 'Long business name for checking mobile wrapping and navigation', 'verification_status': status, 'customer_type': 'manufacturer', 'addresses': [], 'submitted_by': actor, 'revision': 1, 'review_note': None}]
         page.goto(BASE)
         page.wait_for_load_state('networkidle')
         expect(page.get_by_text('Welcome, Home tester.', exact=True)).to_be_visible()

@@ -7,7 +7,7 @@ import { parseNotificationPhones } from '../model/notification-recipients';
 
 type Recipient = { phone: string; label: string; enabled: boolean };
 type Delivery = { id: string; phone: string; template: string; status: string; error: string | null };
-type Request = { id: string; created_at: string; details: Record<string, string>; deliveries: Delivery[] };
+type Request = { id: string; created_at: string; details: Record<string, unknown>; deliveries: Delivery[] };
 export function RawMaterialAdmin() {
   const auth = useAuth();
   const currentPhone = auth.identity?.profile.phone ?? auth.session?.user.phone ?? '';
@@ -70,8 +70,9 @@ export function RawMaterialAdmin() {
     {orders.error ? <Txt accessibilityRole="alert">{orders.error.message}</Txt> : null}
     {orders.data?.length === 0 ? <Txt>No order requests.</Txt> : null}
     {orders.data?.map(order => <Card key={order.id} style={{ gap: 8 }}>
-      <Txt style={s.h2}>{order.details.reference}</Txt><Txt>{new Date(order.created_at).toLocaleString()}</Txt>
-      {Object.entries(order.details).filter(([key]) => key !== 'reference').map(([key, value]) => <Txt key={key}>{key}: {value}</Txt>)}
+      <Txt style={s.h2}>{String(order.details.reference ?? '')}</Txt><Txt>{new Date(order.created_at).toLocaleString()}</Txt>
+      {Object.entries(order.details).filter(([key]) => !['reference', 'manual_input'].includes(key)).map(([key, value]) =>
+        <Txt key={key}>{key.replaceAll('_', ' ')}: {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '')}</Txt>)}
       {(order.deliveries ?? []).map(delivery => <Card key={delivery.id} style={{ gap: 8 }}>
         <Txt>{delivery.phone} — {delivery.template.includes('admin') ? 'Admin notification' : 'Buyer acknowledgment'}: {delivery.status}</Txt>
         {delivery.error ? <Txt>{delivery.error}</Txt> : null}

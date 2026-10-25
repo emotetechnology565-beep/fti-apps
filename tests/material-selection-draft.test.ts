@@ -6,14 +6,43 @@ import { emptySelection } from '../src/features/catalog/model/material-selection
 function setup() {
   const memory = new Map<string, string>();
   let now = 1000;
-  const store = createSelectionDraftStorage({ getItem: async key => memory.get(key) ?? null, setItem: async (key, value) => { memory.set(key, value); }, removeItem: async key => { memory.delete(key); } }, () => now);
-  return { store, memory, advance: (ms: number) => { now += ms; } };
+  const store = createSelectionDraftStorage(
+    {
+      getItem: async (key) => memory.get(key) ?? null,
+      setItem: async (key, value) => {
+        memory.set(key, value);
+      },
+      removeItem: async (key) => {
+        memory.delete(key);
+      },
+    },
+    () => now,
+  );
+  return {
+    store,
+    memory,
+    advance: (ms: number) => {
+      now += ms;
+    },
+  };
 }
-const draft = { ...emptySelection(), category: 'sheet', sizeId: 'size', grade: 'MS', optionId: 'option', quantity: '1.5', review: true };
+const draft = {
+  ...emptySelection(),
+  category: 'sheet',
+  sizeId: 'size',
+  grade: 'MS',
+  optionId: 'option',
+  quantity: '1.5',
+  review: true,
+};
 
 test('selection drafts stay isolated by user, and no private form fields are serialized', async () => {
   const { store, memory } = setup();
-  await store.save('buyer-a', { ...draft, buyerName: 'Private', location: 'Private' } as typeof draft);
+  await store.save('buyer-a', {
+    ...draft,
+    buyerName: 'Private',
+    location: 'Private',
+  } as typeof draft);
   assert.deepEqual(await store.load('buyer-a'), draft);
   assert.deepEqual(await store.load('buyer-b'), emptySelection());
   assert.deepEqual(await store.load(null), emptySelection());
@@ -48,4 +77,23 @@ test('queued saves do not resurrect a cleared submitted draft', async () => {
   const { store } = setup();
   await Promise.all([store.save('buyer-a', draft), store.clear('buyer-a')]);
   assert.deepEqual(await store.load('buyer-a'), emptySelection());
+});
+
+test('inline manual size and grade modes survive handoff independently', async () => {
+  const { store } = setup();
+  const manualSize = {
+    ...draft,
+    sizeId: '__manual__',
+    manual: { material: '', size: '15mm', grade: '', uom: 'MT' as const },
+  };
+  await store.prepareLogin(manualSize);
+  assert.deepEqual(await store.load('buyer-a'), manualSize);
+  const manualGrade = {
+    ...manualSize,
+    sizeId: 'listed-size',
+    grade: 'CUSTOM',
+    manual: { ...manualSize.manual, gradeEntry: true },
+  };
+  await store.save('buyer-a', manualGrade);
+  assert.deepEqual(await store.load('buyer-a'), manualGrade);
 });

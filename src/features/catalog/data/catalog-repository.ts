@@ -2,6 +2,7 @@ import { supabase } from '@core/api/supabase-client';
 import type { CatalogImage, CatalogPage, Category, Product, Variant } from '../model/types';
 import type { GradeSheet } from '../model/grade-sheet';
 import type { SelectionOptions } from '../model/material-selection';
+import type { ManualPreview, ManualRequest } from '../model/manual-material';
 
 export type CatalogQuery = {
   search?: string;
@@ -89,6 +90,7 @@ async function catalogRpc<T>(operation: string, args: Record<string, unknown> = 
 }
 
 const rawMaterialOperations = new Set([
+  'fti_catalog_manual_preview', 'fti_catalog_manual_request_submit',
   'fti_catalog_selection_options', 'fti_catalog_selection_request_submit',
   'fti_catalog_selection_admin', 'fti_catalog_selection_spec_save', 'fti_catalog_selection_size_save', 'fti_catalog_selection_option_save',
   'fti_catalog_raw_order_submit', 'fti_catalog_raw_orders', 'fti_catalog_raw_recipients',
@@ -97,6 +99,10 @@ const rawMaterialOperations = new Set([
 
 export const catalogApi = {
   rpc: catalogRpc,
+  manualPreview: (material: string, size: string, grade: string, productId?: string) =>
+    catalogRpc<ManualPreview>('fti_catalog_manual_preview', { p_material: material, p_size: size, p_grade: grade, p_product: productId || null }),
+  submitManual: (id: string, request: ManualRequest, quantity: string, buyer: Record<string, unknown>) =>
+    catalogRpc<{ id: string; reference: string; replayed: boolean }>('fti_catalog_manual_request_submit', { p_id: id, p_request: request, p_quantity: quantity, p_buyer: buyer }),
   selectionOptions: (category?: string, sizeId?: string, productId?: string) => catalogRpc<SelectionOptions>('fti_catalog_selection_options', {
     p_category: category || null, p_size_id: sizeId || null, p_product: productId || null,
   }),

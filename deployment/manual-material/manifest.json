@@ -1,0 +1,7 @@
+{
+  "01_manual_material_requests.sql": "13015a3e20c0c2295d4bccc456d7745f931d731b801ddd38a331109b5cf2f5cf",
+  "02_supabase_queues.sql": "3288744f792306ccbf56386612cb845b80a439d89e96cb452cad2dfce08070eb",
+  "03_catalog.ts": "3e8c41d93e3fda8cec8164cc007b72a258e869fe820c1e5f8a40856bd0d51f7a",
+  "README.md": "f32b04cea98bf1c746961fef9fa8c7c9b928caa8ba57aa33bbd1fe8d0f762ad4",
+  "04_verify.sql": "fd6644953b08fcb5b94c953fc8fa427f85f3a08b4d55979b1e049af1dc703bd5"
+}

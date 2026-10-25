@@ -2,6 +2,7 @@
 import base64
 import copy
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -108,7 +109,7 @@ def run(context, width):
             choose('Category', 'Raw Materials')
             choose('Raw material category', name)
             return
-        page.get_by_role('button', name=label + ':', exact=False).click()
+        page.get_by_role('button', name=re.compile('^' + re.escape(label) + ':')).click()
         page.get_by_role('radio', name=name, exact=True).click()
         expect(page.get_by_role('button', name='Close filter', exact=True)).to_have_count(0)
 
@@ -140,7 +141,7 @@ def run(context, width):
     expect(page.get_by_role('textbox', name='Buyer name', exact=True)).to_have_value('Test Buyer')
     page.get_by_role('textbox', name='Business / buyer type', exact=True).fill('Test Engineering')
     page.get_by_role('textbox', name='Delivery location (up to 100 characters)', exact=True).fill('Pune, Maharashtra 411001')
-    page.get_by_text('Send me WhatsApp updates for this request', exact=True).click()
+    page.get_by_role('button', name='Send me WhatsApp updates for this request', exact=True).click()
     page.screenshot(path=f'artifacts/material-selection-review-{width}.png', full_page=True)
     page.get_by_role('button', name='Submit request', exact=True).click()
     expect(page.get_by_role('button', name='Retry request', exact=True)).to_be_visible()
@@ -159,7 +160,7 @@ def run(context, width):
     choose('Grade', 'MS')
     page.get_by_role('textbox', name='Quantity (kg, minimum 10)', exact=True).fill('10')
     page.get_by_role('button', name='Review request', exact=True).click()
-    page.get_by_text('Send me WhatsApp updates for this request', exact=True).click()
+    page.get_by_role('button', name='Send me WhatsApp updates for this request', exact=True).click()
     failure['mode'] = 'validation'
     page.get_by_role('button', name='Submit request', exact=True).click()
     expect(page.get_by_text('Availability changed. Please review your selection.', exact=True)).to_be_visible()

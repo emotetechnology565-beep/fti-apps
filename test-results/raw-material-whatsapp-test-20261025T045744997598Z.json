@@ -1,0 +1,18 @@
+{
+  "mode": "direct provider test; Supabase Queue not exercised",
+  "recipient_last_four": "2951",
+  "template": "fti_raw_material_received_v1",
+  "reference": "TEST-FTI-RM-20261025T045744997598Z",
+  "status": "accepted",
+  "parameters": [
+    "TEST recipient",
+    "TEST-FTI-RM-20261025T045744997598Z",
+    "TEST Round bar",
+    "15 mm",
+    "EN-8D",
+    "TEST 1 MT"
+  ],
+  "provider_message_id": "wamid.HBgMOTE2Mzk4NzkyOTUxFQIAERgSM0YwNTQ1RjEwNkY2RTJBRDkzAA==",
+  "provider_status": "accepted",
+  "delivery_confirmed": false
+}

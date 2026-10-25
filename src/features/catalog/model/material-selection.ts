@@ -11,6 +11,7 @@ export type SelectionOptions = {
 };
 export type SelectionDraft = {
   category: string; sizeId: string; grade: string; optionId: string; quantity: string; review: boolean; productId: string;
+  manual?: { material: string; size: string; grade: string; uom: Variant['uom']; gradeEntry?: boolean };
 };
 export const emptySelection = (): SelectionDraft => ({ category: '', sizeId: '', grade: '', optionId: '', quantity: '', review: false, productId: '' });
 
