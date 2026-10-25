@@ -35,14 +35,14 @@ function ProductsCatalogue({ kind, filters = {} }: {
   const total = query.data?.total ?? 0;
   const items = query.data?.items ?? [];
   return <View style={{ gap: 16 }}>
-    <Row style={{ flexWrap: 'wrap' }}>
+    {kind !== 'steel' ? <Row style={{ flexWrap: 'wrap' }}>
       {kind !== 'steel' ? <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>
         <Icon name="search" size={17} />
         <TextInput accessibilityLabel="Search catalogue" placeholder={kind === 'fastener' ? 'Search fasteners' : 'Search tractor parts'}
           value={search} onChangeText={value => { setSearch(value); setPage(0); }} returnKeyType="search" style={{ height: 48, flex: 1, fontSize: 13, color: c.ink }} />
       </Row> : null}
       <Chip selected={savedOnly} onPress={() => { setSavedOnly(!savedOnly); setPage(0); }}>Saved materials</Chip>
-    </Row>
+    </Row> : null}
     {query.isPending ? <Card><Txt style={s.muted}>Loading catalogue…</Txt></Card> : query.error ?
       <Empty title="Catalogue unavailable" description={query.error.message} action={<Button secondary onPress={() => void query.refetch()}>Try again</Button>} /> : <>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}><Txt style={s.muted}>{total} products</Txt>
