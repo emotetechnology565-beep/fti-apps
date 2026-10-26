@@ -1,3 +1,4 @@
+import { FastenerPrice } from './FastenerPrice';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, CatalogFilter, Field, Txt, s } from '@shared/ui';
@@ -25,13 +26,18 @@ function WeightResult({
   matches,
   quantity,
   setQuantity,
+  priceKind,
+  boltMatches,
 }: {
+  priceKind?: 'bolt' | 'nut' | 'assembly';
+  boltMatches?: WeightRow[];
   matches: WeightRow[];
   quantity: string;
   setQuantity: (value: string) => void;
 }) {
   const amount = weightQuantity(quantity);
   const result = calculateWeight(matches, amount);
+  const bolt = calculateWeight(boltMatches ?? [], amount);
   if (!matches.length)
     return (
       <Txt style={s.muted}>Weight available on request for this size.</Txt>
@@ -61,6 +67,25 @@ function WeightResult({
           <Txt style={s.h2}>
             Approximate total weight: {formatKg(result.total)} kg
           </Txt>
+          {priceKind && result ? (
+            priceKind === 'assembly' ? (
+              bolt && result.total > bolt.total ? (
+                <FastenerPrice
+                  boltKg={bolt.total}
+                  nutKg={result.total - bolt.total}
+                />
+              ) : (
+                <Txt>
+                  Separate bolt and nut weights are required for pricing.
+                </Txt>
+              )
+            ) : (
+              <FastenerPrice
+                boltKg={priceKind === 'bolt' ? result.total : 0}
+                nutKg={priceKind === 'nut' ? result.total : 0}
+              />
+            )
+          ) : null}
           <Txt style={s.muted}>
             Estimated weight; confirm final weight with FTI.
           </Txt>
@@ -86,6 +111,15 @@ export function DrawingWeight({
     queryKey: ['fastener-weight', target],
     queryFn: () => lookupDrawingWeight(target!),
     enabled: target !== null,
+    staleTime: 30000,
+    retry: 1,
+  });
+  const boltTarget =
+    assembly === 'with' ? drawingWeightTarget(definition, length, false) : null;
+  const boltQuery = useQuery({
+    queryKey: ['fastener-weight', boltTarget],
+    queryFn: () => lookupDrawingWeight(boltTarget!),
+    enabled: !!boltTarget,
     staleTime: 30000,
     retry: 1,
   });
@@ -117,6 +151,14 @@ export function DrawingWeight({
             </>
           ) : (
             <WeightResult
+              priceKind={
+                ['hex-nut', 'lock-nut'].includes(definition.shape)
+                  ? 'nut'
+                  : assembly === 'with'
+                    ? 'assembly'
+                    : 'bolt'
+              }
+              boltMatches={boltQuery.isError ? [] : boltQuery.data}
               matches={query.data ?? []}
               quantity={quantity}
               setQuantity={setQuantity}
@@ -199,6 +241,7 @@ export function CategoryWeight({ category }: { category: string }) {
           ) : null}
           {selectedSize ? (
             <WeightResult
+              priceKind={category.endsWith('nut') ? 'nut' : undefined}
               matches={rows.filter(
                 (row) =>
                   row.column_label === selectedColumn &&

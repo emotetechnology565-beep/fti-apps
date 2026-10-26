@@ -1,3 +1,4 @@
+import { GradeRatesAdmin } from '../components/GradeRatesAdmin';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -85,6 +86,7 @@ export function DimensionAdmin({ subcategory }: { subcategory?: string } = {}) {
     );
   return (
     <View style={{ gap: 16 }}>
+      <GradeRatesAdmin />
       <FastenerPhotoAdmin initialSubcategory={subcategory} />
       <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>Fastener dimensions</Txt>
