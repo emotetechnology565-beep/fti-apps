@@ -1,0 +1,215 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Button, Card, CatalogFilter, Field, Txt, s } from '@shared/ui';
+import type { DrawingDefinition } from '../model/types';
+import {
+  calculateWeight,
+  categoryWeightChart,
+  categoryWeightColumn,
+  drawingWeightTarget,
+  weightQuantity,
+  type WeightRow,
+} from '../model/weight';
+import {
+  listCategoryWeights,
+  lookupDrawingWeight,
+} from '../services/weight-api';
+
+const formatKg = (kg: number) =>
+  kg.toLocaleString('en-IN', { maximumFractionDigits: 6 });
+const options = (items: string[]) =>
+  [...new Set(items)]
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    .map((value) => ({ value, label: value }));
+function WeightResult({
+  matches,
+  quantity,
+  setQuantity,
+}: {
+  matches: WeightRow[];
+  quantity: string;
+  setQuantity: (value: string) => void;
+}) {
+  const amount = weightQuantity(quantity);
+  const result = calculateWeight(matches, amount);
+  if (!matches.length)
+    return (
+      <Txt style={s.muted}>Weight available on request for this size.</Txt>
+    );
+  if (matches.length !== 1)
+    return (
+      <Txt style={s.muted}>
+        Multiple weights match this selection. Contact FTI to confirm.
+      </Txt>
+    );
+  return (
+    <>
+      <Field
+        label="Quantity (pieces)"
+        numeric
+        value={quantity}
+        onChangeText={setQuantity}
+      />
+      {amount === null ? (
+        <Txt accessibilityRole="alert">
+          Enter a whole number from 1 to 1,000,000.
+        </Txt>
+      ) : null}
+      {result ? (
+        <>
+          <Txt>Weight per piece: {formatKg(result.each)} kg</Txt>
+          <Txt style={s.h2}>
+            Approximate total weight: {formatKg(result.total)} kg
+          </Txt>
+          <Txt style={s.muted}>
+            Estimated weight; confirm final weight with FTI.
+          </Txt>
+        </>
+      ) : amount !== null ? (
+        <Txt style={s.muted}>Weight available on request.</Txt>
+      ) : null}
+    </>
+  );
+}
+
+export function DrawingWeight({
+  definition,
+  length,
+}: {
+  definition: DrawingDefinition;
+  length: number;
+}) {
+  const [assembly, setAssembly] = useState('without');
+  const [quantity, setQuantity] = useState('1');
+  const target = drawingWeightTarget(definition, length, assembly === 'with');
+  const query = useQuery({
+    queryKey: ['fastener-weight', target],
+    queryFn: () => lookupDrawingWeight(target!),
+    enabled: target !== null,
+    staleTime: 30000,
+    retry: 1,
+  });
+  return (
+    <Card style={{ gap: 12 }}>
+      <Txt style={s.h2}>Approximate weight</Txt>
+      {target ? (
+        <>
+          {['hex-bolt', 'hex-screw'].includes(definition.shape) ? (
+            <CatalogFilter
+              label="Bolt supply"
+              value={assembly}
+              onChange={setAssembly}
+              options={[
+                { value: 'without', label: 'Without nut' },
+                { value: 'with', label: 'With nut' },
+              ]}
+            />
+          ) : null}
+          <Txt style={s.muted}>{target.description}</Txt>
+          {query.isPending ? (
+            <Txt>Loading weight...</Txt>
+          ) : query.isError ? (
+            <>
+              <Txt>Weight lookup is temporarily unavailable.</Txt>
+              <Button secondary onPress={() => void query.refetch()}>
+                Retry weight lookup
+              </Button>
+            </>
+          ) : (
+            <WeightResult
+              matches={query.data ?? []}
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
+          )}
+        </>
+      ) : (
+        <Txt style={s.muted}>
+          Weight available on request for this standard and size.
+        </Txt>
+      )}
+    </Card>
+  );
+}
+
+export function CategoryWeight({ category }: { category: string }) {
+  const chart = categoryWeightChart(category);
+  const [column, setColumn] = useState('');
+  const [size, setSize] = useState('');
+  const [quantity, setQuantity] = useState('1');
+  const query = useQuery({
+    queryKey: ['fastener-category-weights', chart],
+    queryFn: ({ signal }) => listCategoryWeights(chart!, signal),
+    enabled: !!chart,
+    staleTime: 30000,
+    retry: 1,
+  });
+  const rows = (query.data ?? []).filter((row) =>
+    categoryWeightColumn(category, row.column_label),
+  );
+  const specs = options(rows.map((row) => row.column_label));
+  const selectedColumn =
+    specs.length === 1
+      ? specs[0].value
+      : specs.some((item) => item.value === column)
+        ? column
+        : '';
+  const sizes = options(
+    rows
+      .filter((row) => row.column_label === selectedColumn)
+      .map((row) => row.row_label),
+  );
+  const selectedSize = sizes.some((item) => item.value === size) ? size : '';
+  return (
+    <Card style={{ gap: 12 }}>
+      <Txt style={s.h2}>Approximate weight</Txt>
+      {!chart ? (
+        <Txt style={s.muted}>
+          Weight available on request for this fastener.
+        </Txt>
+      ) : query.isPending ? (
+        <Txt>Loading available sizes...</Txt>
+      ) : query.isError ? (
+        <>
+          <Txt>Weight lookup is temporarily unavailable.</Txt>
+          <Button secondary onPress={() => void query.refetch()}>
+            Retry weight lookup
+          </Button>
+        </>
+      ) : !rows.length ? (
+        <Txt style={s.muted}>Weight available on request.</Txt>
+      ) : (
+        <>
+          <CatalogFilter
+            label="Weight specification"
+            value={selectedColumn}
+            options={[{ value: '', label: 'Choose specification' }, ...specs]}
+            onChange={(value) => {
+              setColumn(value);
+              setSize('');
+            }}
+          />
+          {selectedColumn ? (
+            <CatalogFilter
+              label="Weight size"
+              value={selectedSize}
+              options={[{ value: '', label: 'Choose size' }, ...sizes]}
+              onChange={setSize}
+            />
+          ) : null}
+          {selectedSize ? (
+            <WeightResult
+              matches={rows.filter(
+                (row) =>
+                  row.column_label === selectedColumn &&
+                  row.row_label === selectedSize,
+              )}
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
+          ) : null}
+        </>
+      )}
+    </Card>
+  );
+}

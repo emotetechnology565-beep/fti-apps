@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button, Card, CatalogFilter, Empty, Field, Txt, s } from '@shared/ui';
 import { drawingApi } from '../services/drawing-api';
 import { DrawingPreview } from '../components/DrawingPreview';
+import { CategoryWeight, DrawingWeight } from '../components/FastenerWeight';
 import { DimensionSelect } from '../components/DimensionSelect';
 import { FastenerPhotoCards } from '../components/FastenerPhotoCards';
 import {
@@ -245,6 +246,9 @@ export function FastenerDimensions({
           ) : null}
         </>
       </Card>
+      {subcategory && !hasPublishedType ? (
+        <CategoryWeight key={subcategory} category={subcategory} />
+      ) : null}
       {selected ? (
         <ConfiguredDrawing
           key={`${selected.id}:${selected.revision}`}
@@ -380,6 +384,11 @@ export function ConfiguredDrawing({
       {length ? (
         <>
           <DrawingPreview definition={definition} input={input} />
+          <DrawingWeight
+            key={`${definition.id}:${definition.revision}`}
+            definition={definition}
+            length={input.length}
+          />
           <Card style={{ gap: 10 }}>
             <Txt style={s.h2}>Dimensions</Txt>
             <View
