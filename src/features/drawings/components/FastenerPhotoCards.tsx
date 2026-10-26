@@ -47,7 +47,9 @@ export function FastenerPhotoCards({
   if (!cards.length) return null;
   return (
     <View style={{ gap: 12, marginBottom: 18 }}>
-      {!onlySelected ? <Txt style={s.h2}>Browse fasteners</Txt> : null}
+      {!onlySelected ? (
+        <Txt style={s.muted}>{cards.length} fasteners</Txt>
+      ) : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
         {cards.map((card) => (
           <Pressable
@@ -58,7 +60,7 @@ export function FastenerPhotoCards({
             onPress={() => onSelect(card.slug)}
             style={{
               width: '47%',
-              maxWidth: 250,
+              maxWidth: 225,
               borderWidth: selected === card.slug ? 2 : 1,
               borderColor: selected === card.slug ? c.red : c.line,
               borderRadius: 8,
@@ -66,13 +68,24 @@ export function FastenerPhotoCards({
               backgroundColor: 'white',
             }}
           >
+            <View style={{ height: 4, flexDirection: 'row' }}>
+              <View style={{ flex: 1, backgroundColor: c.red }} />
+              <View style={{ flex: 2, backgroundColor: '#075299' }} />
+            </View>
             <Image
               source={{ uri: card.image_url! }}
               style={{ width: '100%', height: 155 }}
               contentFit="contain"
               accessibilityLabel={`${subcategoryLabel(card.slug)} product photo`}
             />
-            <Txt style={{ padding: 12, color: c.ink, fontWeight: '700' }}>
+            <Txt
+              style={{
+                padding: 12,
+                color: '#075299',
+                backgroundColor: '#e6f2ff',
+                fontWeight: '700',
+              }}
+            >
               {subcategoryLabel(card.slug)}
             </Txt>
           </Pressable>

@@ -112,6 +112,35 @@ export function FastenerDimensions({
   const rows = standardRows.filter((row) => row.shape === selectedShape);
   const selected =
     rows.length === 1 ? rows[0] : rows.find((row) => row.id === id);
+  if (!subcategory) {
+    const openFastener = (slug: string) => {
+      if (slug) router.push({ pathname: '/fastener/[slug]', params: { slug } });
+    };
+    return (
+      <View style={{ gap: 20 }}>
+        <CatalogFilter
+          label="Fastener subcategory"
+          value=""
+          options={[{ value: '', label: 'Choose fastener' }, ...types]}
+          onChange={openFastener}
+        />
+        <Txt style={s.muted}>
+          Choose a fastener to view available standards, sizes and drawings.
+        </Txt>
+        <Field
+          label="Search fasteners"
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search by name, e.g. L type bolt or U type"
+        />
+        <FastenerPhotoCards
+          selected=""
+          search={search}
+          onSelect={openFastener}
+        />
+      </View>
+    );
+  }
   return (
     <View style={{ gap: 16 }}>
       <Card>
