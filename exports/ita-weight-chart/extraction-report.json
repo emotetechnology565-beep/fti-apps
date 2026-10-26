@@ -1,0 +1,10 @@
+{
+  "workbook": "D:\\fti\\fti-app\\exports\\ita-weight-chart\\ITA_Fasteners_Weight_Charts.xlsx",
+  "charts": 26,
+  "worksheets": 29,
+  "data_rows": 626,
+  "value_cells": 4925,
+  "source_cells": 9115,
+  "source": "https://itafasteners.com/weight-chart.php",
+  "verified": "Workbook reopened; every original table token retained; no formulas introduced."
+}
