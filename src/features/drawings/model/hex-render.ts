@@ -13,12 +13,20 @@ export function hexThreadLength(definition: DrawingDefinition, length: number) {
       throw new Error('Length must exceed the unthreaded allowance.');
     return length - allowance;
   }
-  if (definition.standard !== 'IS 1363' || definition.edition !== '1967')
+  if (!(
+    (definition.standard === 'IS 1363' &&
+      ['1967', '1992'].includes(definition.edition)) ||
+    (definition.standard === 'IS 1364' &&
+      ['1967', '1992'].includes(definition.edition))
+  ))
     throw new Error(
       'A thread-length rule must be configured for this standard edition.',
     );
   const extra =
-    length <= 130
+    length <=
+    (definition.standard === 'IS 1364' || definition.edition === '1992'
+      ? 125
+      : 130)
       ? d.thread_add_short
       : length <= 200
         ? d.thread_add_medium

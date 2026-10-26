@@ -125,7 +125,9 @@ function boltViews(
     151,
     end - 1,
     cy - shaft / 2 + 2,
-    'Chamfered or sheared end',
+    definition.standard === 'IS 1364'
+      ? 'Chamfered end'
+      : 'Chamfered or sheared end',
   );
   body += `<g data-view="washer-face-option">${sideHead(110, 425, Math.min(Math.max(k, 15), 26), Math.min(Math.max(flats, 38), 54), true)}${center(98, 425, 110 + Math.min(Math.max(k, 15), 26) + 12, 425)}${label(130, 471, 'Washer face permissible', 'text-anchor="middle" class="caption"')}</g>`;
   body += label(

@@ -65,3 +65,12 @@ No. 14 retains the printed nominal head thickness 4.00 and limits 4.38–4.62; t
 The database tests use disposable PGlite databases and real identity/catalogue SQL. The browser tests use source-transcribed fixtures; they do not prove hosted deployment.
 
 Generate dashboard copies and SHA-256 manifest using `node scripts/prepare-fastener-dimensions.mjs` after source changes. Canonical backend source is in `supabase/`; edit source rather than generated copies.
+
+## IS 1363:1992 Table 3
+Run `16_hex_1992_table_publish.sql` to directly publish 60 entries (15 each: hex bolts, hex screws, hex nuts, lock nuts; M5?M36). Includes hex validator repair; existing dimension library migrations are required. Re-running preserves manual edits and does not duplicate entries. Existing 1967 rows remain separate. Deploy the app update for the edition-specific 125 mm bolt thread cutoff before using the 1992 edition. Values are transcribed as printed, including unusual M18 major diameters, M22 across-corners and M36 bore limits; not silently corrected. No prices or photos are changed.
+
+## IS 1364:1967 Table 4
+Run `17_hex_1364_table_publish.sql` for direct publication of 60 entries, M6?M39: 15 each of hex bolts, screws, nuts and lock nuts. Existing IS 1363 editions remain separate. Hex bolt and Hex nut categories are reused. Includes validator repair; requires the existing dimension library migrations. Repeat-safe and preserves manual edits. Deploy the app update to enable the IS 1364 bolt thread rule (130 mm cutoff). External/internal thread classes are 6g/6H; dimensions are from the supplied table, not copied from IS 1363. No price or photo changes.
+
+## IS 1364:1992 Table 5
+Run `18_hex_1364_1992_table_publish.sql` for direct publication of 52 entries (M1.6?M16, four mapped shapes); the supplied page continues onto another table for larger sizes, so M24+ are not included in this page import. Uses existing Hex bolt and Hex nut categories. Hex bolt/screw thread rules follow Table 5 allowances, including per-size screw b1 offsets. Thin lock nut m1 thickness is separate. The unchamfered thin-nut variation is not represented as a separate shape. Repeat-safe and preserves manual edits. Requires app update for IS 1364:1992 thread cutoff.

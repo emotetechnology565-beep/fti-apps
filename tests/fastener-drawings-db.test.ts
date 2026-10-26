@@ -29,6 +29,60 @@ const hexSource = JSON.parse(
   ),
 ) as DrawingDefinition[];
 
+test('IS 1364 precision table renders all sizes with separate limits', () => {
+  const rows = JSON.parse(
+    readFileSync(
+      'deployment/fastener-dimensions/hex-1364-source-definitions.json',
+      'utf8',
+    ),
+  ) as DrawingDefinition[];
+  assert.equal(rows.length, 60);
+  for (const row of rows) {
+    definitionSchema.parse(row);
+    const svg = drawingSvg(row, { length: 120 });
+    assert.doesNotMatch(svg, /NaN|Infinity|undefined/);
+    assert.match(svg, /IS 1364:1967/);
+  }
+  const bolt = rows.find(
+    (row) => row.shape === 'hex-bolt' && row.size === 'M6',
+  )!;
+  assert.equal(bolt.dimensions.diameter_min, 5.794);
+  assert.deepEqual(
+    [130, 131, 200, 201].map((length) => hexThreadLength(bolt, length)),
+    [18, 24, 24, 37],
+  );
+  const screw = rows.find(
+    (row) => row.shape === 'hex-screw' && row.size === 'M39',
+  )!;
+  assert.equal(hexThreadLength(screw, 120), 106);
+});
+
+test('1992 table retains its own limits and 125 mm thread boundary', () => {
+  const rows = JSON.parse(
+    readFileSync(
+      'deployment/fastener-dimensions/hex-1992-source-definitions.json',
+      'utf8',
+    ),
+  ) as DrawingDefinition[];
+  assert.equal(rows.length, 60);
+  for (const row of rows) {
+    definitionSchema.parse(row);
+    assert.doesNotMatch(
+      drawingSvg(row, { length: 120 }),
+      /NaN|Infinity|undefined/,
+    );
+  }
+  const bolt = rows.find(
+    (row) => row.shape === 'hex-bolt' && row.size === 'M10',
+  )!;
+  assert.equal(bolt.dimensions.head_width, 16);
+  assert.deepEqual(
+    [125, 126, 200, 201].map((length) => hexThreadLength(bolt, length)),
+    [26, 32, 32, 45],
+  );
+  assert.equal(rows.filter((row) => row.shape === 'hex-screw').length, 15);
+});
+
 test('hex table covers the printed size ranges and thread rule boundaries', () => {
   assert.equal(hexSource.length, 55);
   for (const row of hexSource) {
@@ -685,6 +739,42 @@ test('dimension database guards MFA, draft privacy, atomic publication, withdraw
         [hexBolt.id],
       ),
       2,
+    );
+    const import1992 = readFileSync(
+      'deployment/fastener-dimensions/16_hex_1992_table_publish.sql',
+      'utf8',
+    );
+    await db.exec(import1992);
+    await db.exec(import1992);
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where edition='1992' and published_revision=revision and published_data is not null",
+      ),
+      60,
+    );
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where edition='1967' and family='hex'",
+      ),
+      55,
+    );
+    const import1364 = readFileSync(
+      'deployment/fastener-dimensions/17_hex_1364_table_publish.sql',
+      'utf8',
+    );
+    await db.exec(import1364);
+    await db.exec(import1364);
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where standard='IS 1364' and published_revision=revision and published_data is not null",
+      ),
+      60,
+    );
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where standard='IS 1363' and family='hex'",
+      ),
+      115,
     );
   } finally {
     await db.close();

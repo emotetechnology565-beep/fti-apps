@@ -64,6 +64,30 @@
     "sha256": "f6e402bd7f27b9daac486b671c693582435a233176db709eb0f08561a31d08bd"
   },
   {
+    "file": "16_hex_1992_table_publish.sql",
+    "sha256": "e8ad0e9f94bb076285feb5539895abc874e72fbb0c50bd255db0d20be7ebde61"
+  },
+  {
+    "file": "hex-1992-source-definitions.json",
+    "sha256": "9962a321a9e53926212fc1588e6af30310991271255296abe392696865a7bad2"
+  },
+  {
+    "file": "17_hex_1364_table_publish.sql",
+    "sha256": "78104016172529ab4cf0165afa880155557e3e248861fff8a5c3490c844bbc86"
+  },
+  {
+    "file": "hex-1364-source-definitions.json",
+    "sha256": "6960a4b9483eed84d98b03e981301cf08ba4ddf63759f959d6cf1e9153772ee1"
+  },
+  {
+    "file": "18_hex_1364_1992_table_publish.sql",
+    "sha256": "fa7bd2382eaf5bfb831ac438d5998365d75bb7cb40ceeca15d1b09ba0bd8bb10"
+  },
+  {
+    "file": "hex-1364-1992-source-definitions.json",
+    "sha256": "c0eceb7c5063a1d5f42d095d66facfc90017d1eff08ab8a57e9b7c35be66ec31"
+  },
+  {
     "file": "hex-source-definitions.json",
     "sha256": "124b3bb23f4d355cde69b6b8acce9f935e845eb7e8e9ea6ee8c87959b48d0a0b"
   },
