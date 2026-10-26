@@ -44,6 +44,19 @@ test('hex table covers the printed size ranges and thread rule boundaries', () =
   const bolt = hexSource.find(
     (row) => row.shape === 'hex-bolt' && row.size === 'M6',
   )!;
+  const boltView = drawingSvg(bolt, { length: 120 });
+  for (const view of ['end', 'side', 'washer-face-option'])
+    assert.match(boltView, new RegExp(`data-view="${view}"`));
+  for (const dimension of ['L', 'b', 'k', 'd', 's', 'e'])
+    assert.match(boltView, new RegExp(`data-dimension="${dimension}"`));
+  assert.match(boltView, /thread-convention/);
+  const nutView = drawingSvg(
+    hexSource.find((row) => row.shape === 'hex-nut')!,
+    { length: 0 },
+  );
+  for (const view of ['alternate-side', 'full-bearing-side', 'end'])
+    assert.match(nutView, new RegExp(`data-view="${view}"`));
+  assert.match(nutView, /fill="url\(#hatch\)"/);
   assert.equal(bolt.dimensions.diameter_min, 5.694);
   assert.deepEqual(
     [130, 131, 200, 201].map((length) => hexThreadLength(bolt, length)),
