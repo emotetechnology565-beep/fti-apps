@@ -1,0 +1,50 @@
+[
+  {
+    "file": "01_dimension_library.sql",
+    "sha256": "83f9ec7594f03e29ec0641c3b304c1eb7dd86f2dcd7a0bf512d7f564e9d18123"
+  },
+  {
+    "file": "02_scan_drafts.sql",
+    "sha256": "2b18f7251e793247e887af5572c95d5c7fe7d46049f10eb24423078bb0c42c78"
+  },
+  {
+    "file": "03_catalog.ts",
+    "sha256": "3bec28636b3aedfc3e3d5f65c3eebe137e46cecd11e15fb74bc1bfcacdb23c07"
+  },
+  {
+    "file": "04_drawing_families.sql",
+    "sha256": "29e7d3ec9e890cc9c914b2c3bcff2d355ae12deea590d5431d631d94797a0e7b"
+  },
+  {
+    "file": "05_fastener_subcategories.sql",
+    "sha256": "e63b99adb31541986f2b9592fc080583d4ea298d24750707203c8e368068c041"
+  },
+  {
+    "file": "06_fastener_photos.sql",
+    "sha256": "1f953f7205f74abfb0a515a98b056fc91902d8c917a4099f806ff5313bb3788d"
+  },
+  {
+    "file": "07_publish_assigned_photos.sql",
+    "sha256": "5e2fdb28688a95a431ee09e6351f7a56bd258e13725ae97fc371a87e4018cd1a"
+  },
+  {
+    "file": "08_add_fastener_entries.sql",
+    "sha256": "142499b540287dc9af0d4cc57d0a4bd7e92111ca47602b224288edbc17141723"
+  },
+  {
+    "file": "09_delete_old_imports.sql",
+    "sha256": "db76145d61aa9a7145ee00d403abcd9749d3ebe94f528f969bc216c38e67e37d"
+  },
+  {
+    "file": "10_fastener_shape_mapping.sql",
+    "sha256": "cfbdcf52614ff14340da1e3efbbf02941bb62e3420c508e6cdea23fb660e5dd8"
+  },
+  {
+    "file": "11_fastener_entry_save.sql",
+    "sha256": "250bbd7d99995dee8e73e6b56dd9c829b9a9ea7520478fce37ca00ae409359c6"
+  },
+  {
+    "file": "source-definitions.json",
+    "sha256": "17dd6bbaf3bd125dbc2b3178722149068b4f6d8934eb4e9254e5e5f5415ca87b"
+  }
+]

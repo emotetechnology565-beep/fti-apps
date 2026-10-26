@@ -5,7 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@features/auth/ui';
 import { Button, Card, Chip, Field, Row, Txt, c, s } from '@shared/ui';
-import { catalogApi, CatalogRequestError, type CatalogQuery } from '../data/catalog-repository';
+import {
+  catalogApi,
+  CatalogRequestError,
+  type CatalogQuery,
+} from '../data/catalog-repository';
 import { createSelectionDraftStorage } from '../data/selection-draft';
 import { useMaterialSelectionOptions } from '../hooks/use-material-selection-options';
 import {
@@ -37,7 +41,9 @@ type Props = {
   initialSize?: string;
   initialGrade?: string;
   renderAdapter?: (kind: 'fastener' | 'tractor_part') => ReactNode;
-  renderMaterials?: (filters: Pick<CatalogQuery, 'category' | 'ids'>) => ReactNode;
+  renderMaterials?: (
+    filters: Pick<CatalogQuery, 'category' | 'ids'>,
+  ) => ReactNode;
 };
 
 export function MaterialSelection(props: Props) {
@@ -437,6 +443,26 @@ function SelectionForm({
           disabled={locked}
           onChange={(value) => update('category', value)}
         />
+      ) : null}
+      {!productId && !draft.category ? (
+        <Row style={{ flexWrap: 'wrap', gap: 10 }}>
+          {(
+            [
+              { value: 'steel', label: 'Raw Materials' },
+              { value: 'fastener', label: 'Fasteners' },
+              { value: 'tractor_part', label: 'Tractor Parts' },
+            ] as const
+          ).map((item) => (
+            <Button
+              key={item.value}
+              secondary
+              disabled={locked}
+              onPress={() => update('category', item.value)}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </Row>
       ) : null}
       {!productId && draft.category && !adapter ? (
         <CatalogFilter
@@ -872,18 +898,31 @@ function SelectionForm({
           ) : null}
         </>
       )}
-      {!productId && draft.category === 'square' ? <ProductReferenceCharts product={{ slug: 'square' }} /> : null}
-      {!productId && !adapter && !manualActive ? (
+      {!productId && draft.category === 'square' ? (
+        <ProductReferenceCharts product={{ slug: 'square' }} />
+      ) : null}
+      {!productId && !!draft.category && !adapter && !manualActive ? (
         draft.sizeId && query.isFetching ? (
           <Txt style={s.muted}>Loading matching materials…</Txt>
-        ) : renderMaterials?.({
-          category: draft.category && draft.category !== 'steel' ? draft.category : undefined,
-          ids: draft.sizeId
-            ? [...new Set((data?.options ?? [])
-                .filter(item => !draft.grade || item.grade === draft.grade)
-                .map(item => item.product_id))]
-            : undefined,
-        })
+        ) : (
+          renderMaterials?.({
+            category:
+              draft.category && draft.category !== 'steel'
+                ? draft.category
+                : undefined,
+            ids: draft.sizeId
+              ? [
+                  ...new Set(
+                    (data?.options ?? [])
+                      .filter(
+                        (item) => !draft.grade || item.grade === draft.grade,
+                      )
+                      .map((item) => item.product_id),
+                  ),
+                ]
+              : undefined,
+          })
+        )
       ) : null}
       {message ? (
         <Txt accessibilityRole="alert" style={{ color: c.red }}>

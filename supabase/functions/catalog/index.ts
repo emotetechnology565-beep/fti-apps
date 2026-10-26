@@ -5,6 +5,9 @@ const cors = {
   'Cache-Control': 'private, no-store',
 };
 const writeOperations = new Set([
+  'fti_catalog_fastener_photo_admin', 'fti_catalog_fastener_photo_save',
+  'fti_catalog_drawing_subcategory_save',
+  'fti_catalog_drawing_admin', 'fti_catalog_drawing_save', 'fti_catalog_drawing_publish',
   'fti_catalog_manual_request_submit',
   'fti_catalog_selection_request_submit', 'fti_catalog_selection_admin',
   'fti_catalog_selection_spec_save', 'fti_catalog_selection_size_save', 'fti_catalog_selection_option_save',
@@ -63,6 +66,8 @@ Deno.serve(async (request: Request) => {
 
     const allowed =
       operation === 'fti_catalog_list' ||
+      operation === 'fti_catalog_fastener_photos' ||
+      operation === 'fti_catalog_drawing_list' ||
       operation === 'fti_catalog_filtered_list' ||
       operation === 'fti_catalog_selection_options' ||
       operation === 'fti_catalog_manual_preview' ||

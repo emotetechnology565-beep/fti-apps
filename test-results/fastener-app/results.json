@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "writes": [
+    "fti_catalog_fastener_photo_save",
+    "fti_catalog_drawing_subcategory_save",
+    "fti_catalog_drawing_publish"
+  ],
+  "browser_errors": []
+}

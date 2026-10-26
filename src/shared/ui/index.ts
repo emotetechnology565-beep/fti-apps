@@ -4,6 +4,7 @@ export { Badge } from './Badge';
 export { Button } from './Button';
 export { WhatsAppButton } from './WhatsAppButton';
 export { Card } from './Card';
+export { CatalogFilter } from './CatalogFilter';
 export { Chip } from './Chip';
 export { Empty } from './Empty';
 export { Field } from './Field';

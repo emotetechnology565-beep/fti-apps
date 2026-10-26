@@ -7,6 +7,7 @@ import { ProductCard } from '../components/ProductCard';
 import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
 import type { CatalogQuery } from '../data/catalog-repository';
+import { FastenerDimensions } from '@features/drawings/ui';
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -14,7 +15,7 @@ export function Catalogue() {
   return <View>
     <StockSourceDropdown source="fti" />
     <MaterialSelection
-      renderAdapter={kind => <ProductsCatalogue key={kind} kind={kind} />}
+      renderAdapter={kind => kind === 'fastener' ? <View style={{ gap: 24 }}><FastenerDimensions /><ProductsCatalogue kind={kind} /></View> : <ProductsCatalogue key={kind} kind={kind} />}
       renderMaterials={filters => <ProductsCatalogue key={JSON.stringify(filters)} kind="steel" filters={filters} />}
     />
   </View>;
@@ -36,6 +37,7 @@ function ProductsCatalogue({ kind, filters = {} }: {
   const query = useProducts({ ...filters, productKind: kind, search: search.trim(), limit: PRODUCTS_PER_PAGE, offset: page * PRODUCTS_PER_PAGE, ids });
   const total = query.data?.total ?? 0;
   const items = query.data?.items ?? [];
+  if (kind === 'fastener' && query.isSuccess && total === 0 && !search.trim() && !savedOnly && page === 0) return null;
   return <View style={{ gap: 16 }}>
     {kind !== 'steel' ? <Row style={{ flexWrap: 'wrap' }}>
       <Row style={{ flex: 1, minWidth: 220, backgroundColor: 'white', borderWidth: 1, borderColor: c.line, borderRadius: 7, paddingHorizontal: 14 }}>

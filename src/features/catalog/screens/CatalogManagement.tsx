@@ -38,6 +38,10 @@ import {
   type ProductStatusFilter,
 } from '../model/admin-workspace';
 import { CatalogFilter } from '../components/CatalogFilter';
+import {
+  DimensionAdmin,
+  fastenerSubcategoryOptions,
+} from '@features/drawings/ui';
 
 type WorkspaceTab = 'Products' | 'Sizes & Grades' | 'Prices' | 'Photos';
 const PAGE_SIZE = 10;
@@ -51,6 +55,8 @@ const slugFor = (value: string) =>
 const adminKey = ['catalog', 'admin'] as const;
 
 export function CatalogManagement() {
+  const [dimensionsOpen, setDimensionsOpen] = useState(false);
+  const [productDimensionsOpen, setProductDimensionsOpen] = useState(false);
   const client = useQueryClient();
   const query = useQuery({
     queryKey: adminKey,
@@ -186,6 +192,7 @@ export function CatalogManagement() {
     setCategorySlug(item.slug);
   }
   function editVariant(product: AdminProduct, variant?: AdminVariant) {
+    setProductDimensionsOpen(false);
     setIndividualProducts(true);
     setProductId(product.id);
     setVariantId(variant?.id ?? null);
@@ -227,6 +234,7 @@ export function CatalogManagement() {
     setNote('');
   }
   function resetProduct() {
+    setProductDimensionsOpen(false);
     setProductId(null);
     setVariantId(null);
     setCategory(workspaceCategory);
@@ -295,9 +303,15 @@ export function CatalogManagement() {
     }
   }
   async function saveProduct() {
-    if (!category || !name.trim() || !sku.trim() || Number(moq) <= 0) {
+    if (
+      !category ||
+      !name.trim() ||
+      (kind !== 'fastener' && (!sku.trim() || Number(moq) <= 0))
+    ) {
       setNote(
-        'Choose a category and enter a product name, SKU and valid minimum quantity.',
+        kind === 'fastener'
+          ? 'Choose a category and fastener subcategory.'
+          : 'Choose a category and enter a product name, SKU and valid minimum quantity.',
       );
       return;
     }
@@ -359,23 +373,29 @@ export function CatalogManagement() {
           product_kind: kind,
           purchase_mode: purchaseMode,
         },
-        [
-          {
-            id: variantId,
-            sku,
-            size_label: size,
-            uom: sheetFlat ? 'MT' : uom,
-            min_order_qty: Number(moq),
-            diameter_mm: sheetFlat ? null : diameter || null,
-            length_mm: length || null,
-            attributes,
-            is_active: true,
-          },
-        ],
+        kind === 'fastener'
+          ? []
+          : [
+              {
+                id: variantId,
+                sku,
+                size_label: size,
+                uom: sheetFlat ? 'MT' : uom,
+                min_order_qty: Number(moq),
+                diameter_mm: sheetFlat ? null : diameter || null,
+                length_mm: length || null,
+                attributes,
+                is_active: true,
+              },
+            ],
       );
       resetProduct();
       setIndividualProducts(false);
-      setNote('Product and variant saved as catalogue data.');
+      setNote(
+        kind === 'fastener'
+          ? 'Fastener entry saved.'
+          : 'Product and variant saved as catalogue data.',
+      );
       await client.invalidateQueries({ queryKey: adminKey });
       await client.invalidateQueries({ queryKey: ['catalog'] });
     } catch (error) {
@@ -467,6 +487,16 @@ export function CatalogManagement() {
         ))}
       </Row>
 
+      {section === 'fastener' ? (
+        <View style={{ gap: 14 }}>
+          <Button secondary onPress={() => setDimensionsOpen(!dimensionsOpen)}>
+            {dimensionsOpen
+              ? 'Close fastener dimensions'
+              : 'Manage fastener dimensions'}
+          </Button>
+          {dimensionsOpen ? <DimensionAdmin /> : null}
+        </View>
+      ) : null}
       {pendingLeave ? (
         <Card style={{ gap: 12 }}>
           <Txt style={s.h2}>Leave unsaved edits?</Txt>
@@ -712,9 +742,13 @@ export function CatalogManagement() {
             {individualProducts ? (
               <Card style={{ gap: 12 }}>
                 <Txt style={s.h2}>
-                  {productId
-                    ? 'Edit product variant'
-                    : 'Add product and first variant'}
+                  {kind === 'fastener'
+                    ? productId
+                      ? 'Edit fastener entry'
+                      : 'Add fastener entry'
+                    : productId
+                      ? 'Edit product variant'
+                      : 'Add product and first variant'}
                 </Txt>
                 {sheetFlat ? (
                   <Txt style={s.muted}>
@@ -744,21 +778,76 @@ export function CatalogManagement() {
                       </Chip>
                     ))}
                 </Row>
-                <Field
-                  label="Product name"
-                  placeholder="e.g. High tensile hex bolt"
-                  value={name}
-                  onChangeText={(value) => {
-                    setName(value);
-                    if (!productId) setSlug(slugFor(value));
-                  }}
-                />
-                <Field
-                  label="Product slug"
-                  placeholder="e.g. high-tensile-hex-bolt"
-                  value={slug}
-                  onChangeText={setSlug}
-                />
+                {kind === 'fastener' ? (
+                  <View style={{ gap: 12 }}>
+                    <CatalogFilter
+                      label="Fastener subcategory"
+                      value={slug}
+                      options={[
+                        { value: '', label: 'Choose fastener subcategory' },
+                        ...fastenerSubcategoryOptions,
+                        ...(slug &&
+                        !fastenerSubcategoryOptions.some(
+                          (item) => item.value === slug,
+                        )
+                          ? [{ value: slug, label: name || slug }]
+                          : []),
+                      ]}
+                      onChange={(value) => {
+                        const option = fastenerSubcategoryOptions.find(
+                          (item) => item.value === value,
+                        );
+                        if (!option) return;
+                        setName(option.label);
+                        setSlug(option.value);
+                        setProductDimensionsOpen(false);
+                      }}
+                    />
+                    {fastenerSubcategoryOptions.some(
+                      (item) => item.value === slug,
+                    ) ? (
+                      <>
+                        <Txt style={s.muted}>
+                          Manage this subcategory’s Shape, IS standard and Size
+                          options for customer drawing selection.
+                        </Txt>
+                        <Button
+                          secondary
+                          onPress={() => {
+                            setDimensionsOpen(false);
+                            setProductDimensionsOpen(!productDimensionsOpen);
+                          }}
+                        >
+                          {productDimensionsOpen
+                            ? 'Close customer filters and drawings'
+                            : 'Manage customer filters and drawings'}
+                        </Button>
+                        {productDimensionsOpen ? (
+                          <DimensionAdmin key={slug} subcategory={slug} />
+                        ) : null}
+                      </>
+                    ) : null}
+                  </View>
+                ) : null}
+                {kind !== 'fastener' ? (
+                  <>
+                    <Field
+                      label="Product name"
+                      placeholder="e.g. High tensile hex bolt"
+                      value={name}
+                      onChangeText={(value) => {
+                        setName(value);
+                        if (!productId) setSlug(slugFor(value));
+                      }}
+                    />
+                    <Field
+                      label="Product slug"
+                      placeholder="e.g. high-tensile-hex-bolt"
+                      value={slug}
+                      onChangeText={setSlug}
+                    />
+                  </>
+                ) : null}
                 <Field
                   label="Description"
                   placeholder="e.g. Zinc-plated hex bolt for general fastening."
@@ -766,159 +855,165 @@ export function CatalogManagement() {
                   onChangeText={setDescription}
                   multiline
                 />
-                <Txt style={s.muted}>Product type</Txt>
-                <Row style={{ flexWrap: 'wrap' }}>
-                  {(
-                    ['steel', 'fastener', 'tractor_part', 'other'] as const
-                  ).map((value) => (
-                    <Chip
-                      key={value}
-                      selected={kind === value}
-                      onPress={() => setKind(value)}
-                    >
-                      {value.replace('_', ' ')}
-                    </Chip>
-                  ))}
-                </Row>
-                <Txt style={s.muted}>Purchase mode</Txt>
-                <Row style={{ flexWrap: 'wrap' }}>
-                  {(['rfq', 'direct', 'both'] as const).map((value) => (
-                    <Chip
-                      key={value}
-                      selected={purchaseMode === value}
-                      onPress={() => setPurchaseMode(value)}
-                    >
-                      {value}
-                    </Chip>
-                  ))}
-                </Row>
-                <Field
-                  label="Variant SKU"
-                  placeholder="e.g. HEX-M12-50"
-                  value={sku}
-                  onChangeText={setSku}
-                />
-                <Field
-                  label={sheetFlat ? 'SIZE THICKNESS' : 'Size / variant label'}
-                  placeholder={sheetFlat ? 'e.g. 2MM' : 'e.g. M12 x 50 mm'}
-                  value={size}
-                  onChangeText={setSize}
-                />
-                {sheetFlat ? (
-                  <View style={{ gap: 12 }}>
-                    <Txt style={s.h2}>SHEET MS / FLAT MS RATE</Txt>
-                    <Field
-                      label="BASE RATE PMT"
-                      placeholder="e.g. 52900"
-                      numeric
-                      value={materialBase}
-                      onChangeText={setMaterialBase}
-                    />
-                    <Field
-                      label="VADHA"
-                      placeholder="e.g. 3300"
-                      numeric
-                      value={vadha}
-                      onChangeText={setVadha}
-                    />
-                    <Txt>TOTAL: {materialPrice?.total ?? '—'}</Txt>
-                    <Txt style={s.h2}>
-                      NET PRATE: {materialPrice?.net ?? '—'}
-                    </Txt>
-                    <Txt style={s.muted}>
-                      INR per metric tonne. Net Prate = Base Rate PMT + Vadha.
-                      GST is excluded and will be added during order
-                      confirmation.
-                    </Txt>
-                  </View>
-                ) : null}
-                <Txt style={s.muted}>Unit of measure</Txt>
-                {sheetFlat ? (
-                  <Badge>PMT (per metric tonne)</Badge>
-                ) : (
-                  <Row style={{ flexWrap: 'wrap' }}>
-                    {(['kg', 'MT', 'piece', 'box', 'bundle'] as const).map(
-                      (value) => (
+                {kind !== 'fastener' ? (
+                  <>
+                    <Txt style={s.muted}>Product type</Txt>
+                    <Row style={{ flexWrap: 'wrap' }}>
+                      {(
+                        ['steel', 'fastener', 'tractor_part', 'other'] as const
+                      ).map((value) => (
                         <Chip
                           key={value}
-                          selected={uom === value}
-                          onPress={() => setUom(value)}
+                          selected={kind === value}
+                          onPress={() => setKind(value)}
+                        >
+                          {value.replace('_', ' ')}
+                        </Chip>
+                      ))}
+                    </Row>
+                    <Txt style={s.muted}>Purchase mode</Txt>
+                    <Row style={{ flexWrap: 'wrap' }}>
+                      {(['rfq', 'direct', 'both'] as const).map((value) => (
+                        <Chip
+                          key={value}
+                          selected={purchaseMode === value}
+                          onPress={() => setPurchaseMode(value)}
                         >
                           {value}
                         </Chip>
-                      ),
+                      ))}
+                    </Row>
+                    <Field
+                      label="Variant SKU"
+                      placeholder="e.g. HEX-M12-50"
+                      value={sku}
+                      onChangeText={setSku}
+                    />
+                    <Field
+                      label={
+                        sheetFlat ? 'SIZE THICKNESS' : 'Size / variant label'
+                      }
+                      placeholder={sheetFlat ? 'e.g. 2MM' : 'e.g. M12 x 50 mm'}
+                      value={size}
+                      onChangeText={setSize}
+                    />
+                    {sheetFlat ? (
+                      <View style={{ gap: 12 }}>
+                        <Txt style={s.h2}>SHEET MS / FLAT MS RATE</Txt>
+                        <Field
+                          label="BASE RATE PMT"
+                          placeholder="e.g. 52900"
+                          numeric
+                          value={materialBase}
+                          onChangeText={setMaterialBase}
+                        />
+                        <Field
+                          label="VADHA"
+                          placeholder="e.g. 3300"
+                          numeric
+                          value={vadha}
+                          onChangeText={setVadha}
+                        />
+                        <Txt>TOTAL: {materialPrice?.total ?? '—'}</Txt>
+                        <Txt style={s.h2}>
+                          NET PRATE: {materialPrice?.net ?? '—'}
+                        </Txt>
+                        <Txt style={s.muted}>
+                          INR per metric tonne. Net Prate = Base Rate PMT +
+                          Vadha. GST is excluded and will be added during order
+                          confirmation.
+                        </Txt>
+                      </View>
+                    ) : null}
+                    <Txt style={s.muted}>Unit of measure</Txt>
+                    {sheetFlat ? (
+                      <Badge>PMT (per metric tonne)</Badge>
+                    ) : (
+                      <Row style={{ flexWrap: 'wrap' }}>
+                        {(['kg', 'MT', 'piece', 'box', 'bundle'] as const).map(
+                          (value) => (
+                            <Chip
+                              key={value}
+                              selected={uom === value}
+                              onPress={() => setUom(value)}
+                            >
+                              {value}
+                            </Chip>
+                          ),
+                        )}
+                      </Row>
                     )}
-                  </Row>
-                )}
-                <Field
-                  label="Minimum order quantity"
-                  placeholder="e.g. 100"
-                  numeric
-                  value={moq}
-                  onChangeText={setMoq}
-                />
-                {kind === 'tractor_part' ? (
-                  <View style={{ gap: 12 }}>
-                    <Txt style={s.muted}>
-                      Optional prices in INR per {uom}. Leave both blank for
-                      price on request.
-                    </Txt>
                     <Field
-                      label="Base price (₹)"
-                      placeholder="e.g. 1000.00"
+                      label="Minimum order quantity"
+                      placeholder="e.g. 100"
                       numeric
-                      value={basePrice}
-                      onChangeText={setBasePrice}
+                      value={moq}
+                      onChangeText={setMoq}
                     />
-                    <Field
-                      label="Price after discount (₹, optional)"
-                      placeholder="e.g. 800.00"
-                      numeric
-                      value={discountedPrice}
-                      onChangeText={setDiscountedPrice}
-                    />
-                  </View>
+                    {kind === 'tractor_part' ? (
+                      <View style={{ gap: 12 }}>
+                        <Txt style={s.muted}>
+                          Optional prices in INR per {uom}. Leave both blank for
+                          price on request.
+                        </Txt>
+                        <Field
+                          label="Base price (₹)"
+                          placeholder="e.g. 1000.00"
+                          numeric
+                          value={basePrice}
+                          onChangeText={setBasePrice}
+                        />
+                        <Field
+                          label="Price after discount (₹, optional)"
+                          placeholder="e.g. 800.00"
+                          numeric
+                          value={discountedPrice}
+                          onChangeText={setDiscountedPrice}
+                        />
+                      </View>
+                    ) : null}
+                    {!sheetFlat ? (
+                      <Row style={{ flexWrap: 'wrap' }}>
+                        <View style={{ flex: 1, minWidth: 140 }}>
+                          <Field
+                            label="Diameter (mm)"
+                            placeholder="e.g. 12"
+                            numeric
+                            value={diameter}
+                            onChangeText={setDiameter}
+                          />
+                        </View>
+                        <View style={{ flex: 1, minWidth: 140 }}>
+                          <Field
+                            label="Length (mm)"
+                            placeholder="e.g. 50"
+                            numeric
+                            value={length}
+                            onChangeText={setLength}
+                          />
+                        </View>
+                      </Row>
+                    ) : null}
+                    <Row style={{ flexWrap: 'wrap' }}>
+                      <View style={{ flex: 1, minWidth: 140 }}>
+                        <Field
+                          label="Grade"
+                          placeholder="e.g. 8.8"
+                          value={grade}
+                          onChangeText={setGrade}
+                        />
+                      </View>
+                      <View style={{ flex: 1, minWidth: 140 }}>
+                        <Field
+                          label="Brand"
+                          placeholder="e.g. Unbrako"
+                          value={brand}
+                          onChangeText={setBrand}
+                        />
+                      </View>
+                    </Row>
+                  </>
                 ) : null}
-                {!sheetFlat ? (
-                  <Row style={{ flexWrap: 'wrap' }}>
-                    <View style={{ flex: 1, minWidth: 140 }}>
-                      <Field
-                        label="Diameter (mm)"
-                        placeholder="e.g. 12"
-                        numeric
-                        value={diameter}
-                        onChangeText={setDiameter}
-                      />
-                    </View>
-                    <View style={{ flex: 1, minWidth: 140 }}>
-                      <Field
-                        label="Length (mm)"
-                        placeholder="e.g. 50"
-                        numeric
-                        value={length}
-                        onChangeText={setLength}
-                      />
-                    </View>
-                  </Row>
-                ) : null}
-                <Row style={{ flexWrap: 'wrap' }}>
-                  <View style={{ flex: 1, minWidth: 140 }}>
-                    <Field
-                      label="Grade"
-                      placeholder="e.g. 8.8"
-                      value={grade}
-                      onChangeText={setGrade}
-                    />
-                  </View>
-                  <View style={{ flex: 1, minWidth: 140 }}>
-                    <Field
-                      label="Brand"
-                      placeholder="e.g. Unbrako"
-                      value={brand}
-                      onChangeText={setBrand}
-                    />
-                  </View>
-                </Row>
                 <Row style={{ flexWrap: 'wrap' }}>
                   <Button
                     secondary
@@ -931,9 +1026,11 @@ export function CatalogManagement() {
                     Cancel product editing
                   </Button>
                   <Button disabled={busy} onPress={() => void saveProduct()}>
-                    {productId
-                      ? 'Save product and variant'
-                      : 'Create product draft'}
+                    {kind === 'fastener'
+                      ? 'Save fastener entry'
+                      : productId
+                        ? 'Save product and variant'
+                        : 'Create product draft'}
                   </Button>
                   {productId ? (
                     <Button secondary onPress={resetProduct}>
@@ -1023,7 +1120,10 @@ export function CatalogManagement() {
                     <View style={{ flex: 1, minWidth: 140, gap: 4 }}>
                       <Txt style={{ fontWeight: '700' }}>{item.name}</Txt>
                       <Txt style={s.muted}>
-                        {item.variants.length} variants · {item.slug}
+                        {section === 'fastener'
+                          ? 'Fastener subcategory'
+                          : `${item.variants.length} variants`}{' '}
+                        · {item.slug}
                       </Txt>
                     </View>
                     <Badge>{item.status.toUpperCase()}</Badge>
@@ -1058,49 +1158,50 @@ export function CatalogManagement() {
                   ) : null}
                   {tab === 'Products' && expandedProduct === item.id ? (
                     <>
-                      {workspaceTabs.includes('Prices') &&
-                      item.variants.some(
-                        (variant) =>
-                          variant.attributes.grade_list_price !== undefined,
-                      ) ? (
-                        <Button secondary onPress={() => selectTab('Prices')}>
-                          Edit grades and prices
-                        </Button>
-                      ) : (
-                        item.variants.map((variant) => (
-                          <Row
-                            key={variant.id}
-                            style={{
-                              justifyContent: 'space-between',
-                              flexWrap: 'wrap',
-                              gap: 8,
-                            }}
-                          >
-                            <View style={{ flex: 1, minWidth: 140 }}>
-                              <Txt style={s.muted}>
-                                {variant.sku} ·{' '}
-                                {variant.size_label || 'No size'} · MOQ{' '}
-                                {variant.min_order_qty} {variant.uom}
-                              </Txt>
-                            </View>
-                            <Button
-                              secondary
-                              onPress={() => {
-                                if (individualProducts) {
-                                  setNote(
-                                    'Save or cancel the open product form before editing another variant.',
-                                  );
-                                  return;
-                                }
-                                editVariant(item, variant);
+                      {section !== 'fastener' &&
+                        (workspaceTabs.includes('Prices') &&
+                        item.variants.some(
+                          (variant) =>
+                            variant.attributes.grade_list_price !== undefined,
+                        ) ? (
+                          <Button secondary onPress={() => selectTab('Prices')}>
+                            Edit grades and prices
+                          </Button>
+                        ) : (
+                          item.variants.map((variant) => (
+                            <Row
+                              key={variant.id}
+                              style={{
+                                justifyContent: 'space-between',
+                                flexWrap: 'wrap',
+                                gap: 8,
                               }}
                             >
-                              Edit variant
-                            </Button>
-                          </Row>
-                        ))
-                      )}
-                      {!item.variants.length ? (
+                              <View style={{ flex: 1, minWidth: 140 }}>
+                                <Txt style={s.muted}>
+                                  {variant.sku} ·{' '}
+                                  {variant.size_label || 'No size'} · MOQ{' '}
+                                  {variant.min_order_qty} {variant.uom}
+                                </Txt>
+                              </View>
+                              <Button
+                                secondary
+                                onPress={() => {
+                                  if (individualProducts) {
+                                    setNote(
+                                      'Save or cancel the open product form before editing another variant.',
+                                    );
+                                    return;
+                                  }
+                                  editVariant(item, variant);
+                                }}
+                              >
+                                Edit variant
+                              </Button>
+                            </Row>
+                          ))
+                        ))}
+                      {section === 'fastener' || !item.variants.length ? (
                         <Button
                           secondary
                           onPress={() => {
@@ -1113,15 +1214,19 @@ export function CatalogManagement() {
                             editVariant(item);
                           }}
                         >
-                          Add first variant
+                          {section === 'fastener'
+                            ? 'Edit fastener entry'
+                            : 'Add first variant'}
                         </Button>
                       ) : null}
-                      <ProductPublication
-                        product={item}
-                        categories={data.categories}
-                        disabled={busy}
-                        refresh={refreshCatalogue}
-                      />
+                      {section !== 'fastener' ? (
+                        <ProductPublication
+                          product={item}
+                          categories={data.categories}
+                          disabled={busy}
+                          refresh={refreshCatalogue}
+                        />
+                      ) : null}
                       {chartsForProduct(item.slug).length ? (
                         <Button
                           secondary

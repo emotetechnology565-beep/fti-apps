@@ -1,0 +1,21 @@
+{
+  "hook_combinations_checked": 118,
+  "coach_sizes_checked": 6,
+  "checked": [
+    "standard lookup",
+    "unsupported edition / standard",
+    "dependent size choices",
+    "both J and U forms",
+    "nut assemblies",
+    "adjustable tilted return",
+    "scan-specific length combinations",
+    "blank and entered pitch",
+    "input validation",
+    "source inconsistency label",
+    "reset",
+    "SVG export",
+    "print PDF",
+    "320/390px page fit"
+  ],
+  "browser_errors": []
+}

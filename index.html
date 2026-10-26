@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FTI | Standard drawing studio</title>
+<style>
+:root{color-scheme:light;--ink:#24333d;--blue:#075299;--muted:#526473;--line:#d5dfe5;--ground:#f0f3f5}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--ground);font:15px "Segoe UI",sans-serif}button,input,select{font:inherit}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #4185bf;outline-offset:3px}[hidden]{display:none!important}header{display:flex;align-items:center;gap:20px;padding:22px 32px;background:white;border-bottom:1px solid var(--line)}.brand{font:bold 28px Georgia,serif;color:var(--blue);padding-right:20px;border-right:1px solid var(--line)}h1{margin:0;font-size:22px;font-weight:600}header p{margin:5px 0 0;font-size:13px;color:var(--muted)}.flow{margin-left:auto;font:12px Consolas,monospace;color:var(--muted)}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:22px;max-width:1500px;padding:26px;margin:auto;align-items:start}aside,.sheet,.data-panel{background:white;border:1px solid var(--line);border-radius:5px;min-width:0}aside{padding:23px}h2{font-size:17px;font-weight:600;margin:0 0 18px}.step{color:var(--blue);font:12px Consolas,monospace;margin:0 0 9px}.field{display:block;font-size:13px;font-weight:600;margin-bottom:18px}input,select{width:100%;height:44px;border:1px solid #acbdc8;border-radius:4px;padding:9px 10px;background:white;color:var(--ink);margin-top:7px}.hint{display:block;color:var(--muted);font-size:12px;line-height:1.5;font-weight:400;margin-top:7px}fieldset{padding:0;border:0;margin:0;min-width:0}fieldset:disabled{opacity:.55}.standard-info{background:#f0f6fa;border-left:3px solid var(--blue);padding:12px;font-size:12px;line-height:1.6;margin-bottom:22px;overflow-wrap:anywhere}.standard-info strong{display:block;color:var(--blue);font-size:13px}.note{font-size:12px;line-height:1.65;color:var(--muted);margin:16px 0 0}.error{font-size:13px;color:#9a3029;line-height:1.6;margin:0 0 17px}.workspace{display:grid;gap:18px;min-width:0}button{background:white;color:var(--ink);border:1px solid #afc0ca;border-radius:4px;min-height:42px;padding:9px 14px;cursor:pointer}button:hover{background:#edf3f7}button:disabled{opacity:.45;cursor:default}.primary{background:var(--ink);color:white;border-color:var(--ink)}.primary:hover{background:#3b4e5b}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line)}.toolbar h2{margin:0 0 5px}.toolbar p{margin:0;font-size:12px;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.viewport{overflow:auto;max-width:100%;background:white}.viewport svg{display:block;width:100%;min-width:640px;height:auto}.empty{min-height:360px;padding:65px 35px;color:var(--muted);display:flex;justify-content:center;flex-direction:column;gap:12px}.empty strong{font:22px Georgia,serif;color:var(--ink)}.drawing-foot{border-top:1px solid var(--line);padding:13px 22px;font-size:12px;line-height:1.65;color:var(--muted)}.drawing-foot strong{color:var(--ink)}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding:18px 22px;border-top:1px solid var(--line)}.summary small{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.summary strong{font:14px Consolas,monospace;overflow-wrap:anywhere}.data-panel{padding:20px 22px}.data-panel h2{margin-bottom:7px}.data-panel>p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 13px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px 9px;border-bottom:1px solid #e3e9ed;text-align:left;vertical-align:top}th{font-size:12px;color:var(--muted);font-weight:500}td:nth-child(2){font-family:Consolas,monospace;color:var(--blue);white-space:nowrap}td:last-child{color:var(--muted);font-size:12px}details{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}summary{cursor:pointer;color:var(--blue);font-size:13px;min-height:28px}details p{font-size:12px;line-height:1.75;color:var(--muted);margin:10px 0}a{color:var(--blue)}footer{max-width:1500px;padding:0 26px 24px;margin:auto;color:var(--muted);font-size:12px;line-height:1.7}.data-state{color:var(--muted);font-size:13px;padding:12px 0}
+@media(max-width:1050px){.flow{display:none}.toolbar{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr 1fr}}@media(max-width:760px){header{padding:17px 18px;gap:13px}.brand{font-size:24px;padding-right:13px}h1{font-size:19px}header p{font-size:12px}main{grid-template-columns:minmax(0,1fr);padding:16px;gap:16px}aside{padding:20px}.toolbar,.data-panel{padding:18px}.summary{padding:16px 18px;gap:13px}.summary strong{font-size:13px}.drawing-foot{padding:13px 18px}footer{padding:0 16px 20px}.actions{width:100%}.actions button{flex:1}}@media print{@page{size:A4 landscape;margin:12mm}header,aside,.toolbar .actions,footer,details{display:none}body{background:white}main{display:block;padding:0}.sheet,.data-panel{border:0}.viewport{overflow:visible}.viewport svg{min-width:0;width:100%;max-height:120mm}.workspace{display:block}.summary{grid-template-columns:repeat(3,1fr)}.data-panel{break-before:page}.toolbar{border:0;padding:0 0 10px}}
+.drawing-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:-7px 0 20px}.drawing-choices button{padding:8px 5px;background:white;min-width:0;text-align:center;font-size:11px;line-height:1.4}.drawing-choices button[aria-pressed="true"]{border:2px solid var(--blue);padding:7px 4px;background:#f1f7fb;color:var(--blue)}.drawing-choices svg{display:block;width:100%;height:90px;margin-bottom:5px}.drawing-choices.family-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.drawing-choices.family-choices svg{height:65px}.example-note{font-size:12px;line-height:1.6;color:#72501b;background:#fff7e8;padding:10px 12px;margin-bottom:18px}
+</style>
+</head>
+<body>
+<header><div class="brand">FTI</div><div><h1>Standard drawing studio</h1><p>A standard, a size, a drawing.</p></div><div class="flow">IS standard → Product → Size → Drawing</div></header>
+<main>
+<aside aria-label="Drawing configuration"><p class="step">01 / Find your standard</p>
+<form id="controls" novalidate>
+<label class="field">IS standard number<input id="standard" list="standard-list" value="IS 730:1978" placeholder="e.g. IS 730" autocomplete="off" spellcheck="false" aria-describedby="standard-hint standard-error"><span class="hint" id="standard-hint">Available in this example: IS 730 and IS 1120.</span></label>
+<datalist id="standard-list"><option value="IS 730:1978"></option><option value="IS 1120:1975"></option></datalist>
+<p id="standard-error" class="error" role="alert" hidden></p><div id="standard-info" class="standard-info" aria-live="polite"></div>
+<fieldset id="choices"><p class="step">02 / Configure the fastener</p>
+<label class="field">Product type<select id="family"></select></label>
+<div id="family-drawings" class="drawing-choices family-choices" role="group" aria-label="Choose product by drawing"></div>
+<label class="field" id="subtype-field">Shape / subtype<select id="subtype"></select></label>
+<div id="subtype-drawings" class="drawing-choices" role="group" aria-label="Choose shape by drawing"></div>
+<p id="round-example-note" class="example-note" hidden>Round forms start with example dimensions so you can see the shape immediately. Replace the radius, length and return height with the purchaser’s dimensions.</p>
+<label class="field"><span id="size-label">Nominal size</span><select id="size"></select></label>
+<label class="field" id="width-field">Width w (mm)<select id="width"></select><span class="hint">Options from the supplied table.</span></label>
+<label class="field" id="radius-field" hidden>Inside bend radius R1 (mm)<input id="radius" type="number" min="0.1" max="250" step="any" placeholder="Enter purchaser-specified radius"><span class="hint">Required for the round form. The scan says the purchaser specifies R1 for the pipe. Opening w = 2 × R1.</span></label>
+<label class="field" id="return-field" hidden>Return leg height C (mm)<input id="return-height" type="number" min="0.1" max="500" step="any" placeholder="Enter return leg height"><span class="hint">Customer dimension for J Type II, measured from the outer bottom to the free end.</span></label>
+<label class="field" id="angle-field">Return angle θ (degrees)<input id="angle" type="number" min="1" max="75" step="any" value="25"><span class="hint">J Type I has an inclined return. 25° is an illustrative preview angle; the scan does not give a numeric angle. Enter the required angle if known.</span></label>
+<label class="field" id="preferred-length-field">Preferred length L (mm)<select id="length"></select></label>
+<label class="field" id="custom-length-field" hidden>Length L (mm)<input id="custom-length" type="number" min="10" max="500" step="any" value="75"><span class="hint" id="custom-length-hint">Customer input. Enter the required length. Example range: 10–500 mm.</span></label>
+<label class="field" id="pitch-field">Thread pitch P (mm), if known<input id="pitch" type="number" min="0.1" max="10" step="any" placeholder="Optional — not given in this table"><span class="hint">Leave blank to retain the printed thread-length formula.</span></label>
+<p id="input-error" class="error" role="alert" hidden></p><button id="reset-example" type="button">Reset example</button>
+</fieldset></form><p class="note">The standard fills the available dimensions. Type, size and length distinguish the individual fastener.</p></aside>
+<div class="workspace">
+<section class="sheet" aria-label="Generated technical drawing">
+<div class="toolbar"><div><h2>Drawing preview</h2><p id="description" aria-live="polite"></p></div><div class="actions"><button id="print" type="button">Print / PDF</button><button id="download" class="primary" type="button">Download SVG</button></div></div>
+<div class="viewport" id="drawing" tabindex="0" aria-label="Scrollable drawing preview"></div>
+<div class="summary"><div><small>Standard edition</small><strong id="summary-standard"></strong></div><div><small>Selected size</small><strong id="summary-size"></strong></div><div><small>Thread length b</small><strong id="summary-thread"></strong></div></div>
+<div class="drawing-foot"><strong>All dimensions in mm.</strong> Schematic preview; nuts, runout, thread profile and some bend details are simplified. Fits the viewport automatically; do not measure the image. On a phone, swipe the drawing to inspect it.</div>
+</section>
+<section class="data-panel" aria-label="Dimension lookup"><h2>Dimensions filled by the standard</h2><p id="dimension-caption">Dimensions and customer inputs are shown below.</p>
+<div class="table-wrap"><table id="dimension-table"><thead><tr><th scope="col">Dimension</th><th scope="col">Value</th></tr></thead><tbody id="dimension-rows"></tbody></table></div><p id="data-state" class="data-state" hidden>Select a supported standard to view dimensions.</p>
+
+</section></div></main><footer>FTI / Standard-driven drawing example · Schematic preview for selection and discussion · No data is sent or stored.</footer>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const fmt=value=>Number(value.toFixed(4)).toString();
+const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const range=(start,end,step=10)=>Array.from({length:Math.floor((end-start)/step)+1},(_,i)=>start+i*step);
+// Transcribed only from the supplied scan, page 1, Tables 1 and 1A.
+// The allowed choices preserve combinations rather than permitting arbitrary size cross-products.
+const library={
+'730':{edition:'1978',label:'IS 730:1978',name:'Hook bolts for corrugated-sheet roofing',families:{
+ j:{name:'J-type hook bolt',baseThread:25,sizes:{
+  M6:{d:6,s:20,depth:15,widths:[12],radius:4,lengths:range(70,150)},
+  M8:{d:8,s:25,depth:20,widths:[14],radius:4,lengths:range(70,200)},
+  M10:{d:10,s:25,depth:20,widths:[16],radius:4,lengths:range(70,200)}}},
+ l:{name:'L-type hook bolt',baseThread:30,sizes:{M8:{d:8,widths:[50,60,70],radius:1.5},M10:{d:10,widths:[80,95,110],radius:1.5}}},
+ u:{name:'U-type hook bolt',baseThread:30,sizes:{M8:{d:8,widths:[50,60,80,90],radius:1.5},M10:{d:10,widths:[50,60,80,90],radius:1.5}}}
+}},
+'1120':{edition:'1975',label:'IS 1120:1975',name:'Hexagon-head coach screws / wood screws',families:{coach:{name:'Hexagon-head coach screw',sizes:{
+ 'No. 10':{d:4.88,p:2.12,s:8,k:3.5,dMin:4.72,dMax:5,sMin:7.64,kMin:3.12,kMax:3.88},
+ 'No. 14':{d:6.30,p:2.82,s:10,k:4,dMin:6.05,dMax:6.43,sMin:9.64,kMin:4.38,kMax:4.62},
+ 'No. 18':{d:7.72,p:3.39,s:13,k:5.5,dMin:7.47,dMax:7.85,sMin:12.57,kMin:5.12,kMax:5.88},
+ 'No. 24':{d:9.86,p:4.23,s:17,k:7,dMin:9,dMax:9.98,sMin:16.57,kMin:6.55,kMax:7.45},
+ 'No. 28':{d:11.28,p:4.62,s:19,k:8,dMin:11.02,dMax:11.40,sMin:18.48,kMin:7.55,kMax:8.45},
+ 'No. 32':{d:12.70,p:5.08,s:24,k:10,dMin:12.45,dMax:12.83,sMin:23.16,kMin:9.25,kMax:10.75}
+}}}}
+};
+let active=null;
+function options(id,values,preferred){const select=$(id),previous=preferred??select.value;select.replaceChildren(...values.map(value=>{const option=document.createElement('option');option.value=String(typeof value==='object'?value.value:value);option.textContent=String(typeof value==='object'?value.label:value);return option;}));if([...select.options].some(option=>option.value===String(previous)))select.value=String(previous);}
+function lookupStandard(raw){const match=raw.trim().match(/^(?:IS\s*[: -]?\s*)?(730|1120)(?:\s*[:/-]\s*(\d{4}))?$/i);if(!match)return null;const standard=library[match[1]];if(match[2]&&match[2]!==standard.edition)return null;return{id:match[1],...standard};}
+function clearDrawing(message){$('drawing').replaceChildren();const box=document.createElement('div');box.className='empty';const heading=document.createElement('strong');heading.textContent='No drawing generated';const detail=document.createElement('span');detail.textContent=message;box.append(heading,detail);$('drawing').append(box);$('download').disabled=true;$('print').disabled=true;$('dimension-rows').replaceChildren();$('dimension-table').hidden=true;$('data-state').hidden=false;for(const id of ['summary-standard','summary-size','summary-thread'])$(id).textContent='—';$('description').textContent=message;}
+function selectStandard(){const next=lookupStandard($('standard').value),changed=next?.id!==active?.id;active=next;$('choices').disabled=!active;$('standard-error').hidden=!!active;$('input-error').hidden=true;if(!active){const message='This standard or edition is not in the supplied library. Try IS 730:1978 or IS 1120:1975.';$('standard-error').textContent=message;$('standard-info').textContent='Two standards are available in this example.';clearDrawing(message);return;}$('standard-info').replaceChildren();const strong=document.createElement('strong');strong.textContent=active.label;$('standard-info').append(strong,document.createTextNode(active.name));if(changed){options('family',Object.entries(active.families).map(([value,family])=>({value,label:family.name})),Object.keys(active.families)[0]);selectFamily();}else render();}
+function isRound(){return ['round','type-ii'].includes($('subtype').value);}
+function customerLength(){return $('family').value==='coach'||isRound();}
+function shapeName(){return $('subtype-field').hidden?'':$('subtype').selectedOptions[0]?.textContent??'';}
+function selectFamily(){
+ if(!active)return;const family=$('family').value,coach=family==='coach';
+ options('size',Object.keys(active.families[family].sizes),coach?'No. 10':'M8');
+ options('subtype',family==='j'?[{value:'type-i',label:'Type I \u2014 angled return'},{value:'type-ii',label:'Type II \u2014 round return'}]:family==='u'?[{value:'square',label:'Square bend'},{value:'round',label:'Round bend'}]:[],family==='j'?'type-i':'square');
+ $('subtype-field').hidden=!['j','u'].includes(family);
+ $('size-label').textContent=coach?'Screw number (not M diameter)':'Nominal size';
+ $('pitch-field').hidden=coach;$('pitch').value='';$('radius').value='';$('return-height').value='';selectSize();
+}
+function selectSubtype(){
+ if(isRound()){$('radius').value=25;$('return-height').value=60;$('custom-length').value=$('family').value==='u'?150:120;}
+ else{$('radius').value='';$('return-height').value='';}
+ selectSize();
+}
+function choiceSketch(family,subtype){
+ const nuts=family==='u'?[35,85]:family==='l'?[35]:[78];
+ const shape=family==='u'?(subtype==='round'?'M35 20V71A25 25 0 0 0 85 71V20':'M35 20V86Q35 96 45 96H75Q85 96 85 86V20'):family==='j'?(subtype==='type-ii'?'M78 20V71A25 25 0 0 1 28 71V48':'M78 20V71A25 25 0 0 1 31 83L22 63'):family==='l'?'M35 20V86Q35 96 45 96H80Q90 96 90 86V77':'M36 50H95L108 60L95 70H36';
+ const nutDrawings=family==='coach'?'<path d="M23 45H36V75H23Z" fill="white" stroke="#24333d" stroke-width="2"/>':nuts.map(x=>`<path d="M${x-9} 32V26Q${x-9} 24 ${x-6} 24H${x+6}Q${x+9} 24 ${x+9} 26V32Z" fill="white" stroke="#24333d" stroke-width="1.5"/>`).join('');
+ return `<svg viewBox="0 0 120 115" aria-hidden="true"><path d="${shape}" fill="none" stroke="#24333d" stroke-width="7" stroke-linejoin="round"/><path d="${shape}" fill="none" stroke="white" stroke-width="3.5" stroke-linejoin="round"/>${nutDrawings}</svg>`;
+}
+function refreshDrawingChoices(){
+ const family=$('family').value;
+ const makeButton=(value,label,sketch,selected,action)=>{
+  const button=document.createElement('button');button.type='button';button.dataset.value=value;button.setAttribute('aria-pressed',String(selected));
+  button.innerHTML=sketch;const caption=document.createElement('span');caption.textContent=label;button.append(caption);button.addEventListener('click',action);return button;
+ };
+ $('family-drawings').replaceChildren(...Object.entries(active.families).map(([key,item])=>makeButton(key,item.name,choiceSketch(key,key==='j'?'type-i':'square'),key===family,()=>{$('family').value=key;selectFamily();})));
+ const subtypes=[...$('subtype').options];$('subtype-drawings').hidden=subtypes.length===0;
+ $('subtype-drawings').replaceChildren(...subtypes.map(option=>makeButton(option.value,option.textContent,choiceSketch(family,option.value),option.selected,()=>{$('subtype').value=option.value;selectSubtype();})));
+ $('round-example-note').hidden=!isRound();
+}
+
+function selectSize(){
+ const family=$('family').value,data=active.families[family].sizes[$('size').value],widths=data.widths??[],rounded=isRound();
+ $('width-field').hidden=widths.length<=1||rounded;
+ $('radius-field').hidden=!rounded;$('angle-field').hidden=family!=='j'||rounded;$('return-field').hidden=!(family==='j'&&rounded);
+ $('custom-length-field').hidden=!customerLength();$('preferred-length-field').hidden=customerLength();
+ $('custom-length-hint').textContent=rounded?'Customer length for the pipe-dependent round form. R1 and length must fit together. Example range: 10-500 mm.':'Customer input. Enter the required length. Example range: 10-500 mm.';
+ refreshDrawingChoices();
+ options('width',widths,widths[0]);selectWidth();
+}
+function lengthsFor(family,data,width){if(family==='j')return data.lengths;if(family==='u')return width===90?[225]:range(150,200);if(family==='l')return data.d===8?range(120,200):width===110?[180,190,200,225]:range(150,200);return[];}
+function selectWidth(){const family=$('family').value,data=active.families[family].sizes[$('size').value];if(family!=='coach')options('length',lengthsFor(family,data,Number($('width').value)),120);render();}
+function dimensionsRows(rows){$('dimension-rows').replaceChildren(...rows.map(values=>{const tr=document.createElement('tr');for(const value of values.slice(0,2)){const td=document.createElement('td');td.textContent=value;tr.append(td);}return tr;}));$('dimension-table').hidden=false;$('data-state').hidden=true;}
+function line(x1,y1,x2,y2,extra=''){return`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;}
+function text(x,y,value,extra=''){return`<text x="${x}" y="${y}" ${extra}>${esc(value)}</text>`;}
+function dimH(x1,x2,y,origin,label){return`<g class="dim">${line(x1,origin,x1,y+7)}${line(x2,origin,x2,y+7)}${line(x1,y,x2,y,'marker-start="url(#arrow)" marker-end="url(#arrow)"')}${text((x1+x2)/2,y-10,label,'text-anchor="middle"')}</g>`;}
+function dimV(x,y1,y2,origin,label){return`<g class="dim">${line(origin,y1,x+7,y1)}${line(origin,y2,x+7,y2)}${line(x,y1,x,y2,'marker-start="url(#arrow)" marker-end="url(#arrow)"')}${text(x-13,(y1+y2)/2,label,`text-anchor="middle" transform="rotate(-90 ${x-13} ${(y1+y2)/2})"`)}</g>`;}
+function svgWrap(body,title,subtitle){return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" role="img" aria-labelledby="svg-title svg-desc"><title id="svg-title">${esc(title)}</title><desc id="svg-desc">${esc(subtitle)}. Schematic with dimensions in millimetres.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#075299"/></marker><pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#eaf0f3" stroke-width=".6"/></pattern></defs><style>text{font:14px Consolas,monospace;fill:#24333d}.outline{stroke:#24333d;stroke-width:1.6;fill:white;stroke-linejoin:round}.dim{stroke:#075299;stroke-width:1;fill:none}.dim text{fill:#075299;stroke:none}.center{stroke:#8ca0ad;stroke-width:1;stroke-dasharray:12 4 2 4}.thread{stroke:#24333d;stroke-width:1;fill:none}.meta{font:12px sans-serif;fill:#526473}.label{font:16px sans-serif;font-weight:600}.boundary{stroke:#d5dfe5;stroke-width:1;fill:none}</style><rect width="1000" height="660" fill="white"/><rect x="25" y="25" width="950" height="495" fill="url(#grid)"/>${body}<path class="boundary" d="M35 535H965M35 611H965"/>${text(45,560,title,'class="label"')}${text(45,585,subtitle,'class="meta"')}${text(45,635,'DIMENSIONS IN MM · SCHEMATIC PREVIEW · FIT TO VIEWPORT','class="meta"')}</svg>`;}
+function nutAssembly(x,top,diameter,leg){
+ // Square-nut side elevation with chamfered upper corners, matching the scan's assembly.
+ // The scan does not supply nut dimensions here, so these proportions are illustrative.
+ const w=Math.max(diameter*2.15,20),h=Math.max(diameter*.68,8),y=top+diameter*.55,ch=Math.min(h*.32,5);
+ return `<g class="nut-assembly" data-leg="${leg}"><path class="outline" d="M${x-w/2},${y+h}V${y+ch}Q${x-w/2},${y} ${x-w/2+ch},${y}H${x+w/2-ch}Q${x+w/2},${y} ${x+w/2},${y+ch}V${y+h}Z"/><path class="thread" d="M${x-w*.23},${y+ch}V${y+h}M${x+w*.23},${y+ch}V${y+h}"/></g>`;
+}
+function hookDrawing({family,data,length,width,depth,b,p,rounded,r1,returnHeight,angle}){
+ const scale=Math.min(345/length,420/(width+data.d*2),4),d=data.d*scale,top=95,bottom=top+length*scale-d/2;
+ const right=family==='l'?430:family==='u'?570:560,left=family==='l'?right+(width+data.d)*scale:right-(width+data.d)*scale;
+ const radius=rounded?(r1+data.d/2)*scale:Math.max(data.radius*scale+d/2,8);
+ let path='',returnTip=null;
+ if(rounded){
+  const low=bottom-radius,mid=(left+right)/2,endY=family==='u'?top:top+(length-returnHeight)*scale;
+  path=`M${right},${top}V${low}A${radius},${radius} 0 0 1 ${mid},${bottom}A${radius},${radius} 0 0 1 ${left},${low}V${endY}`;
+ }else if(family==='j'){
+  // A tangent circular bend flows into the tilted free leg, rather than a squared U return.
+  const a=(right-left)/2,cx=right-a,cy=bottom-a,theta=angle*Math.PI/180;
+  const arcX=cx-a*Math.cos(theta),arcY=cy+a*Math.sin(theta),tipY=bottom-depth*scale;
+  const tipX=arcX-(arcY-tipY)*Math.tan(theta);
+  returnTip={x:tipX,y:tipY};
+  path=`M${right},${top}V${cy}A${a},${a} 0 0 1 ${arcX},${arcY}L${tipX},${tipY}`;
+ }else if(family==='l'){
+  path=`M${right},${top}V${bottom-radius}Q${right},${bottom} ${right+radius},${bottom}H${left-radius}Q${left},${bottom} ${left},${bottom-radius}V${bottom-depth*scale}`;
+ }else{
+  const endY=bottom-depth*scale;
+  // J Type I has an inclined free leg; the inclination remains schematic because theta is not tabulated.
+  path=`M${right},${top}V${bottom-radius}Q${right},${bottom} ${right-radius},${bottom}H${left+radius}Q${left},${bottom} ${left},${bottom-radius}`;
+  path+=family==='u'?`V${top}`:family==='j'?`L${left-depth*scale*.28},${endY}`:`V${endY}`;
+ }
+ const threadLength=b===null?Math.min(38*scale,length*scale*.38):b*scale,pitch=p===null?7:Math.max(3,p*scale);let threads='';
+ for(const x of family==='u'?[left,right]:[right])for(let y=top+3;y<top+threadLength-3;y+=pitch)threads+=line(x-d/2,y,x+d/2,Math.min(top+threadLength,y+pitch*.65));
+ let body=`<path class="bolt-body" data-shape="${family}-${$('subtype').value}" d="${path}" fill="none" stroke="#24333d" stroke-width="${d+2}" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="white" stroke-width="${Math.max(d-1,1)}" stroke-linejoin="round"/><g class="thread">${threads}</g>${family==='u'?nutAssembly(left,top,d,'left'):''}${nutAssembly(right,top,d,'right')}<g class="center">${line(right,top-25,right,Math.min(bottom+40,500))}${family==='u'?line(left,top-25,left,bottom+35):''}</g>`;
+ body+=dimV(Math.max(left,right)+100,top,bottom+d/2,right+d/2,`L = ${fmt(length)}`)+dimH(Math.min(left,right)+d/2,Math.max(left,right)-d/2,Math.min(bottom+60,505),bottom+d/2,`w = ${fmt(width)}`)+dimH(right-d/2,right+d/2,top-40,top,`d = ${fmt(data.d)}`);
+ body+=`<g class="dim">${line(right+d/2+8,top+threadLength,right+60,top+threadLength)}${text(right+68,top+threadLength+5,b===null?`b = ${active.families[family].baseThread} + 2P`:`b = ${fmt(b)}`)}</g>`;
+ if(rounded){
+  body+=text(120,160,`R1 = ${fmt(r1)} (customer)`,'class="meta"');
+  if(family==='j')body+=dimV(left-65,top+(length-returnHeight)*scale,bottom+d/2,left-d/2,`C = ${fmt(returnHeight)}`);
+ }else if(family!=='u')body+=text(left-70,top+65,`D = ${fmt(depth)}`,'class="meta"')+text(left-70,top+85,family==='j'?`R \u2265 ${fmt(data.radius)}`:`R basic ${fmt(data.radius)}`,'class="meta"');
+ else body+=text((left+right)/2,top+length*scale*.55,`R basic ${fmt(data.radius)}`,'text-anchor="middle" class="meta"');
+ if(returnTip){
+  body+=`<g class="center">${line(returnTip.x,returnTip.y-12,returnTip.x,returnTip.y+42)}</g>`;
+  body+=text(returnTip.x-120,returnTip.y-18,`θ = ${fmt(angle)}° (preview)`,'class="meta"');
+ }
+ body+=text(75,475,'Nut assemblies shown; nut sizes and thread profiles are schematic.','class="meta"');
+ return svgWrap(body,`${active.label} / ${active.families[family].name}${shapeName()?' / '+shapeName():''}`,`${$('size').value} \u00b7 L ${fmt(length)} \u00b7 w ${fmt(width)} \u00b7 Property class 4.6`);
+}
+function coachDrawing({data,length}){
+ const scale=Math.min(570/(length+data.k),130/data.s,12),x=100,y=285,head=data.k*scale,flats=data.s*scale,d=data.d*scale,start=x+head,end=start+length*scale,ts=start+length*scale*.35,tip=Math.min(d,length*scale*.12),pitch=data.p*scale;
+ let threads='';for(let at=ts;at<end-tip;at+=pitch)threads+=`<path d="M${at},${y-d/2}l${Math.min(pitch*.6,end-tip-at)},${d}M${at},${y+d/2}l${Math.min(pitch*.6,end-tip-at)},${-d}"/>`;
+ const cx=830,r=flats/Math.sqrt(3),points=Array.from({length:6},(_,i)=>`${cx+r*Math.cos((30+60*i)*Math.PI/180)},${y+r*Math.sin((30+60*i)*Math.PI/180)}`).join(' ');
+ let body=`<g class="outline"><rect x="${x}" y="${y-flats/2}" width="${head}" height="${flats}"/><path d="M${start},${y-d/2}H${end-tip}L${end},${y}L${end-tip},${y+d/2}H${start}Z"/><polygon points="${points}"/></g><g class="thread">${threads}</g><g class="center">${line(x-25,y,end+25,y)}${line(cx-r-20,y,cx+r+20,y)}${line(cx,y-r-20,cx,y+r+20)}</g>`;
+ body+=dimH(start,end,425,y+d/2,`L = ${fmt(length)} (customer input)`)+dimH(x,start,150,y-flats/2,`k = ${fmt(data.k)}`)+dimH(cx-flats/2,cx+flats/2,150,y-r,`s = ${fmt(data.s)}`)+dimV(end+70,y-d/2,y+d/2,end,`d = ${fmt(data.d)}`)+text(100,470,`P = ${fmt(data.p)} · Threaded proportion and point are illustrative.`,'class="meta"');
+ return svgWrap(body,`${active.label} / Hexagon-head coach screw`,`${$('size').value} · d ${fmt(data.d)} · L ${fmt(length)} · Wood screw, not a metric machine screw`);
+}
+function render(){
+ if(!active)return;
+ const family=$('family').value,definition=active.families[family],data=definition.sizes[$('size').value],coach=family==='coach',rounded=isRound();
+ const length=Number(customerLength()?$('custom-length').value:$('length').value),r1=rounded?Number($('radius').value):null;
+ const returnHeight=family==='j'&&rounded?Number($('return-height').value):null,width=rounded?2*r1:Number($('width').value);
+ const p=coach?data.p:$('pitch').value.trim()===''?null:Number($('pitch').value),b=coach?null:p===null?null:definition.baseThread+2*p;
+ const angle=Number($('angle').value);
+ const depth=data.depth??(family==='l'?width===110?30:data.d===8?20:25:0);
+ let error='';
+ if(family==='j'&&!rounded&&(!$('angle').value||!$('angle').checkValidity()||!Number.isFinite(angle)))error='Enter a return angle between 1 and 75 degrees.';
+ else if(customerLength()&&(!$('custom-length').checkValidity()||!Number.isFinite(length)||length<=0))error='Enter a length between 10 and 500 mm.';
+ else if(rounded&&(!$('radius').value||!$('radius').checkValidity()||!Number.isFinite(r1)))error='Enter the purchaser-specified inside radius R1, between 0.1 and 250 mm.';
+ else if(rounded&&length<=r1+data.d)error='Length L must exceed R1 plus the rod diameter to leave a straight leg.';
+ else if(family==='j'&&rounded&&(!$('return-height').value||!$('return-height').checkValidity()||!Number.isFinite(returnHeight)||returnHeight<r1+data.d||returnHeight>=length))error='Enter return height C: at least R1 + diameter, and shorter than L.';
+ else if(!coach&&$('pitch').value!==''&&(!$('pitch').checkValidity()||!Number.isFinite(p)))error='Enter a pitch between 0.1 and 10 mm, or leave it blank.';
+ else if(!customerLength()&&!lengthsFor(family,data,width).includes(length))error='Choose one of the preferred lengths in the supplied table.';
+ else if(b!==null&&b>=length-(rounded?r1+data.d:depth))error='The supplied pitch leaves insufficient straight length for the hook. Check pitch or choose a longer length.';
+ $('input-error').textContent=error;$('input-error').hidden=!error;if(error){clearDrawing(error);return;}
+ const model={family,data,length,width,depth,b,p,rounded,r1,returnHeight,angle};$('drawing').innerHTML=coach?coachDrawing(model):hookDrawing(model);$('download').disabled=false;$('print').disabled=false;
+ $('description').textContent=`${active.label} \u00b7 ${definition.name}${shapeName()?' / '+shapeName():''} \u00b7 ${$('size').value} \u00b7 ${fmt(length)} mm`;
+ $('summary-standard').textContent=active.label;$('summary-size').textContent=`${$('size').value} \u00d7 ${fmt(length)} mm`;$('summary-thread').textContent=coach?'Schematic portion':b===null?`${definition.baseThread} + 2P`:fmt(b)+' mm';
+ const rows=coach?[
+ ['Shank diameter d, nominal',fmt(data.d),'Supplied Table 1A; screw number is '+$('size').value],['Shank diameter d, range',`${fmt(data.dMin)}\u2013${fmt(data.dMax)}`,'Printed minimum / maximum'],['Thread pitch P',fmt(data.p),'Supplied Table 1A'],['Head across flats s, nominal',fmt(data.s),'Supplied Table 1A'],['Head across flats s, range',`${fmt(data.sMin)}\u2013${fmt(data.s)}`,'Printed minimum / maximum'],['Head height k, nominal',fmt(data.k),'Supplied Table 1A; used by preview'],['Head height k, printed range',`${fmt(data.kMin)}\u2013${fmt(data.kMax)}`,data.k<data.kMin?'Source inconsistency: nominal is outside printed range. Retained as supplied.':'Printed minimum / maximum'],['Length L',fmt(length),'Customer input; preferred lengths absent from supplied table']
+ ]:[
+ ['Nominal diameter d',fmt(data.d),'Selected nominal size; mm'],...(family==='j'&&!rounded?[['Return angle theta',fmt(angle)+' degrees','Illustrative / customer input; numeric angle absent from supplied table']]:[]),['Length L',fmt(length),rounded?'Customer input for round form':length>200?'Preferred length; printed tolerance \u00b14':'Preferred length; printed tolerance \u00b13'],['Inside opening / width w',fmt(width),rounded?'Derived from purchaser radius: 2 \u00d7 R1':family==='j'?'Printed tolerance +2':family==='l'&&width>=95?'Printed tolerance \u00b13':'Printed tolerance \u00b12'],
+ ...(rounded?[['Inside radius R1',fmt(r1),'Purchaser-specified pipe-dependent geometry; scan gives +1.5 tolerance'],...(family==='j'?[['Return height C',fmt(returnHeight),'Customer input; no height inferred from Type I']]:[])]:[...(family==='u'?[]:[[family==='j'?'Hook depth D':'Inside dimension D',fmt(depth),family==='j'?'Printed tolerance +2':'Printed tolerance \u00b12']]),...(family==='j'?[['Dimension s',fmt(data.s),'Supplied J-type table; printed tolerance +2']]:[]),['Bend radius R',family==='j'?`\u2265 ${fmt(data.radius)}`:fmt(data.radius),family==='j'?'Printed minimum; schematic bend':'Printed basic value; simplified bend']]),
+ ['Thread pitch P',p===null?'Not specified':fmt(p),p===null?'Absent from supplied table. Enter it if known.':'Customer input; not verified against an external standard'],['Thread length b',b===null?`${definition.baseThread} + 2P`:fmt(b),b===null?'Formula from supplied hook-bolt table':'Calculated from printed formula and entered pitch']];
+ dimensionsRows(rows);$('dimension-caption').textContent='Dimensions in millimetres unless otherwise indicated.';
+}
+$('controls').addEventListener('submit',event=>event.preventDefault());$('standard').addEventListener('input',selectStandard);$('family').addEventListener('change',selectFamily);$('subtype').addEventListener('change',selectSubtype);$('radius').addEventListener('input',render);$('angle').addEventListener('input',render);$('return-height').addEventListener('input',render);$('size').addEventListener('change',selectSize);$('width').addEventListener('change',selectWidth);$('length').addEventListener('change',render);$('custom-length').addEventListener('input',render);$('pitch').addEventListener('input',render);$('reset-example').addEventListener('click',()=>{$('standard').value='IS 730:1978';$('custom-length').value=75;$('angle').value=25;active=null;selectStandard();});$('print').addEventListener('click',()=>window.print());
+$('download').addEventListener('click',()=>{const svg=$('drawing').querySelector('svg');if(!svg||!active)return;const url=URL.createObjectURL(new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+svg.outerHTML],{type:'image/svg+xml;charset=utf-8'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`fti-is-${active.id}-${$('family').value}${shapeName()?'-'+$('subtype').value:''}-${$('size').value.replace(/[^a-zA-Z0-9]/g,'')}-${customerLength()?$('custom-length').value:$('length').value}mm.svg`;document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+selectStandard();
+</script>
+</body>
+</html>
