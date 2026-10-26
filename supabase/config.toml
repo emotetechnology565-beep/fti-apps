@@ -1,4 +1,7 @@
 project_id = "fti-app"
+[functions.fastener-weight]
+# Public, read-only reference weights; the handler uses the anon database role.
+verify_jwt = false
 [functions.business-stock]
 verify_jwt = false
 [functions.business-stock-media]

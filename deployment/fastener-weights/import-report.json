@@ -1,0 +1,16 @@
+{
+  "rows": 4925,
+  "charts": 26,
+  "matchable": 4924,
+  "review": [
+    {
+      "workbook_row": 4698,
+      "chart": "25 Socket head cap screws",
+      "row": "100",
+      "column": "M16",
+      "published_text": "18.6."
+    }
+  ],
+  "sql_editor_import_parts": 14,
+  "sql_editor_max_part_bytes": 80000
+}

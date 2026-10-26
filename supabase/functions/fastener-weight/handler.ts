@@ -1,0 +1,75 @@
+type Config = { supabaseUrl?: string; anonKey?: string };
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Cache-Control': 'no-store',
+};
+
+// Approximate weight lookup. Use only the read-only anon role.
+export async function handleFastenerWeight(request: Request, config: Config, send: typeof fetch = fetch) {
+  const json = (body: unknown, status = 200) => Response.json(body, { status, headers: cors });
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+  if (request.method !== 'POST') return json({ code: 'METHOD_NOT_ALLOWED' }, 405);
+  let body: Record<string, unknown>;
+  try {
+    const raw = await request.text();
+    if (raw.length > 4096) return json({ code: 'REQUEST_TOO_LARGE' }, 413);
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error();
+    body = parsed;
+  } catch {
+    return json({ code: 'INVALID_INPUT', message: 'Send a JSON object.' }, 400);
+  }
+  const label = (key: string) => typeof body[key] === 'string' &&
+    (body[key] as string).trim().length > 0 && (body[key] as string).length <= 200;
+  if (!['chart', 'rowLabel', 'columnLabel'].every(label) ||
+    Object.keys(body).some(key => !['chart', 'rowLabel', 'columnLabel', 'quantity', 'lengthM'].includes(key))) {
+    return json({ code: 'INVALID_INPUT', message: 'Provide chart, rowLabel and columnLabel for the approximate weight lookup.' }, 400);
+  }
+  const quantity = body.quantity ?? 1;
+  const lengthM = body.lengthM;
+  if (typeof quantity !== 'number' || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 1_000_000 ||
+    (lengthM !== undefined && (typeof lengthM !== 'number' || !Number.isFinite(lengthM) || lengthM <= 0 || lengthM > 100_000))) {
+    return json({ code: 'INVALID_INPUT', message: 'quantity must be an integer from 1 to 1000000; lengthM must be positive and at most 100000.' }, 400);
+  }
+  if (!config.supabaseUrl || !config.anonKey) return json({ code: 'UNAVAILABLE' }, 503);
+  try {
+    const response = await send(`${config.supabaseUrl}/rest/v1/rpc/fti_fastener_weight_lookup`, {
+      method: 'POST',
+      headers: { apikey: config.anonKey, Authorization: `Bearer ${config.anonKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_chart: body.chart, p_row_label: body.rowLabel, p_column_label: body.columnLabel }),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) {
+      return json({ code: 'LOOKUP_UNAVAILABLE', message: 'Check that the weight SQL package has been applied.' }, 503);
+    }
+    const matches = await response.json();
+    if (!Array.isArray(matches)) throw new Error();
+    if (!matches.length) return json({ code: 'NO_MATCH', message: 'No approximate weight is available for this size.', matches: [] }, 404);
+    // Return only product/weight fields, never attribution or ingestion metadata.
+    const publicMatch = (row: Record<string, unknown>) => ({
+      chart: row.chart, product: row.product, specification: row.specification,
+      row_label: row.row_label, column_label: row.column_label,
+      weight_basis: row.weight_basis, weight_kg_per_piece: row.weight_kg_per_piece,
+      weight_kg_per_metre: row.weight_kg_per_metre,
+    });
+    if (matches.length > 1) return json({ code: 'AMBIGUOUS_MATCH', message: 'Multiple approximate weights match this size.', matches: matches.map(publicMatch) }, 409);
+    const match = publicMatch(matches[0]);
+    const perMetre = match.weight_basis === 'metre';
+    if (typeof match.weight_basis !== 'string' || !['metre', 'piece', '100_pieces'].includes(match.weight_basis)) throw new Error();
+    const unitWeightKg = Number(perMetre ? match.weight_kg_per_metre : match.weight_kg_per_piece);
+    if (!Number.isFinite(unitWeightKg) || unitWeightKg <= 0) throw new Error();
+    if (!perMetre && lengthM !== undefined) {
+      return json({ code: 'INVALID_INPUT', message: 'lengthM applies only to weights per metre; other charts already include size in the lookup.' }, 400);
+    }
+    const totalWeightKg = perMetre
+      ? (typeof lengthM === 'number' ? unitWeightKg * lengthM * quantity : null)
+      : unitWeightKg * quantity;
+    return json({ label: 'Approximate weight', match, approximate: true, quantity, unitWeightKg,
+      unit: perMetre ? 'kg/metre' : 'kg/piece', lengthM: lengthM ?? null,
+      requiresLength: perMetre && lengthM === undefined, totalWeightKg });
+  } catch {
+    return json({ code: 'LOOKUP_UNAVAILABLE', message: 'Weight lookup is temporarily unavailable.' }, 503);
+  }
+}

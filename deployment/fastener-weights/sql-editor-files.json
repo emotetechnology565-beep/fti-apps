@@ -1,0 +1,69 @@
+{
+  "max_part_bytes": 80000,
+  "files": [
+    {
+      "file": "01_setup.sql",
+      "bytes": 2590
+    },
+    {
+      "file": "02_import_part_01.sql",
+      "bytes": 79765
+    },
+    {
+      "file": "02_import_part_02.sql",
+      "bytes": 79889
+    },
+    {
+      "file": "02_import_part_03.sql",
+      "bytes": 79787
+    },
+    {
+      "file": "02_import_part_04.sql",
+      "bytes": 79905
+    },
+    {
+      "file": "02_import_part_05.sql",
+      "bytes": 80000
+    },
+    {
+      "file": "02_import_part_06.sql",
+      "bytes": 79766
+    },
+    {
+      "file": "02_import_part_07.sql",
+      "bytes": 79998
+    },
+    {
+      "file": "02_import_part_08.sql",
+      "bytes": 79873
+    },
+    {
+      "file": "02_import_part_09.sql",
+      "bytes": 79799
+    },
+    {
+      "file": "02_import_part_10.sql",
+      "bytes": 79883
+    },
+    {
+      "file": "02_import_part_11.sql",
+      "bytes": 79975
+    },
+    {
+      "file": "02_import_part_12.sql",
+      "bytes": 79784
+    },
+    {
+      "file": "02_import_part_13.sql",
+      "bytes": 79984
+    },
+    {
+      "file": "02_import_part_14.sql",
+      "bytes": 54212
+    },
+    {
+      "file": "03_verify.sql",
+      "bytes": 452
+    }
+  ]
+}
