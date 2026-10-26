@@ -44,6 +44,20 @@ Definitions store source, edition, shape and dimensions; customer inputs affect 
 
 ## Verification
 
+### Hex bolt, screw, nut and lock nut
+
+`15_hex_table_publish.sql` is the self-contained SQL Editor script for the supplied IS 1363:1967 table. It installs the hex schema and updated dimensional validator, imports 55 definitions, and directly publishes matching entries in the existing `hex-bolt` and `hex-nut` subcategories. The existing filename `15_hex_table_drafts.sql` now runs the same direct-publication script. No separate run of `14_hex_fasteners.sql` is needed when using either combined file. Keep the earlier identity/catalogue and drawing-library migrations installed.
+
+Expected published counts are 15 hex bolts (M6–M39), 10 hex screws (M6–M24), 15 hex nuts and 15 lock nuts (M6–M39). Reruns do not duplicate entries or increment already published revisions. Existing manually changed dimensions are preserved and reported as `unchanged_manual_drafts`, rather than being overwritten. The final query returns counts after commit. The disposable-database test reproduces the older validator's `drawing_definitions_check` error, then verifies the combined script repairs it and publishes all 55 rows.
+
+The bolt thread minimum is 2d+6 for L≤130, 2d+12 for 130<L≤200, and 2d+25 for L>200, with the printed +0/+2P allowance. Screw b1 uses its per-size L-minus-offset values. Overall bolt/screw length is customer input; nut height comes from the table. Drawings use maximum head/shank envelope dimensions and schematic thread/chamfer detail. No dimensions are assigned to Heavy Hex categories. No prices, product stock or photo assignments are created by this script.
+
+### Coach screw table
+
+The existing `coach-screw` subcategory contains IS 1120:1975 sizes No. 10, 14, 18, 24, 28 and 32. Apply `12_coach_screw_tolerances.sql`, then `13_coach_screw_table.sql` to add the supplied shank/head tolerance limits, minimum across corners and maximum under-head radius. The import adds missing fields, preserves existing dimension values and published snapshots, and is repeatable without duplicate rows. Review and publish the updated definitions in admin. Overall screw length must be entered because this table does not provide length options.
+
+No. 14 retains the printed nominal head thickness 4.00 and limits 4.38–4.62; the app flags this discrepancy for confirmation. No replacement values are inferred. The reaffirmation year 1988 does not replace the standard edition 1975.
+
 - `npm run typecheck`, `npm run lint`, `npm run build`
 - `node_modules/.bin/tsx --test tests/fastener-drawings-db.test.ts tests/architecture.test.ts`
 - `python scripts/fastener-dimensions-browser.py` after web export: intercepted API checks for customer cascade, SVG display, invalid dimensions, and staff save/publish; no remote records are modified.

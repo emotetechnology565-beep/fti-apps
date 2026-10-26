@@ -18,6 +18,8 @@ import { DimensionSelect } from '../components/DimensionSelect';
 import { FastenerPhotoCards } from '../components/FastenerPhotoCards';
 import {
   shapeLabels,
+  isNutShape,
+  isHexShape,
   type DrawingDefinition,
   type DrawingShape,
 } from '../model/types';
@@ -25,7 +27,7 @@ import {
 import {
   allSubcategories,
   drawingSubcategory,
-  dimensionLabels,
+  drawingDimensionLabel,
   matchesFastenerSearch,
   subcategoryShapes,
 } from '../model/subcategories';
@@ -247,9 +249,11 @@ export function ConfiguredDrawing({
     progressive && d.widths.length > 1 ? '' : String(d.widths[0] ?? ''),
   );
   const [length, setLength] = useState(
-    progressive && d.lengths.length !== 1
-      ? ''
-      : String(d.lengths[0] ?? (progressive ? '' : 120)),
+    isNutShape(definition.shape)
+      ? String(d.head_height ?? '')
+      : progressive && d.lengths.length !== 1
+        ? ''
+        : String(d.lengths[0] ?? (progressive ? '' : 120)),
   );
   const [radius, setRadius] = useState('25');
   const [returnHeight, setReturnHeight] = useState('60');
@@ -269,6 +273,17 @@ export function ConfiguredDrawing({
         <Txt style={s.h2}>
           {shapeLabels[definition.shape]} · {definition.size}
         </Txt>
+        {definition.shape === 'coach' &&
+        d.head_height !== undefined &&
+        ((d.head_height_min !== undefined &&
+          d.head_height < d.head_height_min) ||
+          (d.head_height_max !== undefined &&
+            d.head_height > d.head_height_max)) ? (
+          <Txt accessibilityRole="alert">
+            Nominal head thickness is outside its stated limits. Confirm this
+            dimension with FTI before manufacture.
+          </Txt>
+        ) : null}
         {d.widths.length ? (
           <DimensionSelect
             label="Width (mm)"
@@ -280,7 +295,8 @@ export function ConfiguredDrawing({
             }}
           />
         ) : null}
-        {!progressive || !d.widths.length || !!width ? (
+        {!isNutShape(definition.shape) &&
+        (!progressive || !d.widths.length || !!width) ? (
           d.lengths.length ? (
             <DimensionSelect
               label="Length (mm)"
@@ -346,21 +362,30 @@ export function ConfiguredDrawing({
           <DrawingPreview definition={definition} input={input} />
           <Card style={{ gap: 10 }}>
             <Txt style={s.h2}>Dimensions</Txt>
-            {Object.entries(d).map(([name, value]) => (
-              <Row
-                key={name}
-                style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}
-              >
-                <Txt>
-                  {dimensionLabels[name as keyof typeof dimensionLabels]}
-                </Txt>
-                <Txt>
-                  {Array.isArray(value)
-                    ? value.join(', ') || 'Purchaser input'
-                    : String(value)}
-                </Txt>
-              </Row>
-            ))}
+            {Object.entries(d)
+              .filter(
+                ([name]) =>
+                  !(isHexShape(definition.shape) && name === 'widths') &&
+                  !(isNutShape(definition.shape) && name === 'lengths'),
+              )
+              .map(([name, value]) => (
+                <Row
+                  key={name}
+                  style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}
+                >
+                  <Txt>
+                    {drawingDimensionLabel(
+                      definition.shape,
+                      name as keyof typeof d,
+                    )}
+                  </Txt>
+                  <Txt>
+                    {Array.isArray(value)
+                      ? value.join(', ') || 'Purchaser input'
+                      : String(value)}
+                  </Txt>
+                </Row>
+              ))}
             <Txt style={s.muted}>
               {definition.standard}:{definition.edition} · Revision{' '}
               {definition.revision}

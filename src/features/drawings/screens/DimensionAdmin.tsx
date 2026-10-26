@@ -8,6 +8,8 @@ import { drawingApi } from '../services/drawing-api';
 import { definitionSchema, normalizeStandard } from '../model/validation';
 import {
   drawingFamily,
+  isHexShape,
+  isNutShape,
   shapeLabels,
   type DimensionData,
   type DrawingDefinition,
@@ -21,7 +23,9 @@ import {
   subcategoryLabel,
   subcategoryShapes,
   shapeDimensionKeys,
-  dimensionLabels,
+  drawingDimensionLabel,
+  coachToleranceKeys,
+  hexDimensionKeys,
 } from '../model/subcategories';
 import { FastenerPhotoAdmin } from '../components/FastenerPhotoAdmin';
 
@@ -209,6 +213,8 @@ const scalarKeys = [
   'thread_base',
   'head_width',
   'head_height',
+  ...coachToleranceKeys,
+  ...hexDimensionKeys,
 ] as const;
 function DefinitionEditor({
   row,
@@ -229,10 +235,11 @@ function DefinitionEditor({
   const [shape, setShape] = useState<DrawingShape>(
     row?.shape ?? subcategoryShapes(subcategory)[0] ?? 'j-i',
   );
-  const family =
-    shape === 'coach'
+  const family = isHexShape(shape)
+    ? 'hex'
+    : shape === 'coach'
       ? 'coach'
-      : row && row.shape !== 'coach'
+      : row && !isHexShape(row.shape) && row.shape !== 'coach'
         ? drawingFamily(row)
         : 'roofing';
   const [size, setSize] = useState(row?.size ?? '');
@@ -264,11 +271,11 @@ function DefinitionEditor({
         .map((key) => [key, Number(scalars[key])]),
     ),
     widths:
-      !round && shape !== 'coach' && widths.trim()
+      !round && !isHexShape(shape) && shape !== 'coach' && widths.trim()
         ? widths.split(',').map((value) => Number(value.trim()))
         : [],
     lengths:
-      !round && lengths.trim()
+      !round && !isNutShape(shape) && lengths.trim()
         ? lengths.split(',').map((value) => Number(value.trim()))
         : [],
   });
@@ -379,7 +386,7 @@ function DefinitionEditor({
         .map((key) => (
           <Field
             key={key}
-            label={dimensionLabels[key]}
+            label={drawingDimensionLabel(shape, key)}
             value={scalars[key]}
             onChangeText={(value) => {
               setScalars((previous) => ({ ...previous, [key]: value }));
@@ -388,14 +395,17 @@ function DefinitionEditor({
             numeric
           />
         ))}
-      {supportedShapes.length && !round && shape !== 'coach' ? (
+      {supportedShapes.length &&
+      !round &&
+      !isHexShape(shape) &&
+      shape !== 'coach' ? (
         <Field
           label="Allowed widths (mm, comma separated; blank for purchaser input)"
           value={widths}
           onChangeText={setWidths}
         />
       ) : null}
-      {supportedShapes.length && !round ? (
+      {supportedShapes.length && !round && !isNutShape(shape) ? (
         <Field
           label="Allowed lengths (mm, comma separated; blank for purchaser input)"
           value={lengths}

@@ -43,6 +43,7 @@ type Props = {
   renderAdapter?: (kind: 'fastener' | 'tractor_part') => ReactNode;
   renderMaterials?: (
     filters: Pick<CatalogQuery, 'category' | 'ids'>,
+    allCategories?: boolean,
   ) => ReactNode;
 };
 
@@ -901,27 +902,30 @@ function SelectionForm({
       {!productId && draft.category === 'square' ? (
         <ProductReferenceCharts product={{ slug: 'square' }} />
       ) : null}
-      {!productId && !!draft.category && !adapter && !manualActive ? (
+      {!productId && !adapter && !manualActive ? (
         draft.sizeId && query.isFetching ? (
           <Txt style={s.muted}>Loading matching materials…</Txt>
         ) : (
-          renderMaterials?.({
-            category:
-              draft.category && draft.category !== 'steel'
-                ? draft.category
+          renderMaterials?.(
+            {
+              category:
+                draft.category && draft.category !== 'steel'
+                  ? draft.category
+                  : undefined,
+              ids: draft.sizeId
+                ? [
+                    ...new Set(
+                      (data?.options ?? [])
+                        .filter(
+                          (item) => !draft.grade || item.grade === draft.grade,
+                        )
+                        .map((item) => item.product_id),
+                    ),
+                  ]
                 : undefined,
-            ids: draft.sizeId
-              ? [
-                  ...new Set(
-                    (data?.options ?? [])
-                      .filter(
-                        (item) => !draft.grade || item.grade === draft.grade,
-                      )
-                      .map((item) => item.product_id),
-                  ),
-                ]
-              : undefined,
-          })
+            },
+            !draft.category,
+          )
         )
       ) : null}
       {message ? (

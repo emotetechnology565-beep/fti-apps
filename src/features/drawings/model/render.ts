@@ -1,5 +1,6 @@
 import type { DrawingDefinition, DrawingInput } from './types';
-import { shapeLabels } from './types';
+import { isHexShape, shapeLabels } from './types';
+import { hexDrawingSvg } from './hex-render';
 
 export const escapeXml = (value: string) =>
   value.replace(
@@ -14,6 +15,7 @@ export function drawingSvg(
   definition: DrawingDefinition,
   input: DrawingInput,
 ): string {
+  if (isHexShape(definition.shape)) return hexDrawingSvg(definition, input);
   const d = definition.dimensions,
     shape = definition.shape;
   const round = shape === 'j-ii' || shape === 'u-round',

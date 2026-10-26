@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'test-results' / 'fastener-app'
 OUT.mkdir(parents=True, exist_ok=True)
 definitions = json.loads((ROOT / 'deployment/fastener-dimensions/source-definitions.json').read_text())
+definitions += json.loads((ROOT / 'deployment/fastener-dimensions/hex-source-definitions.json').read_text())
 for index, row in enumerate(definitions):
     row.update(id=f'00000000-0000-0000-0000-{index+10:012d}',revision=1,published_revision=1)
 actor='00000000-0000-0000-0000-000000000001'
@@ -78,6 +79,8 @@ with sync_playwright() as p:
     expect(page.get_by_role('button',name='Raw Materials',exact=True)).to_be_visible()
     expect(page.get_by_role('button',name='Fasteners',exact=True)).to_be_visible()
     expect(page.get_by_role('button',name='Tractor Parts',exact=True)).to_be_visible()
+    expect(page.get_by_text('Fastener selection',exact=True)).to_have_count(0)
+    expect(page.get_by_role('textbox',name='Search catalogue',exact=True)).to_be_visible()
     expect(page.get_by_text('15 products',exact=True)).to_have_count(0)
     page.get_by_role('button',name='Fasteners',exact=True).click()
     expect(page.get_by_text('Fastener selection',exact=True)).to_be_visible()
@@ -105,8 +108,8 @@ with sync_playwright() as p:
     assert page.get_by_role('radio',name='Hex bolt',exact=True).count()==1
     assert page.get_by_role('radio',name='Sq.plate',exact=True).count()==1
     customer_names=page.get_by_role('radio').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("aria-label"))')
-    page.get_by_role('radio',name='Hex bolt',exact=True).click()
-    expect(page).to_have_url(base+'/fastener/hex-bolt')
+    page.get_by_role('radio',name='Plain washer',exact=True).click()
+    expect(page).to_have_url(base+'/fastener/plain-washer')
     expect(page.get_by_text('No published sizes or drawings are available for this subcategory yet. Contact FTI for a quotation.',exact=True)).to_be_visible()
     expect(page.get_by_role('button',name='Choose U bolt photo',exact=True)).to_have_count(0)
     page.get_by_role('button',name='Back to fasteners',exact=True).click()
@@ -137,6 +140,23 @@ with sync_playwright() as p:
     expect(page.get_by_role('button',name='Choose U bolt photo',exact=True)).to_have_count(0)
     expect(page.get_by_role('button',name='IS standard: IS 730:1978',exact=True)).to_be_visible()
     expect(page.get_by_role('button',name='Shape: Choose shape',exact=True)).to_have_count(0)
+    page.goto(base+'/fastener/hex-bolt',wait_until='networkidle')
+    expect(page.get_by_role('button',name='IS standard: IS 1363:1967',exact=True)).to_be_visible()
+    page.get_by_role('button',name='Shape: Choose shape',exact=True).click()
+    page.get_by_role('radio',name='Hex bolt',exact=True).click()
+    page.get_by_role('button',name='Size: Choose size',exact=True).click()
+    page.get_by_role('radio',name='M6',exact=True).click()
+    page.get_by_role('textbox',name='Length L (mm)',exact=True).fill('120')
+    expect(page.get_by_role('img',name='IS 1363:1967, M6. Length 120 mm. Schematic drawing.',exact=True)).to_be_visible()
+    page.screenshot(path=str(OUT/'hex-bolt-mobile.png'),full_page=True)
+    page.goto(base+'/fastener/hex-nut',wait_until='networkidle')
+    page.get_by_role('button',name='Shape: Choose shape',exact=True).click()
+    page.get_by_role('radio',name='Hex nut',exact=True).click()
+    page.get_by_role('button',name='Size: Choose size',exact=True).click()
+    page.get_by_role('radio',name='M6',exact=True).click()
+    expect(page.get_by_role('textbox',name='Length L (mm)',exact=True)).to_have_count(0)
+    expect(page.get_by_role('img',name='IS 1363:1967, M6. Thickness 5.38 mm. Schematic drawing.',exact=True)).to_be_visible()
+    page.screenshot(path=str(OUT/'hex-nut-mobile.png'),full_page=True)
     page.goto(base+'/admin?section=catalogue',wait_until='networkidle')
     page.get_by_role('button',name='Fasteners',exact=True).click()
     page.get_by_role('button',name='Manage fastener dimensions',exact=True).click()
@@ -169,9 +189,9 @@ with sync_playwright() as p:
     page.get_by_role('button',name='Manage product',exact=True).click()
     page.get_by_role('button',name='Edit fastener entry',exact=True).click()
     page.get_by_role('button',name='Fastener subcategory: U bolt',exact=True).click()
-    product_names=page.get_by_role('radio').all_text_contents()
-    assert len(product_names)>=len(customer_names)
-    for label in customer_names:
+    product_names=page.get_by_role('radio').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("aria-label"))')
+    assert set(customer_names[1:]).issubset(set(product_names)),(customer_names,product_names)
+    for label in customer_names[1:]:
         assert page.get_by_role('radio',name=label,exact=True).count()==1,label
     page.get_by_role('radio',name='U bolt',exact=True).click()
     expect(page.get_by_role('textbox',name='Product name',exact=True)).to_have_count(0)

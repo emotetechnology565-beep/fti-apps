@@ -1,4 +1,9 @@
-import type { DrawingDefinition, DrawingShape, DimensionData } from './types';
+import {
+  isNutShape,
+  type DrawingDefinition,
+  type DrawingShape,
+  type DimensionData,
+} from './types';
 
 export const fastenerSubcategories = [
   { value: 'hex-bolt', label: 'Hex bolt' },
@@ -40,6 +45,8 @@ export function matchesFastenerSearch(slug: string, search: string) {
   ].some((value) => plain(value).includes(term));
 }
 export function subcategoryShapes(value: string): DrawingShape[] {
+  if (value === 'hex-bolt') return ['hex-bolt', 'hex-screw'];
+  if (value === 'hex-nut') return ['hex-nut', 'lock-nut'];
   if (value === 'u-bolt') return ['u-square', 'u-round'];
   if (value === 'j-type-bolt' || value === 'j-hook') return ['j-i', 'j-ii'];
   if (value === 'l-bolt') return ['l'];
@@ -56,12 +63,101 @@ export const dimensionLabels: Record<keyof DimensionData, string> = {
   thread_base: 'Thread length base (mm)',
   head_width: 'Head across flats (mm)',
   head_height: 'Head height (mm)',
+  diameter_min: 'Diameter d minimum (mm)',
+  diameter_max: 'Diameter d maximum (mm)',
+  head_width_min: 'Head across flats s minimum (mm)',
+  head_width_max: 'Head across flats s maximum (mm)',
+  head_height_min: 'Head thickness k minimum (mm)',
+  head_height_max: 'Head thickness k maximum (mm)',
+  across_corners_min: 'Head across corners e minimum (mm)',
+  fillet_radius_max: 'Under-head radius r maximum (mm)',
+  pitch_diameter_min: 'Pitch diameter minimum (mm)',
+  pitch_diameter_max: 'Pitch diameter maximum (mm)',
+  minor_diameter_min: 'Nut minor diameter minimum (mm)',
+  minor_diameter_max: 'Nut minor diameter maximum (mm)',
+  thread_add_short: 'Thread allowance for L up to 130 mm (mm)',
+  thread_add_medium: 'Thread allowance for L over 130 to 200 mm (mm)',
+  thread_add_long: 'Thread allowance for L over 200 mm (mm)',
+  thread_end_allowance: 'Hex screw unthreaded allowance (mm)',
 };
+export const coachToleranceKeys = [
+  'diameter_min',
+  'diameter_max',
+  'head_width_min',
+  'head_width_max',
+  'head_height_min',
+  'head_height_max',
+  'across_corners_min',
+  'fillet_radius_max',
+] as const;
+export const hexDimensionKeys = [
+  'pitch_diameter_min',
+  'pitch_diameter_max',
+  'minor_diameter_min',
+  'minor_diameter_max',
+  'thread_add_short',
+  'thread_add_medium',
+  'thread_add_long',
+  'thread_end_allowance',
+] as const;
+export function drawingDimensionLabel(
+  shape: DrawingShape,
+  key: keyof DimensionData,
+) {
+  if (isNutShape(shape) && key.startsWith('head_height')) {
+    const symbol = shape === 'lock-nut' ? 'm1' : 'm';
+    return `Nut height ${symbol}${key.endsWith('_min') ? ' minimum' : key.endsWith('_max') ? ' maximum' : ''} (mm)`;
+  }
+  return dimensionLabels[key];
+}
 export function shapeDimensionKeys(
   shape: DrawingShape,
 ): (keyof DimensionData)[] {
+  if (shape === 'hex-nut' || shape === 'lock-nut')
+    return [
+      'diameter',
+      'pitch',
+      'head_width',
+      'head_height',
+      'head_width_min',
+      'head_width_max',
+      'head_height_min',
+      'head_height_max',
+      'across_corners_min',
+      'minor_diameter_min',
+      'minor_diameter_max',
+    ];
+  if (shape === 'hex-bolt' || shape === 'hex-screw')
+    return [
+      'diameter',
+      'pitch',
+      'head_width',
+      'head_height',
+      'diameter_min',
+      'diameter_max',
+      'head_width_min',
+      'head_width_max',
+      'head_height_min',
+      'head_height_max',
+      'across_corners_min',
+      'pitch_diameter_min',
+      'pitch_diameter_max',
+      ...(shape === 'hex-bolt'
+        ? ([
+            'thread_add_short',
+            'thread_add_medium',
+            'thread_add_long',
+          ] as const)
+        : (['thread_end_allowance'] as const)),
+    ];
   if (shape === 'coach')
-    return ['diameter', 'pitch', 'head_width', 'head_height'];
+    return [
+      'diameter',
+      'pitch',
+      'head_width',
+      'head_height',
+      ...coachToleranceKeys,
+    ];
   if (shape === 'j-ii' || shape === 'u-round')
     return ['diameter', 'pitch', 'thread_base'];
   return [
@@ -77,12 +173,16 @@ export function drawingSubcategory(
 ) {
   return (
     row.subcategory ??
-    (row.shape.startsWith('u-')
-      ? 'u-bolt'
-      : row.shape.startsWith('j-')
-        ? 'j-type-bolt'
-        : row.shape === 'l'
-          ? 'l-bolt'
-          : 'coach-screw')
+    (['hex-bolt', 'hex-screw'].includes(row.shape)
+      ? 'hex-bolt'
+      : ['hex-nut', 'lock-nut'].includes(row.shape)
+        ? 'hex-nut'
+        : row.shape.startsWith('u-')
+          ? 'u-bolt'
+          : row.shape.startsWith('j-')
+            ? 'j-type-bolt'
+            : row.shape === 'l'
+              ? 'l-bolt'
+              : 'coach-screw')
   );
 }

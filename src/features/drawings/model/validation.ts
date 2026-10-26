@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { drawingShapes } from './types';
+import { drawingShapes, isHexShape, isNutShape } from './types';
 import { allSubcategories, subcategoryShapes } from './subcategories';
 
 const positive = z.number().finite().positive().max(10000);
@@ -14,6 +14,22 @@ export const dimensionSchema = z
     thread_base: positive.optional(),
     head_width: positive.optional(),
     head_height: positive.optional(),
+    diameter_min: positive.optional(),
+    diameter_max: positive.optional(),
+    head_width_min: positive.optional(),
+    head_width_max: positive.optional(),
+    head_height_min: positive.optional(),
+    head_height_max: positive.optional(),
+    across_corners_min: positive.optional(),
+    fillet_radius_max: positive.optional(),
+    pitch_diameter_min: positive.optional(),
+    pitch_diameter_max: positive.optional(),
+    minor_diameter_min: positive.optional(),
+    minor_diameter_max: positive.optional(),
+    thread_add_short: positive.optional(),
+    thread_add_medium: positive.optional(),
+    thread_add_long: positive.optional(),
+    thread_end_allowance: positive.optional(),
   })
   .strict();
 export const definitionSchema = z
@@ -25,7 +41,7 @@ export const definitionSchema = z
         'Choose a valid fastener subcategory.',
       )
       .optional(),
-    family: z.enum(['foundation', 'roofing', 'coach']).optional(),
+    family: z.enum(['foundation', 'roofing', 'coach', 'hex']).optional(),
     standard: z.string().regex(/^IS [1-9][0-9]{0,5}$/),
     edition: z.string().regex(/^[0-9]{4}$/),
     shape: z.enum(drawingShapes),
@@ -62,8 +78,33 @@ export const definitionSchema = z
         message: 'Coach screw shapes must use the coach screw family.',
       });
     const d = value.dimensions;
-    const missing =
-      value.shape === 'coach'
+    if (value.family && (value.family === 'hex') !== isHexShape(value.shape))
+      context.addIssue({
+        code: 'custom',
+        message: 'Hex fastener shapes must use the hex fastener family.',
+      });
+    for (const [min, max] of [
+      [d.diameter_min, d.diameter_max],
+      [d.head_width_min, d.head_width_max],
+      [d.head_height_min, d.head_height_max],
+      [d.pitch_diameter_min, d.pitch_diameter_max],
+      [d.minor_diameter_min, d.minor_diameter_max],
+    ])
+      if (min !== undefined && max !== undefined && min > max)
+        context.addIssue({
+          code: 'custom',
+          message: 'Minimum dimensions must not exceed maximum dimensions.',
+        });
+    const missing = isHexShape(value.shape)
+      ? !d.head_width ||
+        !d.head_height ||
+        !d.pitch ||
+        (isNutShape(value.shape)
+          ? !d.minor_diameter_min || !d.minor_diameter_max
+          : value.shape === 'hex-screw'
+            ? !d.thread_end_allowance
+            : !d.thread_add_short || !d.thread_add_medium || !d.thread_add_long)
+      : value.shape === 'coach'
         ? !d.head_width || !d.head_height || !d.pitch
         : !d.thread_base ||
           (!['j-ii', 'u-round'].includes(value.shape) &&

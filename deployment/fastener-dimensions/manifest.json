@@ -44,7 +44,31 @@
     "sha256": "250bbd7d99995dee8e73e6b56dd9c829b9a9ea7520478fce37ca00ae409359c6"
   },
   {
+    "file": "12_coach_screw_tolerances.sql",
+    "sha256": "aea88a157bc27d1f1ddf9a7126fae344680a4d422cfaefa896d6bdf67705191c"
+  },
+  {
+    "file": "13_coach_screw_table.sql",
+    "sha256": "863de93a6fbb125da4f49ca257fc7fd818d0e9d8a13e30e49fe36d742cec4030"
+  },
+  {
+    "file": "14_hex_fasteners.sql",
+    "sha256": "9d37465416e57d54c32b8a51f15d5525f6cb4cd0cba23218408bb544103b433e"
+  },
+  {
+    "file": "15_hex_table_drafts.sql",
+    "sha256": "ede8486867cca53ac32284d74a7f4b92530b6364942705cc4469fab51899534b"
+  },
+  {
+    "file": "15_hex_table_publish.sql",
+    "sha256": "f6e402bd7f27b9daac486b671c693582435a233176db709eb0f08561a31d08bd"
+  },
+  {
+    "file": "hex-source-definitions.json",
+    "sha256": "124b3bb23f4d355cde69b6b8acce9f935e845eb7e8e9ea6ee8c87959b48d0a0b"
+  },
+  {
     "file": "source-definitions.json",
-    "sha256": "17dd6bbaf3bd125dbc2b3178722149068b4f6d8934eb4e9254e5e5f5415ca87b"
+    "sha256": "9b1c5fc18daa8626df73fb6c82fff566d4410a7c7d353310190c9097905ce4f2"
   }
 ]

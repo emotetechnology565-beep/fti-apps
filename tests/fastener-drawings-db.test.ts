@@ -7,6 +7,7 @@ import {
   normalizeStandard,
 } from '../src/features/drawings/model/validation';
 import { drawingSvg } from '../src/features/drawings/model/render';
+import { hexThreadLength } from '../src/features/drawings/model/hex-render';
 import type { DrawingDefinition } from '../src/features/drawings/model/types';
 import { drawingFamily } from '../src/features/drawings/model/types';
 import {
@@ -21,6 +22,46 @@ const source = JSON.parse(
     'utf8',
   ),
 ) as DrawingDefinition[];
+const hexSource = JSON.parse(
+  readFileSync(
+    'deployment/fastener-dimensions/hex-source-definitions.json',
+    'utf8',
+  ),
+) as DrawingDefinition[];
+
+test('hex table covers the printed size ranges and thread rule boundaries', () => {
+  assert.equal(hexSource.length, 55);
+  for (const row of hexSource) {
+    definitionSchema.parse(row);
+    const svg = drawingSvg(row, { length: 120 });
+    assert.doesNotMatch(svg, /NaN|Infinity|undefined/);
+    assert.match(svg, /IS 1363:1967/);
+    assert.equal(
+      (svg.match(/data-part="nut"/g) ?? []).length,
+      row.shape === 'hex-nut' || row.shape === 'lock-nut' ? 1 : 0,
+    );
+  }
+  const bolt = hexSource.find(
+    (row) => row.shape === 'hex-bolt' && row.size === 'M6',
+  )!;
+  assert.equal(bolt.dimensions.diameter_min, 5.694);
+  assert.deepEqual(
+    [130, 131, 200, 201].map((length) => hexThreadLength(bolt, length)),
+    [18, 24, 24, 37],
+  );
+  assert.throws(() => drawingSvg(bolt, { length: 10 }), /at least/);
+  const screw = hexSource.find(
+    (row) => row.shape === 'hex-screw' && row.size === 'M24',
+  )!;
+  assert.equal(hexThreadLength(screw, 100), 89);
+  assert.equal(
+    hexSource.some((row) => row.shape === 'hex-screw' && row.size === 'M27'),
+    false,
+  );
+  assert.throws(() =>
+    definitionSchema.parse({ ...bolt, subcategory: 'heavy-hex-bolt' }),
+  );
+});
 test('source definitions validate and every template draws without unsafe markup or missing nuts', () => {
   assert.equal(drawingFamily({ shape: 'l' }), 'roofing');
   assert.equal(fastenerSubcategories.length, 15);
@@ -116,6 +157,8 @@ test('dimension database guards MFA, draft privacy, atomic publication, withdraw
       '202610260004_fastener_photos.sql',
       '202610260005_fastener_shape_mapping.sql',
       '202610260006_fastener_entry_save.sql',
+      '202610260007_coach_screw_tolerances.sql',
+      '202610260008_hex_fasteners.sql',
     ])
       await db.exec(readFileSync(`supabase/migrations/${file}`, 'utf8'));
     await db.exec(
@@ -520,6 +563,115 @@ test('dimension database guards MFA, draft privacy, atomic publication, withdraw
         "select count(*)::int as data from platform.audit_logs where action='catalog.old_import.delete'",
       ),
       15,
+    );
+    const coachImport = readFileSync(
+      'deployment/fastener-dimensions/13_coach_screw_table.sql',
+      'utf8',
+    );
+    await db.exec(coachImport);
+    const importedCoach = await value<{
+      head_height: number;
+      head_height_min: number;
+      fillet_radius_max: number;
+    }>(
+      "select dimensions as data from catalog.drawing_definitions where shape='coach' and size='No. 14'",
+    );
+    assert.equal(importedCoach.head_height, 4);
+    assert.equal(importedCoach.head_height_min, 4.38);
+    assert.equal(importedCoach.fillet_radius_max, 0.6);
+    const coachRevision = await value<number>(
+      "select revision as data from catalog.drawing_definitions where shape='coach' and size='No. 14'",
+    );
+    await db.exec(coachImport);
+    assert.equal(
+      await value<number>(
+        "select revision as data from catalog.drawing_definitions where shape='coach' and size='No. 14'",
+      ),
+      coachRevision,
+    );
+    const hexImport = readFileSync(
+      'deployment/fastener-dimensions/15_hex_table_drafts.sql',
+      'utf8',
+    );
+    // Reproduce the reported failure when an older coach-only validator is installed.
+    await db.exec(
+      readFileSync(
+        'supabase/migrations/202610260007_coach_screw_tolerances.sql',
+        'utf8',
+      ),
+    );
+    const firstHex = hexSource[0];
+    await assert.rejects(
+      db.query(
+        "insert into catalog.drawing_definitions(subcategory,family,standard,edition,shape,size,source,notes,dimensions) values('hex-bolt','hex','IS 1363','1967','hex-bolt','M6','Test hex import','',$1)",
+        [JSON.stringify(firstHex.dimensions)],
+      ),
+      (error: unknown) =>
+        (error as { code: string; constraint: string }).code === '23514' &&
+        (error as { constraint: string }).constraint ===
+          'drawing_definitions_check',
+    );
+    await db.exec(hexImport);
+    await db.exec(hexImport);
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where family='hex'",
+      ),
+      55,
+    );
+    assert.equal(
+      await value<number>(
+        "select count(*)::int as data from catalog.drawing_definitions where family='hex' and published_revision is not null",
+      ),
+      55,
+    );
+    const hexBolt = await value<DrawingDefinition>(
+      "select to_jsonb(d)-'published_data' as data from catalog.drawing_definitions d where shape='hex-bolt' and size='M6'",
+    );
+    assert.equal(hexBolt.revision, 2);
+    await asUser(buyer);
+    const hexVisible = await value<DrawingDefinition[]>(
+      'select public.fti_catalog_drawing_list() as data',
+    );
+    assert.equal(
+      hexVisible.find((row) => row.id === hexBolt.id)?.dimensions.head_height,
+      4.38,
+    );
+    await db.exec('reset role');
+    await db.exec(hexImport);
+    assert.equal(
+      await value<number>(
+        'select revision as data from catalog.drawing_definitions where id=$1',
+        [hexBolt.id],
+      ),
+      2,
+    );
+    await asUser(staff);
+    await value(
+      'select public.fti_catalog_drawing_subcategory_save($1,2,$2) as data',
+      [
+        hexBolt.id,
+        JSON.stringify({
+          ...hexBolt,
+          dimensions: { ...hexBolt.dimensions, head_height: 4.37 },
+        }),
+      ],
+    );
+    await db.exec('reset role');
+    await db.exec(hexImport);
+    assert.equal(
+      await value<number>(
+        'select revision as data from catalog.drawing_definitions where id=$1',
+        [hexBolt.id],
+      ),
+      3,
+    );
+    assert.equal(
+      await value<number>(
+        'select published_revision as data from catalog.drawing_definitions where id=$1',
+        [hexBolt.id],
+      ),
+      2,
     );
   } finally {
     await db.close();

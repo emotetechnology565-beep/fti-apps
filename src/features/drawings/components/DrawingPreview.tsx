@@ -3,7 +3,11 @@ import { ScrollView, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Card, Txt, s } from '@shared/ui';
 import { drawingSvg } from '../model/render';
-import type { DrawingDefinition, DrawingInput } from '../model/types';
+import {
+  isNutShape,
+  type DrawingDefinition,
+  type DrawingInput,
+} from '../model/types';
 
 export function DrawingPreview({
   definition,
@@ -37,7 +41,7 @@ export function DrawingPreview({
               style={{ width: '100%', height: '100%' }}
               onError={() => setFailed(true)}
               onLoad={() => setFailed(false)}
-              accessibilityLabel={`${definition.standard}:${definition.edition}, ${definition.size}. Length ${input.length} mm. Schematic drawing.`}
+              accessibilityLabel={`${definition.standard}:${definition.edition}, ${definition.size}. ${isNutShape(definition.shape) ? 'Thickness' : 'Length'} ${input.length} mm. Schematic drawing.`}
             />
           </View>
         </ScrollView>

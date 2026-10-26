@@ -424,14 +424,22 @@
     "shape": "coach",
     "size": "No. 10",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length.",
     "dimensions": {
       "diameter": 4.88,
       "widths": [],
       "lengths": [],
       "pitch": 2.12,
       "head_width": 8,
-      "head_height": 3.5
+      "head_height": 3.5,
+      "diameter_min": 4.72,
+      "diameter_max": 5,
+      "head_width_min": 7.64,
+      "head_width_max": 8,
+      "head_height_min": 3.12,
+      "head_height_max": 3.88,
+      "across_corners_min": 8.63,
+      "fillet_radius_max": 0.6
     }
   },
   {
@@ -440,14 +448,22 @@
     "shape": "coach",
     "size": "No. 14",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length. Nominal head thickness 4.00 is outside printed limits 4.38 to 4.62; client confirmation required.",
     "dimensions": {
       "diameter": 6.3,
       "widths": [],
       "lengths": [],
       "pitch": 2.82,
       "head_width": 10,
-      "head_height": 4
+      "head_height": 4,
+      "diameter_min": 6.05,
+      "diameter_max": 6.43,
+      "head_width_min": 9.64,
+      "head_width_max": 10,
+      "head_height_min": 4.38,
+      "head_height_max": 4.62,
+      "across_corners_min": 10.89,
+      "fillet_radius_max": 0.6
     }
   },
   {
@@ -456,14 +472,22 @@
     "shape": "coach",
     "size": "No. 18",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length.",
     "dimensions": {
       "diameter": 7.72,
       "widths": [],
       "lengths": [],
       "pitch": 3.39,
       "head_width": 13,
-      "head_height": 5.5
+      "head_height": 5.5,
+      "diameter_min": 7.47,
+      "diameter_max": 7.85,
+      "head_width_min": 12.57,
+      "head_width_max": 13,
+      "head_height_min": 5.12,
+      "head_height_max": 5.88,
+      "across_corners_min": 8.63,
+      "fillet_radius_max": 0.6
     }
   },
   {
@@ -472,14 +496,22 @@
     "shape": "coach",
     "size": "No. 24",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length.",
     "dimensions": {
       "diameter": 9.86,
       "widths": [],
       "lengths": [],
       "pitch": 4.23,
       "head_width": 17,
-      "head_height": 7
+      "head_height": 7,
+      "diameter_min": 9,
+      "diameter_max": 9.98,
+      "head_width_min": 16.57,
+      "head_width_max": 17,
+      "head_height_min": 6.55,
+      "head_height_max": 7.45,
+      "across_corners_min": 8.63,
+      "fillet_radius_max": 1
     }
   },
   {
@@ -488,14 +520,22 @@
     "shape": "coach",
     "size": "No. 28",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length.",
     "dimensions": {
       "diameter": 11.28,
       "widths": [],
       "lengths": [],
       "pitch": 4.62,
       "head_width": 19,
-      "head_height": 8
+      "head_height": 8,
+      "diameter_min": 11.02,
+      "diameter_max": 11.4,
+      "head_width_min": 18.48,
+      "head_width_max": 19,
+      "head_height_min": 7.55,
+      "head_height_max": 8.45,
+      "across_corners_min": 8.63,
+      "fillet_radius_max": 1
     }
   },
   {
@@ -504,14 +544,22 @@
     "shape": "coach",
     "size": "No. 32",
     "source": "Whatsapp Scan 26 October 2026 at 09.37.15.pdf, p.1, Table 1A",
-    "notes": "Nominal dimensions transcribed from scan. No.14 head-height nominal 4 differs from printed 4.38?4.62 range; retained as supplied.",
+    "notes": "IS 1120:1975, reaffirmed 1988. Dimensions retained as printed; material reference IS 451:1972. Supplied table does not define overall length.",
     "dimensions": {
       "diameter": 12.7,
       "widths": [],
       "lengths": [],
       "pitch": 5.08,
       "head_width": 24,
-      "head_height": 10
+      "head_height": 10,
+      "diameter_min": 12.45,
+      "diameter_max": 12.83,
+      "head_width_min": 23.16,
+      "head_width_max": 24,
+      "head_height_min": 9.25,
+      "head_height_max": 10.75,
+      "across_corners_min": 8.63,
+      "fillet_radius_max": 1
     }
   }
 ]
