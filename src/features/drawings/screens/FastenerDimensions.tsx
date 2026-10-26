@@ -2,16 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Button,
-  Card,
-  CatalogFilter,
-  Empty,
-  Field,
-  Row,
-  Txt,
-  s,
-} from '@shared/ui';
+import { Button, Card, CatalogFilter, Empty, Field, Txt, s } from '@shared/ui';
 import { drawingApi } from '../services/drawing-api';
 import { DrawingPreview } from '../components/DrawingPreview';
 import { DimensionSelect } from '../components/DimensionSelect';
@@ -391,30 +382,69 @@ export function ConfiguredDrawing({
           <DrawingPreview definition={definition} input={input} />
           <Card style={{ gap: 10 }}>
             <Txt style={s.h2}>Dimensions</Txt>
-            {Object.entries(d)
-              .filter(
-                ([name]) =>
-                  !(isHexShape(definition.shape) && name === 'widths') &&
-                  !(isNutShape(definition.shape) && name === 'lengths'),
-              )
-              .map(([name, value]) => (
-                <Row
-                  key={name}
-                  style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}
+            <View
+              accessibilityRole="summary"
+              style={{
+                borderWidth: 1,
+                borderColor: '#E5EAF0',
+                borderRadius: 8,
+                overflow: 'hidden',
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  backgroundColor: '#EAF0FC',
+                  borderBottomWidth: 1,
+                  borderColor: '#E5EAF0',
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                }}
+              >
+                <Txt style={{ flex: 1, fontWeight: '700' }}>Dimension</Txt>
+                <Txt
+                  style={{
+                    width: '34%',
+                    textAlign: 'right',
+                    fontWeight: '700',
+                  }}
                 >
-                  <Txt>
-                    {drawingDimensionLabel(
-                      definition.shape,
-                      name as keyof typeof d,
-                    )}
-                  </Txt>
-                  <Txt>
-                    {Array.isArray(value)
-                      ? value.join(', ') || 'Purchaser input'
-                      : String(value)}
-                  </Txt>
-                </Row>
-              ))}
+                  Value
+                </Txt>
+              </View>
+              {Object.entries(d)
+                .filter(
+                  ([name]) =>
+                    !(isHexShape(definition.shape) && name === 'widths') &&
+                    !(isNutShape(definition.shape) && name === 'lengths'),
+                )
+                .map(([name, value], index, entries) => (
+                  <View
+                    key={name}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingVertical: 9,
+                      paddingHorizontal: 12,
+                      borderBottomWidth: index === entries.length - 1 ? 0 : 1,
+                      borderColor: '#E5EAF0',
+                      gap: 12,
+                    }}
+                  >
+                    <Txt style={{ flex: 1 }}>
+                      {drawingDimensionLabel(
+                        definition.shape,
+                        name as keyof typeof d,
+                      )}
+                    </Txt>
+                    <Txt style={{ width: '34%', textAlign: 'right' }}>
+                      {Array.isArray(value)
+                        ? value.join(', ') || 'Purchaser input'
+                        : String(value)}
+                    </Txt>
+                  </View>
+                ))}
+            </View>
             <Txt style={s.muted}>
               {definition.standard}:{definition.edition} · Revision{' '}
               {definition.revision}
