@@ -81,11 +81,19 @@
   },
   {
     "file": "18_hex_1364_1992_table_publish.sql",
-    "sha256": "fa7bd2382eaf5bfb831ac438d5998365d75bb7cb40ceeca15d1b09ba0bd8bb10"
+    "sha256": "ac125b9da5b7dba21cc0a348f179b5479d52f876bde32583b50a168a083ce642"
   },
   {
     "file": "hex-1364-1992-source-definitions.json",
-    "sha256": "c0eceb7c5063a1d5f42d095d66facfc90017d1eff08ab8a57e9b7c35be66ec31"
+    "sha256": "4c8195c3419a69bbf4985e4866c15daca3db658d916f0a58e2ca441d677fdd53"
+  },
+  {
+    "file": "19_hex_1364_1992_fine_table_publish.sql",
+    "sha256": "870f0a24ca76de4a9baa3193162227bb8e9499adc4627625bf68ed879b5249ec"
+  },
+  {
+    "file": "hex-1364-fine-source-definitions.json",
+    "sha256": "7cb8e894da23573ef728f0726b86989088b0a262d9a38164fb6eeb8e041837d2"
   },
   {
     "file": "hex-source-definitions.json",

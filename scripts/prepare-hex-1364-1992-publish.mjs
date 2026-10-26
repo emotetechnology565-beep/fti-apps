@@ -41,7 +41,7 @@ insert into platform.audit_logs(actor_id,action,resource_type,resource_id,after_
 select auth.uid(),'catalog.drawing.publish','drawing_definition',id,jsonb_build_object('revision',revision) from published;
 commit;
 
--- Results appear after commit: expected published total is 52 across the four mapped shapes.
+-- Results appear after commit: expected published total is 116 across the four mapped shapes.
 select shape,count(*) as total,
  count(*) filter(where published_revision=revision and published_data is not null) as published,
  count(*) filter(where published_revision is distinct from revision or published_data is null) as unchanged_manual_drafts
