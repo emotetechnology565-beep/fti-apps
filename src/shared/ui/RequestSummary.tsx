@@ -14,7 +14,7 @@ function display(value: unknown): string {
   if (typeof value === 'object')
     return Object.entries(value)
       .map(([key, item]) => `${key.replaceAll('_', ' ')}: ${display(item)}`)
-      .join(' ? ');
+      .join('\n');
   return String(value).replaceAll('_', ' ');
 }
 const buyerKeys = new Set(['name', 'business', 'phone', 'location']);

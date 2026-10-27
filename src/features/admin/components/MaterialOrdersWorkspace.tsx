@@ -23,6 +23,7 @@ export function MaterialOrdersWorkspace() {
           <Pressable
             key={tab.id}
             accessibilityRole="tab"
+            accessibilityLabel={tab.label}
             accessibilityState={{ selected: selected === tab.id }}
             onPress={() => setSelected(tab.id)}
             style={[styles.tab, selected === tab.id ? styles.active : null]}
