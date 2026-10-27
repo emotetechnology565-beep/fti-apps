@@ -95,6 +95,18 @@ with sync_playwright() as p:
         print(page.locator('body').inner_text().encode('ascii', errors='replace').decode())
         print('Weight calls:', weight_calls)
         raise
+    drawing = page.get_by_alt_text(__import__('re').compile('Schematic drawing'))
+    for width in [320, 390]:
+        page.set_viewport_size({'width': width, 'height': 844})
+        drawing.scroll_into_view_if_needed()
+        box = drawing.bounding_box()
+        assert box and box['x'] >= 0 and box['x'] + box['width'] <= width, box
+    page.screenshot(path=str(OUT/'drawing-fit-mobile.png'))
+    page.get_by_role('button', name='Enlarge drawing', exact=True).click()
+    expect(page.get_by_role('button', name='Fit drawing to screen', exact=True)).to_be_visible()
+    assert drawing.bounding_box()['width'] == 720
+    page.get_by_role('button', name='Fit drawing to screen', exact=True).click()
+    assert drawing.bounding_box()['width'] < 390
     choose('Order grade', 'MS')
     choose('Bolt supply', 'With nut')
     page.get_by_role('textbox', name='Quantity (pieces)', exact=True).fill('250')
