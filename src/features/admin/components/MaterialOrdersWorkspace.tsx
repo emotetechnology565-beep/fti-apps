@@ -15,8 +15,9 @@ export function MaterialOrdersWorkspace() {
   return (
     <View style={{ gap: 20 }}>
       <Txt style={{ color: '#58697C', lineHeight: 21 }}>
-        Review buyer requests and WhatsApp delivery updates. Manage the
-        recipient numbers for both request types in notification settings.
+        Confirm buyer requests, prepare orders and record dispatch and delivery.
+        Manage the recipient numbers for both request types in notification
+        settings.
       </Txt>
       <View accessibilityRole="tablist" style={styles.tabs}>
         {tabs.map((tab) => (

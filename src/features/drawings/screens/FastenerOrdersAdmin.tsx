@@ -1,3 +1,7 @@
+import {
+  RequestFulfillment,
+  type RequestFulfillmentState,
+} from '@features/operations/ui';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
@@ -10,6 +14,7 @@ type RequestRow = {
   created_at: string;
   details: Record<string, unknown>;
   definition: DrawingDefinition;
+  fulfillment?: RequestFulfillmentState;
   selection: { input: DrawingInput };
   deliveries:
     | { id: string; phone: string; status: string; error: string | null }[]
@@ -74,6 +79,13 @@ export function FastenerOrdersAdmin() {
             key={order.id}
             details={order.details}
             createdAt={order.created_at}
+            fulfillment={
+              <RequestFulfillment
+                kind="fastener"
+                requestId={order.id}
+                initial={order.fulfillment}
+              />
+            }
             detailLabel="drawing & notifications"
           >
             <Txt style={s.h2}>Drawing & WhatsApp delivery</Txt>

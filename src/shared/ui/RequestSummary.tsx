@@ -39,11 +39,13 @@ export function RequestSummary({
   createdAt,
   children,
   detailLabel = 'notification details',
+  fulfillment,
 }: {
   details: Record<string, unknown>;
   createdAt: string;
   children: ReactNode;
   detailLabel?: string;
+  fulfillment?: ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
   const fields = Object.entries(details).filter(
@@ -97,7 +99,8 @@ export function RequestSummary({
           ))}
         </View>
       </View>
-      <View style={styles.actions}>
+      {fulfillment}
+      <View style={[styles.actions, fulfillment ? { paddingTop: 16 } : null]}>
         <Button
           secondary
           icon={expanded ? 'chevron-up' : 'chevron-down'}

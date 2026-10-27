@@ -1,3 +1,7 @@
+import {
+  RequestFulfillment,
+  type RequestFulfillmentState,
+} from '@features/operations/ui';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
@@ -27,6 +31,7 @@ type Request = {
   created_at: string;
   details: Record<string, unknown>;
   deliveries: Delivery[];
+  fulfillment?: RequestFulfillmentState;
 };
 export function RawMaterialAdmin({
   section = 'all',
@@ -224,6 +229,13 @@ export function RawMaterialAdmin({
               key={order.id}
               details={order.details}
               createdAt={order.created_at}
+              fulfillment={
+                <RequestFulfillment
+                  kind="material"
+                  requestId={order.id}
+                  initial={order.fulfillment}
+                />
+              }
             >
               <Txt style={s.h2}>WhatsApp delivery</Txt>
               {!order.deliveries?.length ? (
