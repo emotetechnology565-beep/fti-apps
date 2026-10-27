@@ -387,7 +387,7 @@ export function ConfiguredDrawing({
           <DrawingWeight
             key={`${definition.id}:${definition.revision}`}
             definition={definition}
-            length={input.length}
+            input={input}
           />
           <Card style={{ gap: 10 }}>
             <Txt style={s.h2}>Dimensions</Txt>

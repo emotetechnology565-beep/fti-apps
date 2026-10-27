@@ -1,3 +1,4 @@
+import { FastenerOrdersAdmin } from '@features/drawings/ui';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
@@ -155,7 +156,7 @@ function StaffWorkspace() {
       case 'sales': return <SalesManagement/>;
       case 'inventory': return <CommerceManagement section="inventory"/>;
       case 'tractor-orders': return <CartOrderQueue/>;
-      case 'raw-material-orders': return <RawMaterialAdmin/>;
+      case 'raw-material-orders': return <><RawMaterialAdmin/><FastenerOrdersAdmin/></>;
       case 'payments': return <CommerceManagement section="payments"/>;
       case 'order-policy': return <CommerceManagement section="policy"/>;
       case 'reservations': return <CommerceManagement section="expiry"/>;

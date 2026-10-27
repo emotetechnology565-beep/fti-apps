@@ -1,0 +1,86 @@
+{
+  "01_grade_rates.sql": {
+    "bytes": 1935,
+    "sha256": "5b4d564cdb3d1fa7f83bd900b26af68b42d37c3d8e0f784b6661254563e97897"
+  },
+  "02_fastener_orders.sql": {
+    "bytes": 13715,
+    "sha256": "e16ba5ada3ec46b8cf1594ed2866e1ec4498924b5753f3516bb14fc2333ad258"
+  },
+  "README.md": {
+    "bytes": 4865,
+    "sha256": "e4f48b81ad6f942ba0df2b1ceeaedfbd98249283523e535d55b6a16352144331"
+  },
+  "sample-drawing.png": {
+    "bytes": 67200,
+    "sha256": "543c6d2b4650c04c5cf9267e28d1c174759560ace1b1bdb8165792309acbb873"
+  },
+  "supabase/config.toml": {
+    "bytes": 250,
+    "sha256": "21acb7998d697831228ed1309e6f9621df68728c2b94955bb2c27c227cdcbb94"
+  },
+  "supabase/functions/operations-whatsapp/crypto.ts": {
+    "bytes": 1988,
+    "sha256": "68c5404687b2df4e9aa866bb848c3cce4242e013ff98bb36089a696687e9fa06"
+  },
+  "supabase/functions/operations-whatsapp/fastener-image.ts": {
+    "bytes": 1034,
+    "sha256": "3bf6b1204dd4774563bf7715908b57a7dd836ff41a0ed5bed5b02e954691a042"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/index.d.ts": {
+    "bytes": 2496,
+    "sha256": "bc8ed21a5bde7f8ab289969c11fbd6dd4d708f4ff36dd9c374aee3cc1b6b63c8"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/index.mjs": {
+    "bytes": 17048,
+    "sha256": "10170d02d816f02ec76f9bc095b01d9becf536e7b1e12e5aa616652c84b237a1"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/index_bg.wasm": {
+    "bytes": 2478606,
+    "sha256": "22bf6e9f9a100d972da0411a69c5ba504367fc1fa87b3b64e3f35e53926d2d70"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/OFL.txt": {
+    "bytes": 4394,
+    "sha256": "061402327a96aadb0bfb694a960ed289ecd38d383e396243831ab81feb109c41"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/RESVG-LICENSE": {
+    "bytes": 16724,
+    "sha256": "4b89d4518bd135ab4ee154a7bce722246b57a98c3d7efc1a09409898160c2bd1"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/assets/Roboto.ttf": {
+    "bytes": 488584,
+    "sha256": "d7598e12c5dbef095ff8272cfc55da0250bd07fbdecbac8a530b9b277872a134"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/hex-orthographic.ts": {
+    "bytes": 12188,
+    "sha256": "9e2a7f7958d33573d1921d5b871163292966954fbbfae2af9e6b6564f7a5970d"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/hex-render.ts": {
+    "bytes": 2235,
+    "sha256": "4312b770aac1f9be30ab2907b6430ac75de94bcdbf0698c129c887e1dee4cae9"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/render.ts": {
+    "bytes": 9200,
+    "sha256": "774ee8b25bf68db296f40dabe74ce9c696fd8cac015654173022172c094d4143"
+  },
+  "supabase/functions/operations-whatsapp/fastener-renderer/types.ts": {
+    "bytes": 2850,
+    "sha256": "e98c14462bbd91a939d1c7daa85fab6eaf8dd9fb34fefcd1f79b85dedf588d1e"
+  },
+  "supabase/functions/operations-whatsapp/index.ts": {
+    "bytes": 11035,
+    "sha256": "bdc63df0eeeeeef4c86a7d20e33aaa3a3938110cb825d6a003dd69060af98fa9"
+  },
+  "template-status.json": {
+    "bytes": 492,
+    "sha256": "537410f01e328b5a46f56c67e9609f4ed35ab80cb7b683574287a52563d17342"
+  },
+  "templates.json": {
+    "bytes": 2171,
+    "sha256": "cc3b0fd5c0fc04e7ba8ebe4a807077251e8c1e1f353a5be16146abbda299b82e"
+  },
+  "web-build.zip": {
+    "bytes": 1634615,
+    "sha256": "80342f9394bf2f9bb51aea881c56b8b9d341c5477d6ad811c73c811451ee5a57"
+  }
+}

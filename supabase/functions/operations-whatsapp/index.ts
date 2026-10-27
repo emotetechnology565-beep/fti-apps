@@ -1,3 +1,5 @@
+import { fastenerPng } from './fastener-image.ts';
+import type { DrawingDefinition, DrawingInput } from './fastener-renderer/types.ts';
 // Scheduled utility-message worker. A shared secret protects invocation; the service key stays server-side.
 import { importDocumentKey, openDocument } from './crypto.ts';
 const env = {
@@ -13,6 +15,7 @@ const parameterCounts: Record<string,number> = {
  fti_request_approved_v1:2,fti_request_rejected_v1:2,fti_request_update_v1:3,
  fti_category_quotation_v1:3,
  fti_raw_material_received_v1:6,fti_raw_material_admin_v1:9,
+ fti_fastener_received_v1:11,fti_fastener_admin_v1:11,
 };
 const names = Object.keys(parameterCounts);
 type Job = { id:string; template:string; parameters:string[]; phone:string };
@@ -70,11 +73,14 @@ Deno.serve(async(request:Request)=>{
   const jobs=await rpc<Job[]>('fti_operations_whatsapp_claim',{p_templates:approved,p_limit:10});
   const rawApproved=approved.filter(name=>name.startsWith('fti_raw_material_'));
   if(rawApproved.length) jobs.push(...await rpc<Job[]>('fti_raw_material_claim',{p_templates:rawApproved,p_limit:10}));
+  const fastenerApproved=approved.filter(name=>name.startsWith('fti_fastener_'));
+  if(fastenerApproved.length) jobs.push(...await rpc<Job[]>('fti_fastener_claim',{p_templates:fastenerApproved,p_limit:10}));
   let sent=0,attention=0;
   for(const job of jobs){
    const raw=job.template.startsWith('fti_raw_material_');
-   const canSend=raw?'fti_raw_material_can_send':'fti_operations_whatsapp_can_send';
-   const finish=raw?'fti_raw_material_finish':'fti_operations_whatsapp_finish';
+   const fastener=job.template.startsWith('fti_fastener_');
+   const canSend=fastener?'fti_fastener_can_send':raw?'fti_raw_material_can_send':'fti_operations_whatsapp_can_send';
+   const finish=fastener?'fti_fastener_finish':raw?'fti_raw_material_finish':'fti_operations_whatsapp_finish';
    const allowed=await rpc<boolean>(canSend,{p_id:job.id});
    if(!allowed){
     await rpc(finish,{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable, consent withdrawn or staff permission removed'});
@@ -87,6 +93,28 @@ Deno.serve(async(request:Request)=>{
     attention++;continue;
    }
    const components: Record<string,unknown>[] = [{type:'body',parameters:job.parameters.map(text=>({type:'text',text}))}];
+   if (fastener) {
+    try {
+     const drawing=await rpc<{definition:DrawingDefinition;input:DrawingInput}>('fti_fastener_drawing_delivery',{p_id:job.id});
+     if(!drawing) throw new Error('Drawing unavailable');
+     const png=await fastenerPng(drawing.definition,drawing.input);
+     if(png.length>5*1024*1024) throw new Error('Drawing image too large');
+     const form=new FormData();
+     form.set('messaging_product','whatsapp');form.set('type','image/png');
+     form.set('file',new Blob([png.slice()],{type:'image/png'}),'FTI-fastener-drawing.png');
+     const uploaded=await fetch(`https://graph.facebook.com/${env.version}/${env.phoneId}/media`,{method:'POST',headers:{Authorization:`Bearer ${env.token}`},body:form,signal:AbortSignal.timeout(20000)});
+     if(!uploaded.ok)throw new Error('Image upload failed');
+     const media=await uploaded.json();
+     if(typeof media.id!=='string'||!/^\d+$/.test(media.id))throw new Error('Invalid image ID');
+     components.unshift({type:'header',parameters:[{type:'image',image:{id:media.id}}]});
+    } catch {
+     await rpc(finish,{p_id:job.id,p_result:'retry',p_error:'Drawing image preparation failed; no message sent'});
+     attention++;continue;
+    }
+    if(!await rpc<boolean>(canSend,{p_id:job.id})){
+     await rpc(finish,{p_id:job.id,p_result:'failed',p_error:'Recipient unavailable before drawing send'});attention++;continue;
+    }
+   }
    if (job.template === 'fti_category_quotation_v1') {
     try {
      const mediaId = await quotationMedia(job.id);

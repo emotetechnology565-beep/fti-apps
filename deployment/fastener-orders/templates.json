@@ -1,0 +1,64 @@
+[
+  {
+    "name": "fti_fastener_received_v1",
+    "category": "UTILITY",
+    "components": [
+      {
+        "type": "HEADER",
+        "format": "IMAGE"
+      },
+      {
+        "type": "BODY",
+        "text": "FTI has received your fastener order request. Your selected drawing is attached.\nReference: {{1}}\nFastener: {{2}}\nStandard: {{3}}\nSize: {{4}}\nGrade: {{5}}\nQuantity: {{6}}\nSupply: {{7}}\nBuyer: {{8}}\nBusiness: {{9}}\nBuyer phone: {{10}}\nDelivery location: {{11}}\nFTI will contact you to confirm availability, pricing and delivery. This acknowledgment does not confirm the order.",
+        "example": {
+          "body_text": [
+            [
+              "FTI-FN-SAMPLE1001",
+              "Hex bolt",
+              "IS 1363:1967",
+              "M10 / L 60 mm",
+              "MS",
+              "100 pieces",
+              "Without nut",
+              "Sample Buyer",
+              "Sample Engineering",
+              "+919000000001",
+              "Pune, Maharashtra 411001"
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "fti_fastener_admin_v1",
+    "category": "UTILITY",
+    "components": [
+      {
+        "type": "HEADER",
+        "format": "IMAGE"
+      },
+      {
+        "type": "BODY",
+        "text": "FTI staff notification: a new fastener order request has been submitted. The selected drawing is attached.\nReference: {{1}}\nFastener: {{2}}\nStandard: {{3}}\nSize: {{4}}\nGrade: {{5}}\nQuantity: {{6}}\nSupply: {{7}}\nBuyer: {{8}}\nBusiness: {{9}}\nBuyer phone: {{10}}\nDelivery location: {{11}}\nPlease review the drawing and contact the buyer to confirm availability, pricing and delivery.",
+        "example": {
+          "body_text": [
+            [
+              "FTI-FN-SAMPLE1001",
+              "Hex bolt",
+              "IS 1363:1967",
+              "M10 / L 60 mm",
+              "MS",
+              "100 pieces",
+              "Without nut",
+              "Sample Buyer",
+              "Sample Engineering",
+              "+919000000001",
+              "Pune, Maharashtra 411001"
+            ]
+          ]
+        }
+      }
+    ]
+  }
+]

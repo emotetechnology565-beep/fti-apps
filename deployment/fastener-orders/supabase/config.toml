@@ -1,0 +1,4 @@
+project_id = "fti-fastener-orders-deployment"
+[functions.operations-whatsapp]
+verify_jwt = false
+static_files = ["./functions/operations-whatsapp/fastener-renderer/assets/*.wasm", "./functions/operations-whatsapp/fastener-renderer/assets/*.ttf"]

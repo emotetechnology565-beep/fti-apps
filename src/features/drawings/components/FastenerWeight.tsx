@@ -1,8 +1,10 @@
+import { FastenerOrder } from './FastenerOrder';
+import { gradeKey, loadGradeRates } from '../services/grade-api';
 import { FastenerPrice } from './FastenerPrice';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, CatalogFilter, Field, Txt, s } from '@shared/ui';
-import type { DrawingDefinition } from '../model/types';
+import type { DrawingDefinition, DrawingInput } from '../model/types';
 import {
   calculateWeight,
   categoryWeightChart,
@@ -28,7 +30,9 @@ function WeightResult({
   setQuantity,
   priceKind,
   boltMatches,
+  selectedGrade,
 }: {
+  selectedGrade?: string;
   priceKind?: 'bolt' | 'nut' | 'assembly';
   boltMatches?: WeightRow[];
   matches: WeightRow[];
@@ -50,12 +54,14 @@ function WeightResult({
     );
   return (
     <>
-      <Field
-        label="Quantity (pieces)"
-        numeric
-        value={quantity}
-        onChangeText={setQuantity}
-      />
+      {selectedGrade === undefined ? (
+        <Field
+          label="Quantity (pieces)"
+          numeric
+          value={quantity}
+          onChangeText={setQuantity}
+        />
+      ) : null}
       {amount === null ? (
         <Txt accessibilityRole="alert">
           Enter a whole number from 1 to 1,000,000.
@@ -71,6 +77,7 @@ function WeightResult({
             priceKind === 'assembly' ? (
               bolt && result.total > bolt.total ? (
                 <FastenerPrice
+                  selectedGrade={selectedGrade}
                   boltKg={bolt.total}
                   nutKg={result.total - bolt.total}
                 />
@@ -81,6 +88,7 @@ function WeightResult({
               )
             ) : (
               <FastenerPrice
+                selectedGrade={selectedGrade}
                 boltKg={priceKind === 'bolt' ? result.total : 0}
                 nutKg={priceKind === 'nut' ? result.total : 0}
               />
@@ -99,11 +107,14 @@ function WeightResult({
 
 export function DrawingWeight({
   definition,
-  length,
+  input,
 }: {
   definition: DrawingDefinition;
-  length: number;
+  input: DrawingInput;
 }) {
+  const length = input.length;
+  const [grade, setGrade] = useState('');
+  const grades = useQuery({ queryKey: gradeKey, queryFn: loadGradeRates });
   const [assembly, setAssembly] = useState('without');
   const [quantity, setQuantity] = useState('1');
   const target = drawingWeightTarget(definition, length, assembly === 'with');
@@ -125,7 +136,29 @@ export function DrawingWeight({
   });
   return (
     <Card style={{ gap: 12 }}>
-      <Txt style={s.h2}>Approximate weight</Txt>
+      <Txt style={s.h2}>Weight and order</Txt>
+      <CatalogFilter
+        label="Order grade"
+        value={grade}
+        onChange={setGrade}
+        options={[
+          { value: '', label: 'Choose grade' },
+          ...(grades.data ?? []).map((r) => ({
+            value: r.grade,
+            label: r.grade,
+          })),
+        ]}
+      />
+      {grades.isError ? (
+        <Txt>Grade rates unavailable. Please retry later.</Txt>
+      ) : null}
+      <Field
+        label="Quantity (pieces)"
+        numeric
+        value={quantity}
+        onChangeText={setQuantity}
+      />
+
       {target ? (
         <>
           {['hex-bolt', 'hex-screw'].includes(definition.shape) ? (
@@ -151,6 +184,7 @@ export function DrawingWeight({
             </>
           ) : (
             <WeightResult
+              selectedGrade={grade}
               priceKind={
                 ['hex-nut', 'lock-nut'].includes(definition.shape)
                   ? 'nut'
@@ -170,6 +204,13 @@ export function DrawingWeight({
           Weight available on request for this standard and size.
         </Txt>
       )}
+      <FastenerOrder
+        definition={definition}
+        input={input}
+        grade={grade}
+        quantity={quantity}
+        withNut={assembly === 'with'}
+      />
     </Card>
   );
 }

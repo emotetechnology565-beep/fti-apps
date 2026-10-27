@@ -54,6 +54,9 @@ def api(route):
             rows = [row for row in rows if row[key] in allowed]
         start = int(query.get('offset', ['0'])[0]); limit = int(query.get('limit', ['1000'])[0])
         route.fulfill(status=200, headers=headers, content_type='application/json', body=json.dumps(rows[start:start+limit])); return
+    if '/rest/v1/fastener_grade_rates' in request.url:
+        route.fulfill(status=200, headers=headers, content_type='application/json', body=json.dumps([{'grade':'MS','bolt_rate':105,'nut_rate':110,'revision':1}]))
+        return
     body = request.post_data_json or {}
     operation = body.get('operation')
     result = []
@@ -80,15 +83,25 @@ with sync_playwright() as p:
     def choose(label, value):
         page.get_by_role('button', name=__import__('re').compile('^'+label+':')).click()
         page.get_by_role('radio', name=value, exact=True).click()
+        expect(page.get_by_role('button', name='Close filter', exact=True)).to_be_hidden()
     page.goto(base+'/fastener/hex-bolt', wait_until='networkidle')
     choose('IS standard', 'IS 1363:1967'); choose('Shape', 'Hex bolt'); choose('Size', 'M6')
     length = page.get_by_role('textbox', name='Length L (mm)', exact=True)
-    length.fill('20')
-    expect(page.get_by_text('Weight per piece:', exact=False)).to_be_visible()
+    length.fill('25')
+    try:
+        expect(page.get_by_text('Weight per piece:', exact=False)).to_be_visible()
+    except Exception:
+        page.screenshot(path=str(OUT/'failure.png'), full_page=True)
+        print(page.locator('body').inner_text().encode('ascii', errors='replace').decode())
+        print('Weight calls:', weight_calls)
+        raise
+    choose('Order grade', 'MS')
     choose('Bolt supply', 'With nut')
     page.get_by_role('textbox', name='Quantity (pieces)', exact=True).fill('250')
-    expect(page.get_by_text('Approximate total weight: 2.03 kg', exact=True)).to_be_visible()
-    page.get_by_text('Approximate total weight: 2.03 kg', exact=True).scroll_into_view_if_needed()
+    expect(page.get_by_text('Approximate total weight: 2.2425 kg', exact=True)).to_be_visible()
+    expect(page.get_by_text('Estimated price:', exact=False)).to_be_visible()
+    expect(page.get_by_role('button',name='Sign in to order fastener')).to_be_visible()
+    page.get_by_text('Approximate total weight: 2.2425 kg', exact=True).scroll_into_view_if_needed()
     page.screenshot(path=str(OUT/'bolt-mobile.png'))
     page.get_by_role('textbox', name='Quantity (pieces)', exact=True).fill('2.5')
     expect(page.get_by_text('Enter a whole number from 1 to 1,000,000.', exact=True)).to_be_visible()
@@ -112,7 +125,8 @@ with sync_playwright() as p:
     page.screenshot(path=str(OUT/'washer-mobile.png'))
     fail_weights = True
     page.reload(wait_until='networkidle')
-    expect(page.get_by_text('Weight lookup is temporarily unavailable.', exact=True)).to_be_visible(timeout=10000)
+    # Supabase retries transient GET failures before React Query reports failure.
+    expect(page.get_by_text('Weight lookup is temporarily unavailable.', exact=True)).to_be_visible(timeout=30000)
     expect(page.get_by_text('Approximate total weight:', exact=False)).to_have_count(0)
     fail_weights = False
     page.get_by_role('button', name='Retry weight lookup', exact=True).click()
@@ -122,3 +136,4 @@ with sync_playwright() as p:
     browser.close()
 server.shutdown()
 print('PASS: workbook weights, assembly selection, quantity, missing sizes, unsupported standards, nuts, washers and retry on mobile')
+

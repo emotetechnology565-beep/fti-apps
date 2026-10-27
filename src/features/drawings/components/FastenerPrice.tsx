@@ -6,11 +6,14 @@ import { fastenerPrice } from '../model/price';
 export function FastenerPrice({
   boltKg,
   nutKg,
+  selectedGrade,
 }: {
+  selectedGrade?: string;
   boltKg: number;
   nutKg: number;
 }) {
-  const [grade, setGrade] = useState('');
+  const [localGrade, setGrade] = useState('');
+  const grade = selectedGrade ?? localGrade;
   const query = useQuery({
     queryKey: gradeKey,
     queryFn: loadGradeRates,
@@ -32,7 +35,7 @@ export function FastenerPrice({
         <Txt>Loading grade prices...</Txt>
       ) : query.isError ? (
         <Txt>Grade pricing is temporarily unavailable.</Txt>
-      ) : (
+      ) : selectedGrade !== undefined ? null : (
         <CatalogFilter
           label="Pricing grade"
           value={grade}
