@@ -4,6 +4,8 @@ This package adds the raw-material-style order request form to configured fasten
 
 The refreshed web build fits the complete drawing to the phone screen by default. “Enlarge drawing” opens the detailed swipeable view; “Fit drawing to screen” restores the full preview. This display fix only needs the web build uploaded, with no SQL or worker changes.
 
+“Download drawing” saves a complete 1440×896 PNG in web browsers, including mobile browsers. The installed app uses the device's share/save sheet with a raster image. No new native dependencies or server calls are required. Native save behavior still requires device verification. The file name includes standard, edition, type, size and length.
+
 ## Deploy in this order
 
 **Fix for “Drawing dimension is outside permitted limits”:** if the initial migrations are already deployed, run only `03_fix_optional_dimensions.sql` in Supabase SQL Editor. It accepts the older app's unused `width: 0` when the published drawing has no width selector. Required dimensions remain positive and published widths remain enforced. This SQL is enough to unblock the current web page; the refreshed `web-build.zip` also omits unused dimensions. No WhatsApp worker redeployment is needed for this fix. Apply `03_fix_optional_dimensions.sql` after `02_fastener_orders.sql` on a new installation, or after rerunning that setup file.

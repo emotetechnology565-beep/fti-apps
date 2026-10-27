@@ -102,6 +102,14 @@ with sync_playwright() as p:
         box = drawing.bounding_box()
         assert box and box['x'] >= 0 and box['x'] + box['width'] <= width, box
     page.screenshot(path=str(OUT/'drawing-fit-mobile.png'))
+    with page.expect_download() as pending_download:
+        page.get_by_role('button', name='Download drawing', exact=True).click()
+    download = pending_download.value
+    assert download.suggested_filename == 'FTI-IS-1363-1967-hex-bolt-M6-L25.png'
+    download.save_as(str(OUT/'downloaded-drawing.png'))
+    exported = (OUT/'downloaded-drawing.png').read_bytes()
+    assert exported[:8] == b'\x89PNG\r\n\x1a\n'
+    assert __import__('struct').unpack('>II', exported[16:24]) == (1440, 896)
     page.get_by_role('button', name='Enlarge drawing', exact=True).click()
     expect(page.get_by_role('button', name='Fit drawing to screen', exact=True)).to_be_visible()
     assert drawing.bounding_box()['width'] == 720
@@ -147,5 +155,5 @@ with sync_playwright() as p:
     assert weight_calls
     browser.close()
 server.shutdown()
-print('PASS: workbook weights, assembly selection, quantity, missing sizes, unsupported standards, nuts, washers and retry on mobile')
+print('PASS: complete mobile drawing, PNG download, weights, assembly selection, quantity, missing sizes, unsupported standards, nuts, washers and retry')
 
