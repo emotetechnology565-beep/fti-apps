@@ -40,6 +40,12 @@ test('Fastener requests preserve snapshots, queue both recipients and enforce ac
         'utf8',
       ),
     );
+    await db.exec(
+      readFileSync(
+        'supabase/migrations/202610270001_fastener_optional_dimensions.sql',
+        'utf8',
+      ),
+    );
     const def = {
       id: definition,
       revision: 1,
@@ -66,14 +72,19 @@ test('Fastener requests preserve snapshots, queue both recipients and enforce ac
       definition,
       JSON.stringify(def),
     ]);
-    const submit = (request = id, revision = 1, qty = 100) =>
+    const submit = (
+      request = id,
+      revision = 1,
+      qty = 100,
+      input = { length: 60, width: 0 },
+    ) =>
       db.query<{ result: { reference: string; replayed: boolean } }>(
         'select public.fti_catalog_fastener_order_submit($1,$2,$3,$4,$5,$6,$7,$8) as result',
         [
           request,
           definition,
           revision,
-          JSON.stringify({ length: 60 }),
+          JSON.stringify(input),
           'MS',
           qty,
           false,
@@ -86,6 +97,16 @@ test('Fastener requests preserve snapshots, queue both recipients and enforce ac
         ],
       );
     await db.exec('set role authenticated');
+    // The deployed form sent width=0 despite having no width selector.
+    // Required values and negative widths must still be rejected.
+    await assert.rejects(
+      submit(id, 1, 100, { length: 0, width: 0 }),
+      /dimension length/,
+    );
+    await assert.rejects(
+      submit(id, 1, 100, { length: 60, width: -1 }),
+      /dimension width/,
+    );
     assert.equal((await submit()).rows[0].result.replayed, false);
     assert.equal((await submit()).rows[0].result.replayed, true);
     await assert.rejects(submit(id, 1, 200), /different details/);

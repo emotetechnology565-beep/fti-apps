@@ -7,9 +7,13 @@
     "bytes": 13715,
     "sha256": "e16ba5ada3ec46b8cf1594ed2866e1ec4498924b5753f3516bb14fc2333ad258"
   },
+  "03_fix_optional_dimensions.sql": {
+    "bytes": 7107,
+    "sha256": "dbe3b5a0d3f276e9310ac5e729aa3a4cf5dcb1f6e7ae4405a491bc4711ba88db"
+  },
   "README.md": {
-    "bytes": 4865,
-    "sha256": "e4f48b81ad6f942ba0df2b1ceeaedfbd98249283523e535d55b6a16352144331"
+    "bytes": 5511,
+    "sha256": "38435361de75d11fe1e56e38cf5ee86ec8fdc0bc8cabfd131e021289ebb34f9c"
   },
   "sample-drawing.png": {
     "bytes": 67200,
@@ -80,7 +84,7 @@
     "sha256": "cc3b0fd5c0fc04e7ba8ebe4a807077251e8c1e1f353a5be16146abbda299b82e"
   },
   "web-build.zip": {
-    "bytes": 1634615,
-    "sha256": "80342f9394bf2f9bb51aea881c56b8b9d341c5477d6ad811c73c811451ee5a57"
+    "bytes": 1634647,
+    "sha256": "229a6103b8bfe7dc0bc61148dc8b16f10149a69539bec57915ffb7eef28bcaa7"
   }
 }

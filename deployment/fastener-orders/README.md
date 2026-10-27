@@ -4,6 +4,8 @@ This package adds the raw-material-style order request form to configured fasten
 
 ## Deploy in this order
 
+**Fix for “Drawing dimension is outside permitted limits”:** if the initial migrations are already deployed, run only `03_fix_optional_dimensions.sql` in Supabase SQL Editor. It accepts the older app's unused `width: 0` when the published drawing has no width selector. Required dimensions remain positive and published widths remain enforced. This SQL is enough to unblock the current web page; the refreshed `web-build.zip` also omits unused dimensions. No WhatsApp worker redeployment is needed for this fix. Apply `03_fix_optional_dimensions.sql` after `02_fastener_orders.sql` on a new installation, or after rerunning that setup file.
+
 1. **Database:** you confirmed the migrations are already applied. `01_grade_rates.sql` and `02_fastener_orders.sql` are included for reference or deployment to another environment. Both can be rerun; the grade-rate setup preserves edited rates. Existing identity, catalogue drawings, raw-material recipient and operations migrations are prerequisites.
 2. **WhatsApp worker:** deploy the entire `supabase/functions/operations-whatsapp` folder from this package. It includes TypeScript, the PNG renderer, WebAssembly and the font. Do not paste only `index.ts` into the Dashboard: the other files are required.
 3. **App:** extract `web-build.zip` and upload its contents to your existing web host. Preserve your existing SPA fallback to `index.html`. For the installed Expo app, use the repository's normal EAS build/update flow.

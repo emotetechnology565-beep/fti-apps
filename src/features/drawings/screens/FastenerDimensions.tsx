@@ -285,11 +285,13 @@ export function ConfiguredDrawing({
   const [angle, setAngle] = useState('25');
   const input = {
     length: Number(length),
-    width: Number(width),
-    radius: Number(radius),
-    returnHeight: Number(returnHeight),
+    ...(d.widths.length && !round ? { width: Number(width) } : {}),
+    ...(round ? { radius: Number(radius) } : {}),
+    ...(definition.shape === 'j-ii'
+      ? { returnHeight: Number(returnHeight) }
+      : {}),
     pitch: pitch.trim() ? Number(pitch) : undefined,
-    angle: Number(angle),
+    ...(definition.shape === 'j-i' ? { angle: Number(angle) } : {}),
   };
   return (
     <View style={{ gap: 16 }}>

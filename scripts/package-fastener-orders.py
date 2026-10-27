@@ -11,6 +11,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 for name, source in {
     '01_grade_rates.sql': 'supabase/migrations/202610260010_fastener_grade_rates.sql',
     '02_fastener_orders.sql': 'supabase/migrations/202610260011_fastener_orders.sql',
+    '03_fix_optional_dimensions.sql': 'supabase/migrations/202610270001_fastener_optional_dimensions.sql',
 }.items():
     shutil.copy2(ROOT/source, OUT/name)
 
