@@ -78,7 +78,8 @@ with sync_playwright() as p:
     assert submissions[0]['p_size'] == 20 and submissions[0]['p_quantity'] == '2'
     assert submissions[0]['p_buyer']['business'] == 'Test Engineering'
     page.goto(base + '/admin?section=raw-material-orders')
-    expect(page.get_by_text('Raw-material notification numbers', exact=True)).to_be_visible(timeout=30000)
+    page.get_by_role('tab', name='Notification settings', exact=True).click(timeout=30000)
+    expect(page.get_by_text('Order notification recipients', exact=True)).to_be_visible(timeout=30000)
     expect(page.get_by_label('WhatsApp number with country code', exact=True)).to_have_value('+919000000001')
     page.get_by_role('button', name='Add notification number', exact=True).click()
     expect(page.get_by_role('button', name='Remove Test Buyer', exact=True)).to_be_visible()

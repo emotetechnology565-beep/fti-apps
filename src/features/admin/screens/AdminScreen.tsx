@@ -1,11 +1,11 @@
-import { FastenerOrdersAdmin } from '@features/drawings/ui';
+import { MaterialOrdersWorkspace } from '../components/MaterialOrdersWorkspace';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { AccessGate, StaffMfa, useAuth } from '@features/auth/ui';
 import { identityRpc, hasPermission } from '@features/auth';
-import { CatalogManagement, RawMaterialAdmin } from '@features/catalog';
+import { CatalogManagement } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
 import { SalesManagement } from '@features/quotations/ui';
 import { OperationsManagement } from '@features/operations/ui';
@@ -38,7 +38,9 @@ function ReviewCard({
     if (!decision || busy) return;
     const reviewNote = note.trim();
     if (reviewNote.length < 3 || reviewNote.length > 1000) {
-      setError('Enter a review note between 3 and 1,000 characters to confirm your decision.');
+      setError(
+        'Enter a review note between 3 and 1,000 characters to confirm your decision.',
+      );
       return;
     }
     setError('');
@@ -145,30 +147,57 @@ function ReviewQueue() {
 }
 function StaffWorkspace() {
   const auth = useAuth();
-  const {section} = useLocalSearchParams<{section?: string}>();
-  const selected = selectedStaffSection(auth.identity,section);
-  if (!selected) return <Empty title="No staff tools assigned" description="Ask an FTI administrator to assign the permissions needed for your work."/>;
+  const { section } = useLocalSearchParams<{ section?: string }>();
+  const selected = selectedStaffSection(auth.identity, section);
+  if (!selected)
+    return (
+      <Empty
+        title="No staff tools assigned"
+        description="Ask an FTI administrator to assign the permissions needed for your work."
+      />
+    );
   const content = (() => {
     switch (selected.id) {
-      case 'businesses': return <ReviewQueue/>;
-      case 'catalogue': return <CatalogManagement/>;
-      case 'pricing': return <PricingManagement/>;
-      case 'sales': return <SalesManagement/>;
-      case 'inventory': return <CommerceManagement section="inventory"/>;
-      case 'tractor-orders': return <CartOrderQueue/>;
-      case 'raw-material-orders': return <><RawMaterialAdmin/><FastenerOrdersAdmin/></>;
-      case 'payments': return <CommerceManagement section="payments"/>;
-      case 'order-policy': return <CommerceManagement section="policy"/>;
-      case 'reservations': return <CommerceManagement section="expiry"/>;
-      case 'dispatch': return <OperationsManagement section="dispatch"/>;
-      case 'support': return <OperationsManagement section="support"/>;
-      case 'reports': return <OperationsManagement section="reports"/>;
-      case 'jobs': return <OperationsManagement section="jobs"/>;
-      case 'announcements': return <OperationsManagement section="content"/>;
-      case 'business-stock': return <StockReviewPanel/>;
+      case 'businesses':
+        return <ReviewQueue />;
+      case 'catalogue':
+        return <CatalogManagement />;
+      case 'pricing':
+        return <PricingManagement />;
+      case 'sales':
+        return <SalesManagement />;
+      case 'inventory':
+        return <CommerceManagement section="inventory" />;
+      case 'tractor-orders':
+        return <CartOrderQueue />;
+      case 'raw-material-orders':
+        return <MaterialOrdersWorkspace />;
+      case 'payments':
+        return <CommerceManagement section="payments" />;
+      case 'order-policy':
+        return <CommerceManagement section="policy" />;
+      case 'reservations':
+        return <CommerceManagement section="expiry" />;
+      case 'dispatch':
+        return <OperationsManagement section="dispatch" />;
+      case 'support':
+        return <OperationsManagement section="support" />;
+      case 'reports':
+        return <OperationsManagement section="reports" />;
+      case 'jobs':
+        return <OperationsManagement section="jobs" />;
+      case 'announcements':
+        return <OperationsManagement section="content" />;
+      case 'business-stock':
+        return <StockReviewPanel />;
     }
   })();
-  return <View style={{gap: 16}}><Txt style={{fontSize: 22, fontWeight: '700'}}>{selected.label}</Txt>{content}</View>;
+  return (
+    <View style={{ gap: 16 }}>
+      <Txt style={{ fontSize: 22, fontWeight: '700' }}>{selected.label}</Txt>
+      {content}
+    </View>
+  );
 }
 export function Admin() {
   const auth = useAuth();
@@ -181,7 +210,7 @@ export function Admin() {
       />
       <AccessGate permission="staff.access">
         <StaffMfa>
-          <StaffWorkspace key={auth.session?.user.id}/>
+          <StaffWorkspace key={auth.session?.user.id} />
         </StaffMfa>
       </AccessGate>
     </View>

@@ -13,3 +13,5 @@ export { Icon } from './Icon';
 export { Row } from './Row';
 export { Section } from './Section';
 export { Txt } from './Txt';
+
+export { RequestSummary } from './RequestSummary';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { supabase } from '@core/api/supabase-client';
-import { Button, Card, Row, Txt, s } from '@shared/ui';
+import { Button, Card, Row, Txt, RequestSummary, Badge, s } from '@shared/ui';
 import { DrawingPreview } from '../components/DrawingPreview';
 import type { DrawingDefinition, DrawingInput } from '../model/types';
 type RequestRow = {
@@ -56,7 +56,8 @@ export function FastenerOrdersAdmin() {
     <Card style={{ gap: 12 }}>
       <Txt style={s.h2}>Fastener order requests</Txt>
       <Txt>
-        Notifications use the enabled order-recipient numbers configured above.
+        Review fastener specifications and drawing snapshots. Recipient numbers
+        are managed in Notification settings.
       </Txt>
       <Button secondary onPress={() => void query.refetch()}>
         Refresh fastener requests
@@ -69,30 +70,42 @@ export function FastenerOrdersAdmin() {
         <Txt>No fastener requests.</Txt>
       ) : (
         query.data.map((order) => (
-          <Card key={order.id} style={{ gap: 12 }}>
-            <Txt style={s.h2}>{String(order.details.reference)}</Txt>
-            <Txt>{new Date(order.created_at).toLocaleString()}</Txt>
-            {Object.entries(order.details)
-              .filter(
-                ([key]) =>
-                  !['reference', 'whatsapp_consent', 'rate_revision'].includes(
-                    key,
-                  ),
-              )
-              .map(([key, value]) => (
-                <Txt key={key}>
-                  {key.replaceAll('_', ' ')}: {String(value)}
-                </Txt>
-              ))}
+          <RequestSummary
+            key={order.id}
+            details={order.details}
+            createdAt={order.created_at}
+            detailLabel="drawing & notifications"
+          >
+            <Txt style={s.h2}>Drawing & WhatsApp delivery</Txt>
             <DrawingPreview
               definition={order.definition}
               input={order.selection.input}
             />
+            {!order.deliveries?.length ? (
+              <Txt>No notification deliveries recorded.</Txt>
+            ) : null}
             {order.deliveries?.map((job) => (
               <Card key={job.id}>
-                <Txt>
-                  {job.phone}: {job.status}
-                </Txt>
+                <Row
+                  style={{
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 8,
+                  }}
+                >
+                  <Txt selectable>{job.phone}</Txt>
+                  <Badge
+                    tone={
+                      ['failed', 'manual_review'].includes(job.status)
+                        ? 'red'
+                        : job.status === 'sent'
+                          ? 'green'
+                          : 'gray'
+                    }
+                  >
+                    {job.status.replaceAll('_', ' ')}
+                  </Badge>
+                </Row>
                 {job.error ? <Txt>{job.error}</Txt> : null}
                 {['failed', 'manual_review'].includes(job.status) ? (
                   review === job.id ? (
@@ -119,10 +132,10 @@ export function FastenerOrdersAdmin() {
                 ) : null}
               </Card>
             ))}
-          </Card>
+          </RequestSummary>
         ))
       )}
-      <Row>
+      <Row style={{ flexWrap: 'wrap' }}>
         <Button
           secondary
           disabled={offset === 0}
