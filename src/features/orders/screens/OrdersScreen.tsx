@@ -18,6 +18,7 @@ import { ShipmentTracking } from '@features/operations/ui';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
 import { OrderOverview, OrderStatus } from '../components/OrderOverview';
+import { OrderLedger } from '../components/OrderLedger';
 
 function OrderPanel({
   order,
@@ -150,6 +151,14 @@ function OrderPanel({
 }
 
 export function Orders({ financeOnly = false }: { financeOnly?: boolean }) {
+  return financeOnly ? (
+    <CommerceOrders financeOnly />
+  ) : (
+    <OrderLedger Panel={OrderPanel} />
+  );
+}
+
+function CommerceOrders({ financeOnly = false }: { financeOnly?: boolean }) {
   const auth = useAuth();
   const client = useQueryClient();
   const localOrders = useStore((state) => state.orders);

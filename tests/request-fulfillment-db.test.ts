@@ -114,6 +114,53 @@ test('material and fastener fulfillment persist guarded transitions, evidence, M
       [request, buyer, drawing, JSON.stringify({ reference: 'FTI-FS-TEST' })],
     );
     await as(buyer);
+    await db.exec('reset role');
+    await db.exec(
+      readFileSync(
+        'supabase/migrations/202610280001_customer_order_history.sql',
+        'utf8',
+      ),
+    );
+    await as(buyer);
+    const history = (search = '', status = 'all', offset = 0) =>
+      value<{
+        total: number;
+        orders: {
+          kind: string;
+          status: string;
+          fulfillment: Record<string, unknown>;
+        }[];
+      }>('select public.fti_customer_orders($1,$2,$3) as data', [
+        offset,
+        search,
+        status,
+      ]);
+    const initialHistory = await history();
+    assert.equal(
+      initialHistory.total,
+      2,
+      'Both material and fastener requests appear before confirmation',
+    );
+    assert.deepEqual(initialHistory.orders.map((o) => o.kind).sort(), [
+      'fastener',
+      'material',
+    ]);
+    assert.ok(
+      initialHistory.orders.every((o) => o.status === 'pending_confirmation'),
+    );
+    assert.equal((await history('FTI-RM')).total, 1);
+    assert.equal((await history('', 'delivered')).total, 0);
+    assert.equal((await history('', 'active')).total, 2);
+    assert.equal((await history('', 'all', 24)).orders.length, 0);
+    await as(staff);
+    assert.equal(
+      (await history()).total,
+      0,
+      'Staff cannot see another buyer through the customer ledger',
+    );
+    await db.exec('reset role; set role anon');
+    await assert.rejects(history(), /permission denied/);
+    await as(buyer);
     await assert.rejects(
       update('material', 0, 'confirmed', confirmation),
       /Permission denied/,

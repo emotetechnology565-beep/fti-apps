@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@features/auth/ui';
@@ -15,6 +16,7 @@ const newId = () => globalThis.crypto?.randomUUID?.() ?? 'xxxxxxxx-xxxx-4xxx-yxx
 
 export function RawMaterialOrder({ product, initialSize = '', initialGrade = '' }: { product: Product; initialSize?: string; initialGrade?: string }) {
   const auth = useAuth();
+  const client = useQueryClient();
   const [size, setSize] = useState(initialSize);
   const [grade, setGrade] = useState(initialGrade);
   const [quantity, setQuantity] = useState('');
@@ -43,6 +45,7 @@ export function RawMaterialOrder({ product, initialSize = '', initialGrade = '' 
     try {
       const result = await catalogApi.rpc<{ reference: string }>('fti_catalog_raw_order_submit', { ...payload, p_id: request.current.id });
       setSent(true); setMessage(`Order request received: ${result.reference}. FTI will contact you to confirm availability, pricing and delivery. WhatsApp acknowledgment queued.`);
+      await client.invalidateQueries({ queryKey: ['commerce'] });
     } catch (error) { setMessage((error as Error).message); }
     finally { setBusy(false); }
   }
