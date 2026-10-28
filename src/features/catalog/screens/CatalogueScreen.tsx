@@ -17,9 +17,34 @@ import { productCardWidth } from '@shared/theme/product-card';
 const PRODUCTS_PER_PAGE = 8;
 
 export function Catalogue() {
-  const params = useLocalSearchParams<{ search?: string; category?: string }>();
+  const params = useLocalSearchParams<{
+    search?: string;
+    category?: string;
+    kind?: string;
+  }>();
   const search = typeof params.search === 'string' ? params.search.trim() : '';
   const category = typeof params.category === 'string' ? params.category : '';
+  const kind =
+    params.kind === 'fastener' || params.kind === 'tractor_part'
+      ? params.kind
+      : null;
+  if (kind)
+    return (
+      <View style={{ gap: 18 }}>
+        <Button secondary onPress={() => router.replace('/products')}>
+          Browse all products
+        </Button>
+        <Txt accessibilityRole="header" style={s.h2}>
+          {kind === 'fastener' ? 'Fasteners' : 'Tractor parts'}
+        </Txt>
+        {kind === 'fastener' ? <FastenerDimensions /> : null}
+        <ProductsCatalogue
+          key={`${kind}:${search}`}
+          kind={kind}
+          initialSearch={search}
+        />
+      </View>
+    );
   if (search || category)
     return (
       <View style={{ gap: 18 }}>

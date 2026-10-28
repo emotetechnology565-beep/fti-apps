@@ -7,13 +7,16 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, type ImageProps } from 'expo-image';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
 import { MaterialPriceBanner } from '@features/pricing/ui';
 import { pricingApi } from '@features/pricing/export';
+import { drawingApi } from '@features/drawings/export';
+import { loadCategoryImages } from '../data/category-images';
+import materialImageFallbacks from '../data/material-image-fallbacks.json';
 import { useStore } from '@core/state/workspace-store';
 import { Button, Card, Txt, Icon, c } from '@shared/ui';
 
@@ -51,36 +54,78 @@ const categories = [
   {
     title: 'Round bars',
     category: 'round-bar-as-rolled',
-    image: require('../../../../assets/materials/round-bar-as-rolled.jpg'),
   },
   {
     title: 'Bright bars',
     category: 'round-bright-bar',
-    image: require('../../../../assets/materials/round-bright-bar.jpg'),
   },
   {
     title: 'Sheets',
     category: 'sheet',
-    image: require('../../../../assets/materials/steel-sheets.jpg'),
   },
   {
     title: 'Flat bars',
     category: 'flat',
-    image: require('../../../../assets/materials/flat-bars.jpg'),
   },
   {
     title: 'Square bars',
     category: 'square',
-    image: require('../../../../assets/materials/square-bars.jpg'),
   },
   {
     title: 'TMT bars',
     category: 'tmt',
-    image: require('../../../../assets/materials/0.jpg'),
   },
 ] as const;
 
+function ProductPhoto({
+  uri,
+  label,
+  style,
+  contentFit = 'contain',
+}: {
+  uri?: string;
+  label: string;
+  style: ImageProps['style'];
+  contentFit?: ImageProps['contentFit'];
+}) {
+  const [failedUrl, setFailedUrl] = useState<string>();
+  return uri && failedUrl !== uri ? (
+    <Image
+      source={{ uri }}
+      accessibilityLabel={label}
+      contentFit={contentFit}
+      style={style}
+      onError={() => setFailedUrl(uri)}
+    />
+  ) : (
+    <View
+      accessibilityLabel={`${label}: photo unavailable`}
+      style={[style, styles.photoPlaceholder]}
+    >
+      <Icon name="image" size={24} color={c.muted} />
+    </View>
+  );
+}
+
 export function Home() {
+  const photos = useQuery({
+    queryKey: ['catalog', 'home', 'images'],
+    queryFn: () => loadCategoryImages(),
+    staleTime: 30000,
+  });
+  const fastenerPhotos = useQuery({
+    queryKey: ['fastener-photos', 'public'],
+    queryFn: drawingApi.photos,
+    staleTime: 30000,
+    retry: false,
+  });
+  const fastenerImage =
+    fastenerPhotos.data?.find(
+      (photo) => photo.slug === 'hex-bolt' && photo.image_url,
+    )?.image_url ??
+    fastenerPhotos.data?.find((photo) => photo.image_url)?.image_url ??
+    photos.data?.fastener;
+  const tractorPartsImage = photos.data?.tractor_part;
   const { identity, session, ready, loading, error } = useAuth();
   const [search, setSearch] = useState('');
   const [marketOpen, setMarketOpen] = useState(false);
@@ -142,8 +187,8 @@ export function Home() {
         <View style={styles.search}>
           <Icon name="search" size={23} color={c.ink} />
           <TextInput
-            accessibilityLabel="Search materials"
-            placeholder="Search materials, sizes or grades"
+            accessibilityLabel="Search products"
+            placeholder="Search products, sizes or grades"
             placeholderTextColor="#58697C"
             value={search}
             onChangeText={setSearch}
@@ -182,11 +227,11 @@ export function Home() {
       </View>
       <View style={styles.sectionHeader}>
         <Txt accessibilityRole="header" style={styles.sectionTitle}>
-          Shop by material
+          Shop by category
         </Txt>
         <Pressable
           accessibilityRole="link"
-          accessibilityLabel="Browse all materials"
+          accessibilityLabel="Browse all products"
           onPress={() => router.push('/products')}
           style={styles.seeAll}
         >
@@ -199,6 +244,34 @@ export function Home() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.categories}
       >
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="Shop fasteners"
+          onPress={() => router.push('/products?kind=fastener')}
+          style={({ pressed }) => [styles.category, pressed && styles.pressed]}
+        >
+          <ProductPhoto
+            uri={fastenerImage ?? undefined}
+            label="Fasteners product photo"
+            contentFit="contain"
+            style={styles.categoryImage}
+          />
+          <Txt style={styles.categoryTitle}>Fasteners</Txt>
+        </Pressable>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="Shop tractor parts"
+          onPress={() => router.push('/products?kind=tractor_part')}
+          style={({ pressed }) => [styles.category, pressed && styles.pressed]}
+        >
+          <ProductPhoto
+            uri={tractorPartsImage}
+            label="Tractor parts product photo"
+            contentFit="contain"
+            style={styles.categoryImage}
+          />
+          <Txt style={styles.categoryTitle}>Tractor parts</Txt>
+        </Pressable>
         {categories.map((item) => (
           <Pressable
             key={item.category}
@@ -215,25 +288,18 @@ export function Home() {
               pressed && styles.pressed,
             ]}
           >
-            <Image
-              source={item.image}
+            <ProductPhoto
+              uri={
+                photos.data?.[item.category] ??
+                materialImageFallbacks[item.category]
+              }
+              label={`${item.title} product photo`}
               contentFit="cover"
               style={styles.categoryImage}
             />
             <Txt style={styles.categoryTitle}>{item.title}</Txt>
           </Pressable>
         ))}
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Shop fasteners"
-          onPress={() => router.push('/fastener/hex-bolt')}
-          style={styles.category}
-        >
-          <View style={styles.categoryIcon}>
-            <Icon name="tool" size={30} color={c.ink} />
-          </View>
-          <Txt style={styles.categoryTitle}>Fasteners</Txt>
-        </Pressable>
       </ScrollView>
       <ScrollView
         horizontal
@@ -252,8 +318,12 @@ export function Home() {
             pressed && styles.pressed,
           ]}
         >
-          <Image
-            source={categories[0].image}
+          <ProductPhoto
+            uri={
+              photos.data?.['round-bar-as-rolled'] ??
+              materialImageFallbacks['round-bar-as-rolled']
+            }
+            label="Raw materials product photo"
             contentFit="cover"
             style={styles.featureImage}
           />
@@ -277,37 +347,65 @@ export function Home() {
         </Pressable>
         <Pressable
           accessibilityRole="link"
-          accessibilityLabel="Explore steel sheets"
-          onPress={() =>
-            router.push({
-              pathname: '/products',
-              params: { category: 'sheet' },
-            })
-          }
+          accessibilityLabel="Browse fasteners"
+          onPress={() => router.push('/products?kind=fastener')}
           style={({ pressed }) => [
             styles.feature,
             { width: featureWidth },
             pressed && styles.pressed,
           ]}
         >
-          <Image
-            source={categories[2].image}
-            contentFit="cover"
+          <ProductPhoto
+            uri={fastenerImage ?? undefined}
+            label="Fasteners product photo"
+            contentFit="contain"
             style={styles.featureImage}
           />
           <View style={styles.featureTag}>
-            <Txt style={styles.tagText}>SHEETS & PLATES</Txt>
+            <Txt style={styles.tagText}>FASTENERS</Txt>
           </View>
           <View style={[styles.featureBody, { backgroundColor: '#9D1827' }]}>
-            <Txt style={styles.featureEyebrow}>
-              FROM SPECIFICATION TO SUPPLY
-            </Txt>
-            <Txt style={styles.featureTitle}>Find your{'\n'}perfect sheet.</Txt>
+            <Txt style={styles.featureEyebrow}>BOLTS, NUTS & MORE</Txt>
+            <Txt style={styles.featureTitle}>Find the right{'\n'}fastener.</Txt>
             <Txt style={styles.featureDescription}>
-              Choose the size and grade for your next fabrication job.
+              Explore fasteners and check dimensions, weights and finishes.
             </Txt>
             <View style={styles.featureCta}>
-              <Txt style={styles.ctaText}>Explore sheets</Txt>
+              <Txt style={styles.ctaText}>Browse fasteners</Txt>
+              <Icon name="arrow-right" size={19} color="white" />
+            </View>
+          </View>
+        </Pressable>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="Browse tractor parts"
+          onPress={() => router.push('/products?kind=tractor_part')}
+          style={({ pressed }) => [
+            styles.feature,
+            { width: featureWidth },
+            pressed && styles.pressed,
+          ]}
+        >
+          <ProductPhoto
+            uri={tractorPartsImage}
+            label="Tractor parts product photo"
+            contentFit="contain"
+            style={styles.featureImage}
+          />
+          <View style={styles.featureTag}>
+            <Txt style={styles.tagText}>TRACTOR PARTS</Txt>
+          </View>
+          <View style={[styles.featureBody, { backgroundColor: '#254D3C' }]}>
+            <Txt style={styles.featureEyebrow}>FOR YOUR NEXT REPAIR</Txt>
+            <Txt style={styles.featureTitle}>
+              Keep your{'\n'}equipment moving.
+            </Txt>
+            <Txt style={styles.featureDescription}>
+              Explore agricultural parts, from rotavator gears to axles and
+              blades.
+            </Txt>
+            <View style={styles.featureCta}>
+              <Txt style={styles.ctaText}>Browse tractor parts</Txt>
               <Icon name="arrow-right" size={19} color="white" />
             </View>
           </View>
@@ -506,17 +604,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: c.cardBorder,
   },
-  categoryIcon: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    backgroundColor: '#FFF0F0',
+  categoryTitle: { fontSize: 11, fontWeight: '600', textAlign: 'center' },
+  photoPlaceholder: {
+    backgroundColor: '#F1F4F8',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: c.cardBorder,
   },
-  categoryTitle: { fontSize: 11, fontWeight: '600', textAlign: 'center' },
   features: { paddingHorizontal: 16, gap: 14, paddingBottom: 18 },
   feature: {
     borderWidth: 1,
@@ -525,7 +618,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#092F56',
   },
-  featureImage: { width: '100%', height: 170 },
+  featureImage: { width: '100%', height: 170, backgroundColor: 'white' },
   featureTag: {
     position: 'absolute',
     top: 14,
