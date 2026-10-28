@@ -97,436 +97,446 @@
         </div>
     </header>
     <main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen">
-        <div class="flex flex-col w-full pb-8">
-            <!-- Search & Filter Console Section -->
-            <section class="flex flex-col gap-space-sm px-space-md pt-space-sm pb-space-md bg-surface">
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col">
-                        <span
-                            class="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">Consignment
-                            Ledger</span>
-                        <h1
-                            class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold tracking-tight">
-                            My Orders &amp; Consignments</h1>
-                    </div>
-                    <button aria-label="Fiscal Period"
-                        class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-primary font-label-md text-label-md font-semibold shadow-sm active:scale-95 transition-transform">
-                        <span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
-                        <span>FY 26-27</span>
-                    </button>
-                </div>
-                <!-- Search Bar with Micro Input Actions -->
-                <div class="relative w-full flex items-center">
-                    <span
-                        class="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[20px]">search</span>
-                    <input
-                        class="w-full h-11 pl-11 pr-10 rounded-xl bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/70 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-container"
-                        placeholder="Search Order ID, PO#, Commodity, LR No." type="search" />
-                    <button
-                        class="absolute right-2.5 w-7 h-7 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant active:scale-90 transition-transform"
-                        title="Barcode Scan">
-                        <span class="material-symbols-outlined text-[17px]">qr_code_scanner</span>
-                    </button>
-                </div>
-                <!-- Horizontal Status Filter Tabs -->
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 -mx-space-md px-space-md">
-                    <button
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary font-label-md text-label-md font-bold shadow-sm transition-all">
-                        <span>All Orders</span>
-                        <span
-                            class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm">24</span>
-                    </button>
-                    <button
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low text-primary font-label-md text-label-md hover:bg-surface-container transition-all">
-                        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-                        <span>In Transit</span>
-                        <span
-                            class="px-1.5 py-0.2 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm font-bold">2</span>
-                    </button>
-                    <button
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all">
-                        <span>Payment Pending</span>
-                        <span
-                            class="px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">3</span>
-                    </button>
-                    <button
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all">
-                        <span>Delivered</span>
-                        <span
-                            class="px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">16</span>
-                    </button>
-                    <button
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all">
-                        <span>RFQs</span>
-                        <span
-                            class="px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">3</span>
-                    </button>
-                </div>
-                <!-- Active Ledger Context Pill -->
-                <div class="flex items-center justify-between text-on-surface-variant pt-0.5">
-                    <div class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[15px] text-secondary">tune</span>
-                        <span class="font-label-sm text-label-sm font-semibold">Active: Last 6 Months (Apr - Oct
-                            2026)</span>
-                    </div>
-                    <button class="font-label-sm text-label-sm text-secondary font-bold hover:underline">Reset
-                        Filters</button>
-                </div>
-            </section>
-            <!-- Main Feed: Consignment Ledger Cards -->
-            <div class="flex flex-col gap-space-md px-space-md mt-space-sm">
-                <!-- 1. LIVE / IN-TRANSIT ORDER CARD (High Visual Focus) -->
-                <article
-                    class="flex flex-col rounded-xl bg-surface-container-lowest shadow-md overflow-hidden transition-all duration-200">
-                    <!-- Live Progress Bar Accent -->
-                    <div class="w-full bg-surface-container h-1.5 overflow-hidden">
-                        <div class="bg-secondary h-full rounded-r-full w-[72%] transition-all"></div>
-                    </div>
-                    <div class="p-space-md flex flex-col gap-space-sm">
-                        <!-- Top Metadata & Dispatch Pulse -->
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-1.5">
-                                    <span
-                                        class="font-headline-sm text-headline-sm font-bold text-primary">#ORD-9412</span>
-                                    <span
-                                        class="px-2 py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm font-bold">DISP-98410</span>
-                                </div>
-                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Booked: 14 Oct
-                                    2026 • PO-FTI-8819</span>
-                            </div>
-                            <!-- Live Status Badge with Pulse -->
-                            <div
-                                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold shadow-sm">
-                                <span class="relative flex h-2 w-2">
-                                    <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                                </span>
-                                <span>In Transit (42 km/h)</span>
-                            </div>
-                        </div>
-                        <!-- Consignee Industrial Entity -->
-                        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-primary">
-                            <span
-                                class="material-symbols-outlined text-[18px] text-secondary flex-shrink-0">domain</span>
-                            <div class="flex flex-col min-w-0">
-                                <span class="font-label-md text-label-md font-bold truncate">Apex Fabricators Pvt.
-                                    Ltd.</span>
-                                <span class="font-body-sm text-body-sm text-on-surface-variant truncate">Consignee Hub:
-                                    Focal Point Phase-V, Ludhiana</span>
-                            </div>
-                        </div>
-                        <!-- Material Specification Summary & Visual Spec Pill -->
-                        <div class="flex flex-col gap-1.5 pt-1">
-                            <div class="flex items-baseline justify-between">
-                                <div class="flex items-center gap-1.5">
-                                    <span
-                                        class="material-symbols-outlined text-[18px] text-primary">precision_manufacturing</span>
-                                    <span class="font-label-lg text-label-lg font-bold text-on-surface">TMT Rebars Fe
-                                        550D</span>
-                                </div>
-                                <span class="font-ticker-price text-ticker-price text-primary">28.00 MT Lot</span>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5 text-on-surface-variant">
-                                <span
-                                    class="px-2 py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">Primary
-                                    Mill: SAIL</span>
-                                <span
-                                    class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Sizes:
-                                    12mm &amp; 16mm</span>
-                                <span
-                                    class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Grade:
-                                    IS 1786</span>
-                            </div>
-                        </div>
-                        <!-- Route & Dispatch Metrics -->
-                        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-surface-container-low">
-                            <div class="flex flex-col min-w-0">
-                                <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Route
-                                    Corridor</span>
-                                <span class="font-body-sm text-body-sm text-primary font-bold truncate">SAIL Jalandhar
-                                    Yard</span>
-                                <span class="font-body-sm text-body-sm text-on-surface-variant truncate">↳ Focal Point
-                                    Ludhiana</span>
-                            </div>
-                            <div class="flex flex-col items-end text-right min-w-0">
-                                <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Estimated
-                                    Arrival</span>
-                                <span class="font-body-sm text-body-sm text-secondary font-bold truncate">Today, 04:30
-                                    PM</span>
-                                <span class="font-label-sm text-label-sm text-on-surface-variant">Remaining ~1h
-                                    45m</span>
-                            </div>
-                        </div>
-                        <!-- Financial Status Pill -->
-                        <div
-                            class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-high text-primary">
-                            <div class="flex flex-col">
-                                <span class="font-label-sm text-label-sm text-on-surface-variant">Total Contract
-                                    Value</span>
-                                <span class="font-headline-sm text-headline-sm font-bold text-primary">₹15,45,600</span>
-                            </div>
-                            <div
-                                class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-lowest text-primary shadow-sm font-label-sm text-label-sm font-bold">
-                                <span class="material-symbols-outlined text-[16px] text-primary"
-                                    style="font-variation-settings: 'FILL' 1;">verified_user</span>
-                                <span>100% Escrow Cleared</span>
-                            </div>
-                        </div>
-                        <!-- Quick Interactive Action Cluster -->
-                        <div class="flex flex-col gap-2 pt-1">
-                            <button
-                                class="w-full h-11 px-4 rounded-xl bg-secondary hover:bg-secondary-container active:scale-[0.98] transition-transform flex items-center justify-center gap-2 text-on-secondary font-label-lg text-label-lg shadow-sm">
-                                <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-                                <span>Track Live Fleet / E-Way GPS</span>
-                            </button>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button
-                                    class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                                    <span class="material-symbols-outlined text-[16px] text-secondary">scale</span>
-                                    <span>Weighbridge Slip</span>
-                                </button>
-                                <button
-                                    class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                                    <span class="material-symbols-outlined text-[16px]">call</span>
-                                    <span>Transporter (LR)</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                <!-- 2. DELIVERED & SETTLED ORDER CARD (Complete Compliance & Re-order) -->
-                <article class="flex flex-col rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden">
-                    <div class="p-space-md flex flex-col gap-space-sm">
-                        <!-- Top Row Metadata -->
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-1.5">
-                                    <span
-                                        class="font-headline-sm text-headline-sm font-bold text-primary">#ORD-9280</span>
-                                    <span
-                                        class="px-2 py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm font-bold">DISP-95211</span>
-                                </div>
-                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Delivered: 04 Oct
-                                    2026 • LR-91040</span>
-                            </div>
-                            <!-- Delivered Badge -->
-                            <div
-                                class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold">
-                                <span class="material-symbols-outlined text-[15px] text-secondary"
-                                    style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                <span>Delivered &amp; Reconciled</span>
-                            </div>
-                        </div>
-                        <!-- Visual Multi-Commodity Breakdown -->
-                        <div class="flex flex-col gap-2 p-3 rounded-lg bg-surface-container-low">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-1.5 min-w-0">
-                                    <span class="material-symbols-outlined text-[16px] text-primary">category</span>
-                                    <span
-                                        class="font-body-sm text-body-sm text-on-surface font-semibold truncate">Special
-                                        Alloy EN8D Round Bar (Dia 50mm)</span>
-                                </div>
-                                <span class="font-label-md text-label-md font-bold text-primary flex-shrink-0">15.00
-                                    MT</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-1.5 min-w-0">
-                                    <span class="material-symbols-outlined text-[16px] text-primary">category</span>
-                                    <span class="font-body-sm text-body-sm text-on-surface font-semibold truncate">TMT
-                                        Rebars Fe 550D (Primary Steel)</span>
-                                </div>
-                                <span class="font-label-md text-label-md font-bold text-primary flex-shrink-0">10.00
-                                    MT</span>
-                            </div>
-                            <div
-                                class="flex items-center justify-between pt-1.5 text-on-surface-variant font-label-sm text-label-sm">
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">balance</span>
-                                    Certified Weighbridge Tare:
-                                </span>
-                                <span class="text-primary font-bold">25.00 MT (100% Match)</span>
-                            </div>
-                        </div>
-                        <!-- Financial & Settlement Details -->
-                        <div
-                            class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container text-primary">
-                            <div class="flex flex-col">
-                                <span class="font-label-sm text-label-sm text-on-surface-variant">Net Billed (Incl. 18%
-                                    GST)</span>
-                                <span class="font-headline-sm text-headline-sm font-bold text-primary">₹16,96,840</span>
-                            </div>
-                            <div class="flex flex-col items-end">
-                                <span class="font-label-sm text-label-sm text-on-surface-variant">Settlement
-                                    Channel</span>
-                                <span class="font-label-md text-label-md text-primary font-bold">RTGS Escrow
-                                    Settled</span>
-                            </div>
-                        </div>
-                        <!-- Compliance Document Pills -->
-                        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-                            <button
-                                class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold active:scale-95 transition-transform">
-                                <span class="material-symbols-outlined text-[15px] text-secondary">description</span>
-                                <span>Tax Inv: INV-04821</span>
-                                <span class="material-symbols-outlined text-[13px]">download</span>
-                            </button>
-                            <button
-                                class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold active:scale-95 transition-transform">
-                                <span class="material-symbols-outlined text-[15px] text-secondary"
-                                    style="font-variation-settings: 'FILL' 1;">verified</span>
-                                <span>MTC 3.1 Mill Cert</span>
-                                <span class="material-symbols-outlined text-[13px]">open_in_new</span>
-                            </button>
-                            <button
-                                class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold active:scale-95 transition-transform">
-                                <span class="material-symbols-outlined text-[15px] text-primary">draw</span>
-                                <span>Signed POD</span>
-                            </button>
-                        </div>
-                        <!-- Action Row: Re-Order vs Raise Tare Query -->
-                        <div class="flex items-center gap-2 pt-1">
-                            <button
-                                class="flex-1 h-11 px-4 rounded-xl bg-secondary hover:bg-secondary-container active:scale-[0.98] text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm transition-all">
-                                <span class="material-symbols-outlined text-[19px]">repeat</span>
-                                <span>Re-order / Repeat Lot</span>
-                            </button>
-                            <button
-                                class="h-11 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-                                title="Tare &amp; Quality Resolution">
-                                <span class="material-symbols-outlined text-[18px]">help_outline</span>
-                                <span>Tare Query</span>
-                            </button>
-                        </div>
-                    </div>
-                </article>
-                <!-- 3. PAYMENT / BALANCE PENDING ORDER CARD (Urgent Call-To-Action) -->
-                <article class="flex flex-col rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden">
-                    <!-- Amber Header Stripe for Financial Alert -->
-                    <div class="p-space-md flex flex-col gap-space-sm">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-1.5">
-                                    <span
-                                        class="font-headline-sm text-headline-sm font-bold text-primary">#ORD-9104</span>
-                                    <span
-                                        class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold">PO-90412</span>
-                                </div>
-                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Approved: 28 Sep
-                                    2026 • Mandate Lot</span>
-                            </div>
-                            <!-- Due Badge -->
-                            <div
-                                class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-                                <span class="material-symbols-outlined text-[15px]">schedule</span>
-                                <span>Balance Due (7 Days)</span>
-                            </div>
-                        </div>
-                        <!-- Material Details -->
-                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <span class="material-symbols-outlined text-[18px] text-primary">iron</span>
-                                <div class="flex flex-col min-w-0">
-                                    <span class="font-label-md text-label-md font-bold text-on-surface truncate">MS
-                                        Round Bar (EN8D) Dia 32mm</span>
-                                    <span class="font-label-sm text-label-sm text-on-surface-variant">Batch Cert
-                                        #BC-2026-904</span>
-                                </div>
-                            </div>
-                            <span class="font-ticker-price text-ticker-price text-primary flex-shrink-0">3.79 MT</span>
-                        </div>
-                        <!-- Financial Breakdown Stack -->
-                        <div class="flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container text-primary">
-                            <div
-                                class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
-                                <span>Agreed Contract Value:</span>
-                                <span class="text-primary font-bold">₹2,60,129</span>
-                            </div>
-                            <div
-                                class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px] text-secondary">check</span>
-                                    Advance Paid (20% Escrow):
-                                </span>
-                                <span class="text-primary font-bold">₹52,025</span>
-                            </div>
-                            <div class="flex items-baseline justify-between pt-1">
-                                <span class="font-label-md text-label-md font-bold text-secondary">Net Balance
-                                    Outstanding:</span>
-                                <span
-                                    class="font-headline-sm text-headline-sm font-bold text-secondary">₹2,08,104</span>
-                            </div>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant">Calculated against
-                                verified certified weighbridge net tare.</span>
-                        </div>
-                        <!-- Direct Actions -->
-                        <div class="grid grid-cols-5 gap-2 pt-1">
-                            <button
-                                class="col-span-3 h-11 px-3 rounded-xl bg-secondary hover:bg-secondary-container active:scale-[0.98] text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-1.5 shadow-sm transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
-                                <span>Pay ₹2,08,104</span>
-                            </button>
-                            <button
-                                class="col-span-2 h-11 px-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1 active:scale-[0.98] transition-colors">
-                                <span class="material-symbols-outlined text-[16px]">receipt_long</span>
-                                <span>Proforma PO</span>
-                            </button>
-                        </div>
-                    </div>
-                </article>
-                <!-- Industrial Assurance & Mill Certificate Hub Banner -->
-                <div class="flex items-center gap-3 p-3.5 rounded-xl bg-primary-container text-on-primary shadow-sm">
-                    <div
-                        class="w-10 h-10 rounded-lg bg-surface-container-lowest/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-[24px] text-inverse-primary">verified</span>
-                    </div>
-                    <div class="flex flex-col min-w-0">
-                        <span class="font-label-md text-label-md font-bold text-inverse-on-surface">100% BIS &amp; NABL
-                            Mill Certification</span>
-                        <span class="font-body-sm text-body-sm text-on-primary-container leading-tight mt-0.5">All 24
-                            delivered orders include ISO compliant chemical &amp; mechanical lab reports.</span>
-                    </div>
-                </div>
-                <!-- Empty State / Support & Resolution Section -->
-                <section
-                    class="flex flex-col items-center text-center p-space-md rounded-xl bg-surface-container-low gap-3">
-                    <div
-                        class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary">
-                        <span class="material-symbols-outlined text-[26px]">support_agent</span>
-                    </div>
-                    <div class="flex flex-col gap-1 max-w-xs">
-                        <h2 class="font-headline-sm text-headline-sm font-bold text-primary">Need Reconciliation Help?
-                        </h2>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant">
-                            Require certified duplicate GST e-invoices, multi-truck weighbridge tare recalculations, or
-                            direct dispute settlement?
-                        </p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full pt-1">
-                        <button
-                            class="w-full h-10 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">support</span>
-                            <span>Connect to Steel Desk Support</span>
+        <div class="flex flex-col w-full">
+            <!-- Content Container -->
+            <div class="px-space-md py-space-sm space-y-space-md">
+                <!-- 1. Search Bar & Primary Actions -->
+                <div class="space-y-space-sm">
+                    <!-- Search Input Box -->
+                    <div class="bg-surface-container-lowest rounded-xl shadow-sm p-1.5 flex items-center gap-space-sm">
+                        <span class="material-symbols-outlined text-primary text-[22px] ml-2 select-none">search</span>
+                        <input
+                            class="w-full bg-transparent text-on-surface placeholder:text-outline text-body-md font-body-md focus:outline-none py-1"
+                            placeholder="Search products, sizes or grades (e.g. Fe 550D, 12mm)" type="text" />
+                        <button aria-label="Scan or Search"
+                            class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary hover:bg-surface-container-highest transition-colors flex-shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
                     </div>
-                    <div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm pt-1">
-                        <span class="material-symbols-outlined text-[14px]">lock</span>
-                        <span>FTI Escrow Protected • Ludhiana Industrial Hub Terminal</span>
+                    <!-- Quick Action 4-Grid -->
+                    <div class="grid grid-cols-4 gap-space-xs">
+                        <button
+                            class="bg-surface-container-lowest rounded-xl p-space-sm flex flex-col items-center justify-center gap-1.5 shadow-sm hover:shadow transition-all group text-center">
+                            <div
+                                class="w-11 h-11 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[22px]">trending_up</span>
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface">Rates</span>
+                        </button>
+                        <button
+                            class="bg-surface-container-lowest rounded-xl p-space-sm flex flex-col items-center justify-center gap-1.5 shadow-sm hover:shadow transition-all group text-center">
+                            <div
+                                class="w-11 h-11 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[22px]">request_quote</span>
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface">Get a quote</span>
+                        </button>
+                        <button
+                            class="bg-surface-container-lowest rounded-xl p-space-sm flex flex-col items-center justify-center gap-1.5 shadow-sm hover:shadow transition-all group text-center">
+                            <div
+                                class="w-11 h-11 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[22px]">local_shipping</span>
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface">My orders</span>
+                        </button>
+                        <button
+                            class="bg-surface-container-lowest rounded-xl p-space-sm flex flex-col items-center justify-center gap-1.5 shadow-sm hover:shadow transition-all group text-center">
+                            <div
+                                class="w-11 h-11 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[22px]">calculate</span>
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface">Calculator</span>
+                        </button>
                     </div>
-                </section>
+                    <!-- Market Selector Chip -->
+                    <button
+                        class="w-full bg-surface-container-lowest rounded-xl px-space-md py-2.5 flex items-center justify-between shadow-sm hover:bg-surface-container-low transition-colors">
+                        <div class="flex items-center gap-space-xs text-left">
+                            <span class="material-symbols-outlined text-secondary text-[20px]">store</span>
+                            <div>
+                                <span
+                                    class="font-label-sm text-label-sm text-outline uppercase block leading-none">Market
+                                    Corridor</span>
+                                <span class="font-label-lg text-label-lg text-primary">Ludhiana Central Mandi •
+                                    Gobindgarh</span>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant text-[20px]">unfold_more</span>
+                    </button>
+                </div>
+                <!-- 2. Latest Order Tracker Widget -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-1.5 text-primary">
+                            <span class="material-symbols-outlined text-[18px]">package_2</span>
+                            <span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Your Latest
+                                Order</span>
+                        </div>
+                        <span
+                            class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+                            Processing
+                        </span>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">
+                            #FTI-RM-6E4E9D13BDEB
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">
+                            AWADH TMT Fe 550D • 42.50 MT • Ready 28/10/2026
+                        </p>
+                    </div>
+                    <!-- Mini Track Stepper -->
+                    <div class="my-3 py-2 px-3 bg-surface-container-low rounded-lg flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                            <span class="font-label-sm text-label-sm text-on-surface font-semibold">Mill Inspection
+                                Completed</span>
+                        </div>
+                        <span class="font-label-sm text-label-sm text-outline">Dispatch T-48h</span>
+                    </div>
+                    <button
+                        class="w-full h-11 rounded-lg bg-surface-container-high text-primary font-label-lg text-label-lg flex items-center justify-center gap-1.5 hover:bg-surface-container-highest transition-colors">
+                        <span>View Order Dossier</span>
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </button>
+                </div>
+                <!-- 3. Shop by Category - Raw Materials -->
+                <div class="space-y-space-xs">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-headline-sm text-headline-sm text-primary font-bold">Raw materials</h2>
+                        <a class="font-label-lg text-label-lg text-secondary flex items-center gap-0.5 hover:underline"
+                            href="#">
+                            <span>View all</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                    <!-- Horizontal Scrollable Strip -->
+                    <div class="flex gap-space-sm overflow-x-auto pb-2 -mx-space-md px-space-md">
+                        <!-- Item: Round bars -->
+                        <div
+                            class="flex-shrink-0 w-36 bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 group cursor-pointer">
+                            <div class="w-full h-28 rounded-lg overflow-hidden bg-surface-container">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    data-alt="Heavy bundle of industrial hot rolled steel round bars stacked horizontally in a bright manufacturing mill, metallic texture and steel tags visible, clean high contrast industrial photography"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuApHo2igJYrzdAnwxCReiKp-qSZJwUUn5m-ZbZPMiOUTQ2BcJlMgn1gXANb1ryEQOwj19qn0tjgwWj5qZ1w6g-pJJLVW6tK7RY9smet-y4DoWBASoPuc00a_gdhOWgvHo-0iIjq5SwmznWrz0LkqSmtPbfn0065Kv5CfWSfxsjirMzQLisONmZ-XAvcoAynY3Q1O8FR81auVKnCptpe9CTsVRmUYIO8y4ibjRSTs" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg text-primary truncate">Round bars</h3>
+                                <span class="font-label-sm text-label-sm text-outline">IS 2062 / EN8</span>
+                            </div>
+                        </div>
+                        <!-- Item: Bright bars -->
+                        <div
+                            class="flex-shrink-0 w-36 bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 group cursor-pointer">
+                            <div class="w-full h-28 rounded-lg overflow-hidden bg-surface-container">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    data-alt="Precision cold-drawn peeled hexagonal and round bright steel bars bundled neatly in warehouse with ambient high key lighting, crisp chrome steel reflection"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPF0a_CfNw-ne2dMMsNgWpM8J9JTyQ8XzSq3uud3kQidArGLuGSccu3xzOYQRagX8KX_lgIa5AVnTcItIzH2LMEbnZwvA8wN7tHMTGXWHD-lW_z1gJM9DmAmOtH51pHsntlGRzz9lZeGWdNZXeM2QRnxc53iEvgw6Mjqg_xaawfzGEXsgRIHCxrbM-Cbjku6nhkMNY7-Pzf_yH1IJ8Ys_BR7NrkmiLSZE9H_yB4g8" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg text-primary truncate">Bright bars</h3>
+                                <span class="font-label-sm text-label-sm text-outline">SAE 1018 / C45</span>
+                            </div>
+                        </div>
+                        <!-- Item: Sheets & Plates -->
+                        <div
+                            class="flex-shrink-0 w-36 bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 group cursor-pointer">
+                            <div class="w-full h-28 rounded-lg overflow-hidden bg-surface-container">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    data-alt="Heavy structural steel hot rolled plates and sheets stacked in warehouse pallet with clean beveled edges and mill stencils, cool industrial steel tones"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCojYD8OQvr36s1R0TLaT1iAZle1k3lUalFNNdnwm85WletFrLY1BKBa3TsL_06BVVrWnM8Q8wBNt2vUUn61WImNiiZpAWPsy5Fc1OnP-8BUAsywm6oHLlaw2gRU09in2Vq-UdtrXWxsvMPREu1ZyfIbw7CFIkq_z4kbqVpP5aoPzjAVO59lgdJWyu2C_9kfoFXfbmzwoLGUkGfJFwAcO41tH5N6BONpCcimHWM_nQ" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg text-primary truncate">Sheets &amp; Plates</h3>
+                                <span class="font-label-sm text-label-sm text-outline">HR / CR / Chequered</span>
+                            </div>
+                        </div>
+                        <!-- Item: TMT Rebars -->
+                        <div
+                            class="flex-shrink-0 w-36 bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 group cursor-pointer">
+                            <div class="w-full h-28 rounded-lg overflow-hidden bg-surface-container">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    data-alt="Reinforced ribbed TMT steel rebar bundles with ribbed surface patterns for infrastructure construction, blueish metal sheen with industrial tags"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4kqEpUB1le7sxl1MV_zSwEt6FrHNotr7ntaxPyNAw0PCLMxiWWo5XlBzTspb0eKVkBp9X0AI6ql1t8NU2BVs5wgVx-fXkPD_hKGLtdSR1tvbQz-4k_2chcEST9Xl5OGVRnsemc50fzKkWBKbpRLMI3XGseVn6uJie1JO_08a3bliZu95ZmwqDZrOoHCsabyKVMJhvlI2jJj1p1FmHjBC3EyjK_m4-lG-GSX5H1ZA" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg text-primary truncate">TMT Rebars</h3>
+                                <span class="font-label-sm text-label-sm text-outline">Fe 500D / 550D</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 4. Fasteners Section -->
+                <div class="space-y-space-xs">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-headline-sm text-headline-sm text-primary font-bold">Fasteners</h2>
+                        <a class="font-label-lg text-label-lg text-secondary flex items-center gap-0.5 hover:underline"
+                            href="#">
+                            <span>View all</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-3 gap-space-xs">
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="Zinc plated heavy duty coach screw fastener isolated on clean white surface with studio lighting, sharp threading details"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgi3GKHEEKaM9o44y1IxOboAhAAg2DMSZy2yh07H3_vOOh6ZEZnn6rhseyzYOG0OWjF29CKLVp7aYBpJou30GYRzdSviY_d6_f8i35gHYyjkfF5ensNNfRZ6oBlA-U5E8qv-49aQnSEK997ZGMPvFG_T0dtwalGkyr4KhN2rlp8JJXJXKsWX_6EunJgGqoT0INnAxNSF8Le2E1IYRcFerbHLjI8J-ktf6qL7fsQkc" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">Coach screw</h3>
+                                <span class="font-label-sm text-label-sm text-outline">M6 – M16</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="High tensile black oxide grade 8.8 industrial hex bolt with precise machine threads on white background, metallic texture"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM1TQJjzzdV0syr4tJOXo-iiw8WjQiJWllto89RKaWF2wZJ2xsL5gliM0_mkv0grCNTcYAYgz37QLBXV79BxYgOdfU_guPAOa5dmGVDnZ_g7bsTigzOib3z17k0CNhwmO6VV8k-6Fm7fWUSSri8e2JbBX6igNx2x9Rwr_HyoDJpm7S4qM2nD__MdqVGrSBauPzl4Ah6dcZCR4S9SSHWlkcc9wl9VVwtbKEGEABqJQ" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">Hex bolt</h3>
+                                <span class="font-label-sm text-label-sm text-outline">Grade 8.8 / 10.9</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="Heavy black phosphate hex nut for construction and machinery isolated on clean studio white background, crisp beveling"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg0lAikKF3GP1aoPj9nhPsZJA8za13ZSgqpe9esrtqr8evSS-lhjZE5Q2MCP7aBn7NIjVXJEmJ8t929hdc3Ipy_wpC1jE8dFqQu4UK7YdXf7BGs3KSYkYEb_ip3kvv59D8v8miNkIgJxzIcug7poECIj0vi4rk7hzgsgYeQJrjoXdG2KZ0q0S3tSFAHEiNHt6DXNDViwnYtz0sIIQIcTR1pzbJ9Yk_sEVECPF17JI" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">Hex nut</h3>
+                                <span class="font-label-sm text-label-sm text-outline">DIN 934 Std</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 5. Tractor Parts Section -->
+                <div class="space-y-space-xs">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-headline-sm text-headline-sm text-primary font-bold">Tractor parts</h2>
+                        <a class="font-label-lg text-label-lg text-secondary flex items-center gap-0.5 hover:underline"
+                            href="#">
+                            <span>View all</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-3 gap-space-xs">
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="Forged black boron steel J-type rotary tiller blade for agricultural machinery isolated against studio background, clean curved profile"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ_Mm6x1EBTp2XfetyNWLA97O41WefueoLOkQp8NSjER2_OpaJXWqRg5OwtK4PsrTxmVgt8Hhd3WVCOINIu8BIEB5_Q9mDnTUkuG6xMfRXxzsedZfLk9WgiaFTjycCxn0I4ma1F1_qyS2l2o7HoI6dPxatUW5hs_bziPPGapxCuw86Cfu-xonEEjChfPdM5ANomyFTdQ1FnzJSRG9c-CV8e7xkxCFz8IvWWbISl-s" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">J-Type Blade</h3>
+                                <span class="font-label-sm text-label-sm text-outline">Boron Steel</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="Pair of hardened steel J-type small rotavator blades with dual bolt holes on white background, black powder coat finish"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPr-JCcOXisv6D-zUSqmRiX2OTzJQhhXAtqK0Kow5ofwR3h8ZXdxQyEDHK4dfuTARdT4M1_gFjWTqLzOvA4ceSiId8YVqugV1wFJlPZnXbXO8Y1bbSj1vL9jioOoudpj9o3WJQFZYP7Tfzf0Ws7i1_u63ipbzZgCP_t2vBOiY5rYrLW8gdC7NSw4K29mX1F0XFBrWSYmAMM4NWdSXwdihj4-dqA-8Dqwb-vwcXg20" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">J-Type Small</h3>
+                                <span class="font-label-sm text-label-sm text-outline">Rotavator</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest rounded-xl p-2.5 shadow-sm space-y-2 text-center group cursor-pointer">
+                            <div
+                                class="w-full h-24 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden p-1">
+                                <img class="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                                    data-alt="Heavy duty L-type rotavator steel blades angled for soil cultivation isolated on white background with crisp edges"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMV8eZ9t7P43mFd76uIvaxQeKlVoo4-voAiURMA_iw4JVdoGhPRXUqzoPwJXh3De0Q27u2iXmjHynTLrP1VPNt1qGtwZruMhTARP2UDRtFnkfO6N0bs8pVr2OUWldTssLg11PD7KmPwLjeQ_fW6tJenCRPJX9r3D-Xub3PDe_JETf2_enieY9tjIbMo78UvuSklKOhDTKKmsU9y3fQz7HuH9WguTuTViojqsk0JTE" />
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-primary truncate">L-Type Blade</h3>
+                                <span class="font-label-sm text-label-sm text-outline">Heat Treated</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 6. Mandi Rates Live Prompt Card -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+                            <h2 class="font-label-lg text-label-lg text-primary font-bold">Latest material prices</h2>
+                        </div>
+                        <a class="font-label-md text-label-md text-secondary font-semibold flex items-center gap-0.5 hover:underline"
+                            href="#">
+                            <span>View all rates</span>
+                            <span class="material-symbols-outlined text-[16px]">north_east</span>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-space-xs pt-1">
+                        <div class="bg-surface-container-low rounded-lg p-2.5">
+                            <div class="flex justify-between items-center">
+                                <span class="font-label-sm text-label-sm text-outline">Ingot (Mandi)</span>
+                                <span class="text-secondary font-label-sm text-label-sm font-bold">Δ
+                                    +&amp;8377;350</span>
+                            </div>
+                            <div class="font-ticker-price text-ticker-price text-primary mt-1">&amp;8377;44,200 <span
+                                    class="font-label-sm text-label-sm font-normal text-outline">/MT</span></div>
+                        </div>
+                        <div class="bg-surface-container-low rounded-lg p-2.5">
+                            <div class="flex justify-between items-center">
+                                <span class="font-label-sm text-label-sm text-outline">TMT 12mm</span>
+                                <span class="text-primary font-label-sm text-label-sm font-bold">Δ par</span>
+                            </div>
+                            <div class="font-ticker-price text-ticker-price text-primary mt-1">&amp;8377;49,850 <span
+                                    class="font-label-sm text-label-sm font-normal text-outline">/MT</span></div>
+                        </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-outline pt-1">
+                        Ludhiana &amp; Mandi Gobindgarh spot benchmarks updated today 11:30 AM IST.
+                    </p>
+                </div>
+                <!-- 7. THE FTI MATERIAL STORE - Signature Hero Banner -->
+                <div
+                    class="bg-primary-container text-inverse-on-surface rounded-xl overflow-hidden shadow-md flex items-stretch">
+                    <div class="flex-1 p-space-md flex flex-col justify-between space-y-space-sm">
+                        <div>
+                            <span
+                                class="font-label-sm text-label-sm tracking-wider uppercase text-inverse-primary font-bold block mb-1">
+                                The FTI Material Store
+                            </span>
+                            <h3 class="font-headline-sm text-headline-sm text-on-primary font-bold leading-tight">
+                                Materials for your next project.
+                            </h3>
+                            <p class="font-body-sm text-body-sm text-on-primary-container mt-1.5 line-clamp-2">
+                                Find the exact size and grade you need. Direct mill dispatch with authentic test
+                                certificates.
+                            </p>
+                        </div>
+                        <button
+                            class="inline-flex items-center gap-1.5 text-on-primary font-label-lg text-label-lg font-bold hover:translate-x-1 transition-transform self-start pt-2">
+                            <span>Browse materials</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                    </div>
+                    <div class="w-32 flex-shrink-0 relative">
+                        <img class="w-full h-full object-cover"
+                            data-alt="Heavy bundle of structural TMT rebars stacked horizontally with metallic industrial sheen, mill interior background"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2j4AJMVjufaYSCp1wUTMvqlIUUvjsHdHe3bvhQjJNHdPMuVKQJLk-BUgJn5BNZ3TvyH28C6xt39JI2L5TNsIR4jHTCxrnqu2QZ8eGzyE75aCezrT3ckTPmvPuKwW7LXESbdLqHsfn8prr_BtSVzHBZCWFk6vwdgZ6mPkPOXkY_Que3bkqQV37AeYnce3NYS6tRhEdQktpSa2y5m5Ocete6Rhhh3Y3ekxPyLzX_vk" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-primary-container via-transparent to-transparent">
+                        </div>
+                    </div>
+                </div>
+                <!-- 8. Business Tools & Support Grid -->
+                <div class="grid grid-cols-2 gap-space-xs">
+                    <!-- Tool 1: Fastener dimensions (Warm / Rose tint) -->
+                    <button
+                        class="bg-secondary-fixed text-left rounded-xl p-space-md shadow-sm flex flex-col justify-between h-36 group">
+                        <div>
+                            <div
+                                class="w-9 h-9 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary mb-2 shadow-xs">
+                                <span class="material-symbols-outlined text-[20px]">build</span>
+                            </div>
+                            <h3 class="font-label-lg text-label-lg text-on-secondary-fixed font-bold leading-tight">
+                                Fastener dimensions</h3>
+                            <p class="font-body-sm text-body-sm text-on-secondary-fixed-variant line-clamp-2 mt-0.5">
+                                Check pitch, threads &amp; weights</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-secondary text-[20px] self-start group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">north_east</span>
+                    </button>
+                    <!-- Tool 2: Business stock (Clean Tech Blue tint) -->
+                    <button
+                        class="bg-surface-container-high text-left rounded-xl p-space-md shadow-sm flex flex-col justify-between h-36 group">
+                        <div>
+                            <div
+                                class="w-9 h-9 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary mb-2 shadow-xs">
+                                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                            </div>
+                            <h3 class="font-label-lg text-label-lg text-primary font-bold leading-tight">Business stock
+                            </h3>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">Explore
+                                active factory listings</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-primary text-[20px] self-start group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">north_east</span>
+                    </button>
+                </div>
+                <!-- 9. Account & Operational Action List -->
+                <div class="space-y-space-xs pb-2">
+                    <!-- Item: Emote Financing -->
+                    <div
+                        class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between cursor-pointer hover:bg-surface-container-low transition-colors">
+                        <div class="flex items-center gap-space-sm">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary flex-shrink-0">
+                                <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-label-lg text-label-lg text-primary font-bold">Emote Credit Facility
+                                    </h3>
+                                    <span
+                                        class="px-2 py-0.2 rounded bg-surface-container text-primary font-label-sm text-[10px]">Under
+                                        review</span>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-outline mt-0.5">Application under review • View
+                                    details</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+                    </div>
+                    <!-- Item: Order Support -->
+                    <div
+                        class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between cursor-pointer hover:bg-surface-container-low transition-colors">
+                        <div class="flex items-center gap-space-sm">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary flex-shrink-0">
+                                <span class="material-symbols-outlined text-[22px]">help_center</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg text-primary font-bold">Need help with your
+                                    order?</h3>
+                                <p class="font-body-sm text-body-sm text-outline mt-0.5">Get support for orders, claims
+                                    and certificates</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+                    </div>
+                    <!-- Item: Announcements / Notice -->
+                    <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-primary text-[18px]">campaign</span>
+                                <h3 class="font-label-lg text-label-lg text-primary font-bold">FTI announcements</h3>
+                            </div>
+                            <span class="font-label-sm text-label-sm text-outline">Today</span>
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">
+                            New spot delivery corridors enabled for Mandi Gobindgarh, Ludhiana, and Ghaziabad industrial
+                            clusters.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
         <script>
-            // Micro-interaction: Interactive pill filter switching
-            document.querySelectorAll('button[aria-label="Fiscal Period"], .no-scrollbar button').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    if (this.parentElement.classList.contains('no-scrollbar')) {
-                        this.parentElement.querySelectorAll('button').forEach(btn => {
-                            btn.className = "flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all";
-                        });
-                        this.className = "flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary font-label-md text-label-md font-bold shadow-sm transition-all";
-                    }
+            // Simple micro-interaction for market selector & category quick filter
+            document.querySelectorAll('button, [role="button"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.classList.add('opacity-80');
+                    setTimeout(() => btn.classList.remove('opacity-80'), 150);
                 });
             });
         </script>

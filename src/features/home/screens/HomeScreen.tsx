@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,13 +11,11 @@ import { router, type Href } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
-import { MaterialPriceBanner } from '@features/pricing/ui';
-import { pricingApi } from '@features/pricing/export';
 import { drawingApi } from '@features/drawings/export';
+import { HomeActivity } from '../components/HomeActivity';
 import { loadHomeCatalogue } from '../data/category-images';
 import materialImageFallbacks from '../data/material-image-fallbacks.json';
-import { useStore } from '@core/state/workspace-store';
-import { Button, Card, Txt, Icon, c } from '@shared/ui';
+import { Button, Txt, Icon, c } from '@shared/ui';
 
 const services = [
   {
@@ -113,6 +110,7 @@ type CategoryTile = {
   imageUrl?: string;
   href: Href;
   contentFit?: ImageProps['contentFit'];
+  subtitle?: string;
 };
 
 function CategoryRow({
@@ -122,6 +120,7 @@ function CategoryRow({
   loading,
   error,
   retry,
+  grid = false,
 }: {
   title: string;
   href: Href;
@@ -129,7 +128,9 @@ function CategoryRow({
   loading?: boolean;
   error?: boolean;
   retry?: () => void;
+  grid?: boolean;
 }) {
+  const Container = grid ? View : ScrollView;
   return (
     <View>
       <View style={styles.categoryRowHeader}>
@@ -147,12 +148,16 @@ function CategoryRow({
         </Pressable>
       </View>
       {items.length ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categories}
+        <Container
+          {...(grid
+            ? { style: styles.productGrid }
+            : {
+                horizontal: true,
+                showsHorizontalScrollIndicator: false,
+                contentContainerStyle: styles.categories,
+              })}
         >
-          {items.map((item) => (
+          {(grid ? items.slice(0, 3) : items).map((item) => (
             <Pressable
               key={item.id}
               accessibilityRole="link"
@@ -160,6 +165,7 @@ function CategoryRow({
               onPress={() => router.push(item.href)}
               style={({ pressed }) => [
                 styles.category,
+                grid && styles.gridTile,
                 pressed && styles.pressed,
               ]}
             >
@@ -167,12 +173,25 @@ function CategoryRow({
                 uri={item.imageUrl}
                 label={`${item.title} product photo`}
                 contentFit={item.contentFit}
-                style={styles.categoryImage}
+                style={[styles.categoryImage, grid && styles.gridImage]}
               />
-              <Txt style={styles.categoryTitle}>{item.title}</Txt>
+              <Txt
+                numberOfLines={1}
+                style={[
+                  styles.categoryTitle,
+                  grid && { textAlign: 'center', fontSize: 12 },
+                ]}
+              >
+                {item.title}
+              </Txt>
+              {item.subtitle ? (
+                <Txt numberOfLines={1} style={styles.categorySubtitle}>
+                  {item.subtitle}
+                </Txt>
+              ) : null}
             </Pressable>
           ))}
-        </ScrollView>
+        </Container>
       ) : (
         <View style={styles.categoryStatus}>
           <Txt style={styles.description}>
@@ -205,25 +224,8 @@ export function Home() {
     staleTime: 30000,
     retry: false,
   });
-  const fastenerImage =
-    fastenerPhotos.data?.find(
-      (photo) => photo.slug === 'hex-bolt' && photo.image_url,
-    )?.image_url ??
-    fastenerPhotos.data?.find((photo) => photo.image_url)?.image_url ??
-    photos.data?.images.fastener;
-  const tractorPartsImage = photos.data?.images.tractor_part;
   const { identity, session, ready, loading, error } = useAuth();
   const [search, setSearch] = useState('');
-  const [marketOpen, setMarketOpen] = useState(false);
-  const [width, setWidth] = useState(0);
-  const market = useStore((state) => state.market);
-  const setMarket = useStore((state) => state.setMarket);
-  const markets = useQuery({
-    queryKey: ['pricing', 'markets'],
-    queryFn: pricingApi.markets,
-    staleTime: 60000,
-  });
-  const selectedMarket = markets.data?.find((item) => item.id === market);
   const business =
     identity?.businesses.find(
       (item) => item.verification_status === 'verified',
@@ -237,39 +239,13 @@ export function Home() {
         ? 'Application under review · View details'
         : 'Application needs changes · Review feedback'
     : 'Add your business details to get verified.';
-  const featureWidth = Math.min(520, Math.max(238, width * 0.85));
   function submitSearch() {
     if (search.trim())
       router.push({ pathname: '/products', params: { search: search.trim() } });
   }
   return (
-    <View
-      style={styles.home}
-      onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
-    >
+    <View style={styles.home}>
       <View style={styles.header}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.services}
-        >
-          {services.map((item) => (
-            <Pressable
-              key={item.path}
-              accessibilityRole="link"
-              accessibilityLabel={item.title}
-              onPress={() => router.push(item.path)}
-              style={({ pressed }) => [
-                styles.service,
-                { backgroundColor: item.bg },
-                pressed && styles.pressed,
-              ]}
-            >
-              <Icon name={item.icon} size={27} color={c.ink} />
-              <Txt style={styles.serviceTitle}>{item.short}</Txt>
-            </Pressable>
-          ))}
-        </ScrollView>
         <View style={styles.search}>
           <Icon name="search" size={23} color={c.ink} />
           <TextInput
@@ -289,42 +265,34 @@ export function Home() {
             onPress={submitSearch}
             style={styles.searchSubmit}
           >
-            <Icon
-              name="arrow-right"
-              size={21}
-              color={search.trim() ? c.red : c.muted}
-            />
+            <Icon name="arrow-right" size={21} color="#142d4e" />
           </Pressable>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Select your home market"
-          onPress={() => setMarketOpen(true)}
-          style={styles.market}
-        >
-          <Icon name="map-pin" size={21} color={c.ink} />
-          <Txt style={styles.marketText}>
-            {selectedMarket
-              ? 'Your market: ' + selectedMarket.name
-              : 'Choose your market'}
-          </Txt>
-          <Icon name="chevron-down" size={18} color={c.ink} />
-        </Pressable>
+        <View style={styles.services}>
+          {services.map((item) => (
+            <Pressable
+              key={item.path}
+              accessibilityRole="link"
+              accessibilityLabel={item.title}
+              onPress={() => router.push(item.path)}
+              style={({ pressed }) => [
+                styles.service,
+                pressed && styles.pressed,
+              ]}
+            >
+              <View style={styles.serviceIcon}>
+                <Icon
+                  name={item.icon}
+                  size={22}
+                  color={item.path === '/rates' ? '#b6171e' : '#142d4e'}
+                />
+              </View>
+              <Txt style={styles.serviceTitle}>{item.short}</Txt>
+            </Pressable>
+          ))}
+        </View>
       </View>
-      <View style={styles.sectionHeader}>
-        <Txt accessibilityRole="header" style={styles.sectionTitle}>
-          Shop by category
-        </Txt>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Browse all products"
-          onPress={() => router.push('/products')}
-          style={styles.seeAll}
-        >
-          <Txt style={styles.seeAllText}>View all</Txt>
-          <Icon name="arrow-right" size={15} color={c.red} />
-        </Pressable>
-      </View>
+      <HomeActivity />
       <CategoryRow
         title="Raw materials"
         href="/products"
@@ -339,6 +307,7 @@ export function Home() {
         }))}
       />
       <CategoryRow
+        grid
         title="Fasteners"
         href="/products?kind=fastener"
         loading={fastenerPhotos.isPending}
@@ -352,6 +321,7 @@ export function Home() {
         }))}
       />
       <CategoryRow
+        grid
         title="Tractor parts"
         href="/products?kind=tractor_part"
         loading={photos.isPending}
@@ -362,23 +332,26 @@ export function Home() {
           href: { pathname: '/product/[id]', params: { id: item.id } },
         }))}
       />
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={featureWidth + 14}
-        decelerationRate="fast"
-        contentContainerStyle={styles.features}
-      >
+      <View style={styles.content}>
         <Pressable
           accessibilityRole="link"
           accessibilityLabel="Browse materials"
           onPress={() => router.push('/products')}
-          style={({ pressed }) => [
-            styles.feature,
-            { width: featureWidth },
-            pressed && styles.pressed,
-          ]}
+          style={styles.promotion}
         >
+          <View style={styles.promotionBody}>
+            <Txt style={styles.featureEyebrow}>THE FTI MATERIAL STORE</Txt>
+            <Txt style={styles.promotionTitle}>
+              Materials for your next project.
+            </Txt>
+            <Txt style={styles.featureDescription}>
+              Find the size and grade you need. Send your requirement to FTI.
+            </Txt>
+            <View style={styles.promotionCta}>
+              <Txt style={styles.ctaText}>Browse materials</Txt>
+              <Icon name="arrow-right" size={18} color="white" />
+            </View>
+          </View>
           <ProductPhoto
             uri={
               photos.data?.images['round-bar-as-rolled'] ??
@@ -386,102 +359,22 @@ export function Home() {
             }
             label="Raw materials product photo"
             contentFit="cover"
-            style={styles.featureImage}
+            style={styles.promotionImage}
           />
-          <View style={styles.featureTag}>
-            <Txt style={styles.tagText}>THE FTI MATERIAL STORE</Txt>
-          </View>
-          <View style={styles.featureBody}>
-            <Txt style={styles.featureEyebrow}>BUILT FOR YOUR NEXT PROJECT</Txt>
-            <Txt style={styles.featureTitle}>
-              The right steel.{'\n'}A stronger start.
-            </Txt>
-            <Txt style={styles.featureDescription}>
-              Explore materials, compare specifications and send your
-              requirement.
-            </Txt>
-            <View style={styles.featureCta}>
-              <Txt style={styles.ctaText}>Browse materials</Txt>
-              <Icon name="arrow-right" size={19} color="white" />
-            </View>
-          </View>
         </Pressable>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Browse fasteners"
-          onPress={() => router.push('/products?kind=fastener')}
-          style={({ pressed }) => [
-            styles.feature,
-            { width: featureWidth },
-            pressed && styles.pressed,
-          ]}
-        >
-          <ProductPhoto
-            uri={fastenerImage ?? undefined}
-            label="Fasteners product photo"
-            contentFit="contain"
-            style={styles.featureImage}
-          />
-          <View style={styles.featureTag}>
-            <Txt style={styles.tagText}>FASTENERS</Txt>
-          </View>
-          <View style={[styles.featureBody, { backgroundColor: '#9D1827' }]}>
-            <Txt style={styles.featureEyebrow}>BOLTS, NUTS & MORE</Txt>
-            <Txt style={styles.featureTitle}>Find the right{'\n'}fastener.</Txt>
-            <Txt style={styles.featureDescription}>
-              Explore fasteners and check dimensions, weights and finishes.
-            </Txt>
-            <View style={styles.featureCta}>
-              <Txt style={styles.ctaText}>Browse fasteners</Txt>
-              <Icon name="arrow-right" size={19} color="white" />
-            </View>
-          </View>
-        </Pressable>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Browse tractor parts"
-          onPress={() => router.push('/products?kind=tractor_part')}
-          style={({ pressed }) => [
-            styles.feature,
-            { width: featureWidth },
-            pressed && styles.pressed,
-          ]}
-        >
-          <ProductPhoto
-            uri={tractorPartsImage}
-            label="Tractor parts product photo"
-            contentFit="contain"
-            style={styles.featureImage}
-          />
-          <View style={styles.featureTag}>
-            <Txt style={styles.tagText}>TRACTOR PARTS</Txt>
-          </View>
-          <View style={[styles.featureBody, { backgroundColor: '#254D3C' }]}>
-            <Txt style={styles.featureEyebrow}>FOR YOUR NEXT REPAIR</Txt>
-            <Txt style={styles.featureTitle}>
-              Keep your{'\n'}equipment moving.
-            </Txt>
-            <Txt style={styles.featureDescription}>
-              Explore agricultural parts, from rotavator gears to axles and
-              blades.
-            </Txt>
-            <View style={styles.featureCta}>
-              <Txt style={styles.ctaText}>Browse tractor parts</Txt>
-              <Icon name="arrow-right" size={19} color="white" />
-            </View>
-          </View>
-        </Pressable>
-      </ScrollView>
+      </View>
       <View style={styles.content}>
         <View style={styles.tools}>
           <Pressable
             accessibilityRole="link"
             accessibilityLabel="Explore fastener dimensions"
             onPress={() => router.push('/fastener/hex-bolt')}
-            style={[styles.tool, { backgroundColor: '#FFF0F0' }]}
+            style={[styles.tool, { backgroundColor: '#ffdad6' }]}
           >
-            <Icon name="tool" size={27} color={c.red} />
-            <Txt style={styles.toolTitle}>Fasteners,{'\n'}made precise.</Txt>
+            <View style={styles.toolIcon}>
+              <Icon name="tool" size={20} color={c.red} />
+            </View>
+            <Txt style={styles.toolTitle}>Fastener dimensions</Txt>
             <Txt style={styles.description}>Check dimensions & weights</Txt>
             <Icon name="arrow-up-right" size={20} color={c.red} />
           </Pressable>
@@ -491,15 +384,14 @@ export function Home() {
             onPress={() => router.push('/business-stock')}
             style={styles.tool}
           >
-            <Icon name="package" size={27} color={c.cardBorder} />
-            <Txt style={styles.toolTitle}>
-              More stock.{'\n'}More possibilities.
-            </Txt>
+            <View style={styles.toolIcon}>
+              <Icon name="package" size={20} color="#142d4e" />
+            </View>
+            <Txt style={styles.toolTitle}>Business stock</Txt>
             <Txt style={styles.description}>Explore business listings</Txt>
             <Icon name="arrow-up-right" size={20} color={c.cardBorder} />
           </Pressable>
         </View>
-        <MaterialPriceBanner />
         {accountResolved || (!session && ready) ? (
           <Pressable
             accessibilityRole="link"
@@ -538,108 +430,79 @@ export function Home() {
             <Icon name="chevron-right" size={20} />
           </Pressable>
         ) : null}
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="Get help with your order"
+          onPress={() => router.push('/support')}
+          style={styles.account}
+        >
+          <Icon name="help-circle" color="#b6171e" size={24} />
+          <View style={styles.accountText}>
+            <Txt style={styles.accountTitle}>Need help with your order?</Txt>
+            <Txt style={styles.description}>
+              Get support for orders, claims and certificates.
+            </Txt>
+          </View>
+          <Icon name="chevron-right" size={20} />
+        </Pressable>
         <Announcements />
       </View>
-      <Modal
-        visible={marketOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setMarketOpen(false)}
-      >
-        <View style={styles.backdrop}>
-          <Card style={styles.modal}>
-            <Txt accessibilityRole="header" style={styles.sectionTitle}>
-              Choose your market
-            </Txt>
-            <Txt style={styles.description}>
-              Use your local market for material price updates.
-            </Txt>
-            <ScrollView style={{ maxHeight: 320 }}>
-              {markets.isPending ? (
-                <Txt>Loading markets…</Txt>
-              ) : markets.error ? (
-                <>
-                  <Txt accessibilityRole="alert">Could not load markets.</Txt>
-                  <Button secondary onPress={() => void markets.refetch()}>
-                    Retry markets
-                  </Button>
-                </>
-              ) : !markets.data?.length ? (
-                <Txt>No markets available yet.</Txt>
-              ) : (
-                markets.data.map((item) => (
-                  <Pressable
-                    key={item.id}
-                    accessibilityRole="radio"
-                    accessibilityLabel={item.name}
-                    accessibilityState={{ checked: item.id === market }}
-                    onPress={() => {
-                      setMarket(item.id);
-                      setMarketOpen(false);
-                    }}
-                    style={styles.marketOption}
-                  >
-                    <Txt>
-                      {item.name} · {item.state}
-                    </Txt>
-                    {item.id === market ? (
-                      <Icon name="check" color={c.red} />
-                    ) : null}
-                  </Pressable>
-                ))
-              )}
-            </ScrollView>
-            <Button secondary onPress={() => setMarketOpen(false)}>
-              Close markets
-            </Button>
-          </Card>
-        </View>
-      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  home: { minWidth: 0, backgroundColor: '#FFFFFF' },
-  header: { backgroundColor: '#E7EFF9', paddingVertical: 16, gap: 14 },
-  services: { paddingHorizontal: 16, gap: 10 },
-  service: {
-    width: 92,
-    minHeight: 84,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: c.cardBorder,
+  home: { minWidth: 0, backgroundColor: '#f8f9ff', gap: 16 },
+  header: { backgroundColor: '#f8f9ff', paddingTop: 8, gap: 8 },
+  serviceIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: '#dde9ff',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 9,
   },
-  serviceTitle: { fontSize: 12, fontWeight: '700' },
+  services: { paddingHorizontal: 16, gap: 4, flexDirection: 'row' },
+  service: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 81,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
+  },
+  serviceTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#142d4e',
+  },
   search: {
     marginHorizontal: 16,
-    borderRadius: 28,
+    borderRadius: 12,
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: c.cardBorder,
+    borderWidth: 0,
+    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 16,
-    gap: 10,
+    paddingLeft: 14,
+    paddingRight: 6,
+    gap: 8,
   },
-  searchInput: { flex: 1, minWidth: 0, height: 54, fontSize: 14, color: c.ink },
+  searchInput: { flex: 1, minWidth: 0, height: 52, fontSize: 15, color: c.ink },
   searchSubmit: {
-    width: 44,
-    height: 52,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#dde9ff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  market: {
-    marginHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
-    minHeight: 44,
-  },
-  marketText: { flex: 1, fontSize: 14, fontWeight: '500' },
   sectionHeader: {
     paddingHorizontal: 16,
     paddingTop: 18,
@@ -648,14 +511,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  sectionTitle: { fontSize: 19, fontWeight: '700', lineHeight: 25 },
-  seeAll: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  seeAllText: { fontSize: 12, fontWeight: '700', color: c.red },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 26,
+    color: '#142d4e',
+  },
+  seeAll: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  seeAllText: { fontSize: 14, fontWeight: '700', color: c.red },
   categories: {
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 22,
-    gap: 16,
+    paddingTop: 4,
+    paddingBottom: 2,
+    gap: 8,
   },
   categoryRowHeader: {
     paddingHorizontal: 16,
@@ -664,116 +532,113 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  categoryRowTitle: { fontSize: 15, fontWeight: '700', color: c.ink },
+  categoryRowTitle: { fontSize: 20, fontWeight: '700', color: '#001835' },
+  productGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    paddingHorizontal: 16,
+  },
+  gridTile: { flex: 1, minWidth: 0, padding: 10, gap: 8 },
+  gridImage: {
+    width: '100%',
+    height: 96,
+    backgroundColor: '#eff4ff',
+    borderWidth: 0,
+  },
   categoryStatus: { paddingHorizontal: 16, paddingBottom: 18, gap: 8 },
-  category: { width: 92, gap: 9, alignItems: 'center' },
+  category: {
+    width: 144,
+    gap: 8,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 12,
+    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
+  },
   categoryImage: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    borderWidth: 1,
-    borderColor: c.cardBorder,
+    width: 124,
+    height: 112,
+    borderRadius: 8,
+    borderWidth: 0,
   },
   categoryTitle: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 12,
+    lineHeight: 18,
     fontWeight: '600',
-    textAlign: 'center',
+    textAlign: 'left',
+    color: '#001835',
   },
+  categorySubtitle: { fontSize: 11, color: '#74777f' },
   photoPlaceholder: {
     backgroundColor: '#F1F4F8',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  features: { paddingHorizontal: 16, gap: 14, paddingBottom: 18 },
-  feature: {
-    borderWidth: 1,
-    borderColor: c.cardBorder,
-    borderRadius: 20,
+  promotion: {
+    backgroundColor: '#142d4e',
+    borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#092F56',
+    flexDirection: 'row',
   },
-  featureImage: { width: '100%', height: 170, backgroundColor: 'white' },
-  featureTag: {
-    position: 'absolute',
-    top: 14,
-    left: 14,
-    backgroundColor: 'white',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
+  promotionBody: { flex: 1, padding: 16, gap: 8 },
+  promotionImage: { width: '33%', minHeight: 180 },
+  promotionTitle: {
+    color: '#fff',
+    fontSize: 20,
+    lineHeight: 25,
+    fontWeight: '700',
   },
-  tagText: { fontSize: 9, fontWeight: '800', color: c.ink, letterSpacing: 0.6 },
-  featureBody: { padding: 22, gap: 12, backgroundColor: '#092F56', flex: 1 },
+  promotionCta: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    minHeight: 44,
+  },
   featureEyebrow: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1,
     color: '#D2E5FA',
   },
-  featureTitle: {
-    fontSize: 31,
-    lineHeight: 35,
-    letterSpacing: -0.8,
-    fontWeight: '800',
-    color: 'white',
-  },
-  featureDescription: { fontSize: 13, lineHeight: 20, color: '#E2EAF4' },
-  featureCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 44,
-    borderTopWidth: 1,
-    borderTopColor: '#FFFFFF40',
-    marginTop: 5,
-    paddingTop: 10,
-  },
+  featureDescription: { fontSize: 13, lineHeight: 20, color: '#a6b7d0' },
   ctaText: { color: 'white', fontWeight: '700', fontSize: 14 },
-  content: { paddingHorizontal: 16, paddingBottom: 16, gap: 20 },
-  tools: { flexDirection: 'row', gap: 12 },
+  content: { paddingHorizontal: 16, paddingBottom: 0, gap: 8 },
+  tools: { flexDirection: 'row', gap: 4 },
   tool: {
     flex: 1,
     minWidth: 0,
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    gap: 12,
-    backgroundColor: '#EAF2FD',
-    borderWidth: 1,
-    borderColor: c.cardBorder,
+    gap: 6,
+    minHeight: 144,
+    backgroundColor: '#dde9ff',
+    borderWidth: 0,
+  },
+  toolIcon: {
+    width: 36,
+    height: 36,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toolTitle: {
-    fontSize: 19,
-    lineHeight: 24,
+    fontSize: 15,
+    lineHeight: 20,
     letterSpacing: -0.4,
     fontWeight: '700',
   },
   description: { fontSize: 12, lineHeight: 19, color: '#58697C' },
   account: {
-    borderWidth: 1,
-    borderColor: c.cardBorder,
-    borderRadius: 16,
-    padding: 18,
+    borderWidth: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
   accountText: { flex: 1, minWidth: 0, gap: 5 },
-  accountTitle: { fontSize: 16, fontWeight: '700', lineHeight: 22 },
+  accountTitle: { fontSize: 14, fontWeight: '700', lineHeight: 22 },
   pressed: { opacity: 0.8 },
-  backdrop: {
-    flex: 1,
-    backgroundColor: '#00000066',
-    padding: 24,
-    justifyContent: 'center',
-  },
-  modal: { width: '100%', maxWidth: 440, alignSelf: 'center', gap: 16 },
-  marketOption: {
-    minHeight: 52,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
 });

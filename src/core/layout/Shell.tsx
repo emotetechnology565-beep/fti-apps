@@ -1,4 +1,5 @@
 import { useAuth } from '@features/auth/ui';
+import { HomeHeader } from '@features/home/components/HomeHeader';
 import { hasPermission } from '@features/auth';
 import { AdminNavigation } from '@features/admin/ui';
 import { AccountNavigation } from '@features/account/ui';
@@ -242,7 +243,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   <Icon
                     name={n.icon}
                     size={16}
-                    color={active(n.path) ? c.red : c.muted}
+                    color={path === '/' ? (active(n.path) ? '#142d4e' : '#44474e') : active(n.path) ? c.red : c.muted}
                   />
                   <Txt
                     style={{
@@ -337,7 +338,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </View>
         ) : null}
         <View style={{ flex: 1, minWidth: 0 }}>
-          <View
+          {path === '/' && !desktop ? <HomeHeader market={markets.data?.find(item => item.id === market)?.name ?? ''} name={business.name} onMarket={() => setMarketOpen(true)} onNotifications={() => setNotifications(true)} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : <View
             style={{
               height: phone ? 68 : 76,
               backgroundColor: 'white',
@@ -462,7 +463,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 </Pressable>
               ) : null}
             </Row>
-          </View>
+          </View>}
           <ScrollView
             ref={contentScroll}
             key={staffWorkspace ? `${path}-${adminSection ?? ''}` : path}
@@ -533,9 +534,9 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               {[
                 { label: 'Home', path: '/', icon: 'grid' },
-                { label: 'Materials', path: '/products', icon: 'box' },
+                { label: path === '/' ? 'Products' : 'Materials', path: '/products', icon: 'box' },
                 { label: 'Rates', path: '/rates', icon: 'trending-up' },
-                { label: 'Cart', path: '/cart', icon: 'shopping-bag' },
+                { label: path === '/' ? 'RFQs' : 'Cart', path: path === '/' ? '/rfqs' : '/cart', icon: path === '/' ? 'file-text' : 'shopping-bag' },
                 { label: 'Account', path: '/account', icon: 'user' },
               ].map((n) => (
                 <Pressable
@@ -554,12 +555,12 @@ export function Shell({ children }: { children: ReactNode }) {
                   <Icon
                     name={n.icon as IconName}
                     size={18}
-                    color={active(n.path) ? c.red : c.muted}
+                    color={path === '/' ? (active(n.path) ? '#142d4e' : '#44474e') : active(n.path) ? c.red : c.muted}
                   />
                   <Txt
                     style={{
-                      fontSize: 9,
-                      color: active(n.path) ? c.red : c.muted,
+                      fontSize: path === '/' ? 11 : 9,
+                      color: path === '/' ? '#142d4e' : active(n.path) ? c.red : c.muted,
                       fontWeight: active(n.path) ? '700' : '400',
                     }}
                   >
