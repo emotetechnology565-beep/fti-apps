@@ -39,9 +39,14 @@ test('unknown product IDs cannot create cart records', () => {
 
 test('cart keeps variants separate, respects MOQ and retains products across catalogue pages', () => {
   const store = createStore(createWorkspaceState);
-  const product = { id: 'tractor', moq: 1, variants: [
-    { id: 'small', min_order_qty: 2 }, { id: 'large', min_order_qty: 5 },
-  ] } as Product;
+  const product = {
+    id: 'tractor',
+    moq: 1,
+    variants: [
+      { id: 'small', min_order_qty: 2 },
+      { id: 'large', min_order_qty: 5 },
+    ],
+  } as Product;
   store.getState().setCatalogProducts([product]);
   store.getState().add('tractor', undefined, 'small');
   store.getState().add('tractor', undefined, 'large');
@@ -52,11 +57,17 @@ test('cart keeps variants separate, respects MOQ and retains products across cat
     { productId: 'tractor', variantId: 'small', quantity: 4 },
     { productId: 'tractor', variantId: 'large', quantity: 5 },
   ]);
-  store.getState().setCatalogProducts([{ id: 'next-page', variants: [] } as unknown as Product]);
+  store
+    .getState()
+    .setCatalogProducts([
+      { id: 'next-page', variants: [] } as unknown as Product,
+    ]);
   store.getState().quantity('tractor', 1, 'large');
   assert.equal(store.getState().cart[1].quantity, 5);
   store.getState().quantity('tractor', 0, 'small');
-  assert.deepEqual(store.getState().cart, [{ productId: 'tractor', variantId: 'large', quantity: 5 }]);
+  assert.deepEqual(store.getState().cart, [
+    { productId: 'tractor', variantId: 'large', quantity: 5 },
+  ]);
 });
 test('persisted user records survive the feature refactor', async () => {
   const oldState = {
@@ -90,4 +101,36 @@ test('persisted user records survive the feature refactor', async () => {
   assert.deepEqual(store.getState().catalogProducts, []);
   store.getState().quantity('previously-selected', 0);
   assert.deepEqual(store.getState().cart, []);
+});
+
+test('raw material cart keeps sizes separate and supports updating and removing quantities', () => {
+  const store = createStore(createWorkspaceState);
+  const material = {
+    key: 'size-8-grade-550',
+    name: 'TMT Bar',
+    size: '8 mm',
+    grade: '550',
+    unit: 'MT',
+    minimum: 1,
+    optionId: 'option-8',
+  };
+  store.getState().addMaterial('tmt', 1, material);
+  store
+    .getState()
+    .addMaterial('tmt', 2, {
+      ...material,
+      key: 'size-10-grade-550',
+      size: '10 mm',
+      optionId: 'option-10',
+    });
+  store.getState().addMaterial('tmt', 0.5, material);
+  assert.equal(store.getState().cart.length, 2);
+  assert.equal(store.getState().cart[0].quantity, 1);
+  store.getState().addMaterial('tmt', 1, material);
+  assert.equal(store.getState().cart[0].quantity, 2);
+  store.getState().quantity('tmt', 0.5, material.key);
+  assert.equal(store.getState().cart[0].quantity, 1);
+  store.getState().quantity('tmt', 0, material.key);
+  assert.equal(store.getState().cart.length, 1);
+  assert.equal(store.getState().cart[0].material?.size, '10 mm');
 });

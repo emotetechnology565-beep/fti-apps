@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { router } from 'expo-router';
-import { useAuth } from '@features/auth/ui';
-import { supabase } from '@core/api/supabase-client';
-import { Button, Card, Chip, Field, Txt, s } from '@shared/ui';
+import { View } from 'react-native';
+import { useStore } from '@core/state/workspace-store';
+import { Button, Txt } from '@shared/ui';
 import { drawingSvg } from '../model/render';
 import { weightQuantity } from '../model/weight';
+import { subcategoryLabel, drawingSubcategory } from '../model/subcategories';
 import type { DrawingDefinition, DrawingInput } from '../model/types';
 
 export function FastenerOrder({
@@ -20,137 +21,74 @@ export function FastenerOrder({
   quantity: string;
   withNut: boolean;
 }) {
-  const auth = useAuth();
-  const [name, setName] = useState(auth.identity?.profile.full_name ?? '');
-  const [business, setBusiness] = useState(
-    auth.identity?.businesses[0]?.legal_name ?? '',
-  );
-  const [location, setLocation] = useState('');
-  const [consent, setConsent] = useState(false);
-  const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
-  const [sent, setSent] = useState(false);
-  const request = useRef<{ id: string; payload: string } | null>(null);
-  async function submit() {
-    if (busy || sent || !auth.session || !supabase) return;
+  function addToCart() {
     try {
       drawingSvg(definition, input);
     } catch {
-      setMessage('Complete valid drawing dimensions before submitting.');
+      setMessage('Complete valid drawing dimensions before adding to cart.');
       return;
     }
     const count = weightQuantity(quantity);
-    if (
-      !count ||
-      !grade ||
-      name.trim().length < 2 ||
-      name.trim().length > 80 ||
-      !business.trim() ||
-      business.trim().length > 80 ||
-      location.trim().length < 5 ||
-      location.trim().length > 100 ||
-      !consent
-    ) {
-      setMessage(
-        'Choose grade and quantity, complete buyer details and agree to WhatsApp updates.',
-      );
+    if (!count || !grade) {
+      setMessage('Choose a grade and a positive whole number of pieces.');
       return;
     }
-    const payload = {
-      p_definition: definition.id,
-      p_revision: definition.published_revision ?? definition.revision,
-      p_input: input,
-      p_grade: grade,
-      p_quantity: count,
-      p_with_nut: withNut,
-      p_buyer: {
-        name: name.trim(),
-        business: business.trim(),
-        location: location.trim(),
-        whatsapp_consent: consent,
-      },
+    const fastenerRequest = {
+      definition: definition.id,
+      revision: definition.published_revision ?? definition.revision,
+      input,
+      grade,
+      withNut,
     };
-    const serialized = JSON.stringify(payload);
-    if (!request.current)
-      request.current = {
-        id:
-          globalThis.crypto?.randomUUID?.() ??
-          'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            const n = Math.floor(Math.random() * 16);
-            return (c === 'x' ? n : (n & 3) | 8).toString(16);
-          }),
-        payload: serialized,
-      };
-    if (request.current.payload !== serialized) {
-      setMessage(
-        'Retry with the original details to avoid a duplicate request.',
-      );
-      return;
-    }
-    setBusy(true);
-    setMessage('');
-    try {
-      const { data, error } = await supabase.rpc(
-        'fti_catalog_fastener_order_submit',
-        { ...payload, p_id: request.current.id },
-      );
-      if (error) throw new Error(error.message);
-      setSent(true);
-      setMessage(
-        `Order request received: ${data.reference}. Drawing and order notifications are queued for you and FTI. FTI will confirm availability, price and delivery.`,
-      );
-    } catch (e) {
-      setMessage((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    const key = JSON.stringify(fastenerRequest);
+    useStore.getState().addMaterial(definition.id, count, {
+      key,
+      name: subcategoryLabel(drawingSubcategory(definition)),
+      size: `${definition.standard}:${definition.edition} / ${definition.size} / L ${input.length} mm${withNut ? ' / With nut' : ''}`,
+      grade,
+      unit: 'piece',
+      minimum: 1,
+      fastenerRequest,
+    });
+    setMessage('Added to cart. Choose another size or proceed from your cart.');
   }
-  if (sent)
-    return (
-      <Card>
-        <Txt accessibilityLiveRegion="polite">{message}</Txt>
-      </Card>
-    );
-  if (!auth.session)
-    return (
-      <Button disabled={!auth.ready} onPress={() => router.push('/login')}>
-        Sign in to order fastener
-      </Button>
-    );
   return (
-    <Card style={{ gap: 12 }}>
-      <Txt style={s.h2}>Order fastener</Txt>
+    <View style={{ gap: 12 }}>
       <Txt>
-        {definition.standard}:{definition.edition} · {definition.size} ·{' '}
-        {grade || 'Choose grade above'} · {quantity} pieces
+        {definition.standard}:{definition.edition} / {definition.size} /{' '}
+        {grade || 'Choose grade above'} / {quantity} pieces
       </Txt>
-      <Field label="Buyer name" value={name} onChangeText={setName} />
-      <Field
-        label="Business / buyer type"
-        value={business}
-        onChangeText={setBusiness}
-      />
-      <Txt>
-        Verified WhatsApp:{' '}
-        {auth.identity?.profile.phone ?? auth.session.user.phone}
-      </Txt>
-      <Field
-        label="Delivery location (up to 100 characters)"
-        value={location}
-        onChangeText={setLocation}
-        multiline
-      />
-      <Chip selected={consent} onPress={() => setConsent(!consent)}>
-        Send me WhatsApp updates for this order request
-      </Chip>
-      <Txt style={s.muted}>
-        The selected drawing and order details will be shared with you and FTI’s
-        configured order recipients. FTI will confirm the final quotation.
-      </Txt>
-      <Button disabled={busy} onPress={() => void submit()}>
-        {busy ? 'Submitting...' : 'Submit order request'}
-      </Button>
-      {message ? <Txt accessibilityRole="alert">{message}</Txt> : null}
-    </Card>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <Button
+          icon="shopping-cart"
+          disabled={!grade || !weightQuantity(quantity)}
+          onPress={addToCart}
+          style={{
+            flex: 1,
+            minHeight: 48,
+            backgroundColor:
+              grade && weightQuantity(quantity) ? '#d32f2f' : '#d7e3f9',
+            borderWidth: 0,
+            borderRadius: 4,
+          }}
+        >
+          Add to Cart
+        </Button>
+        <Button
+          secondary
+          onPress={() => router.push('/cart')}
+          style={{
+            minHeight: 48,
+            backgroundColor: '#e6eeff',
+            borderWidth: 0,
+            borderRadius: 4,
+          }}
+        >
+          View cart
+        </Button>
+      </View>
+      {message ? <Txt accessibilityLiveRegion="polite">{message}</Txt> : null}
+    </View>
   );
 }

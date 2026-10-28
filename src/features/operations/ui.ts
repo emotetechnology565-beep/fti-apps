@@ -1,6 +1,6 @@
 export { SupportTickets } from './components/SupportTickets';
 export { Notifications, Announcements } from './components/Notifications';
-export { ShipmentTracking } from './components/Dispatch';
+export { CustomerShipmentTracking as ShipmentTracking } from './components/CustomerShipmentTracking';
 export { OperationsManagement } from './components/StaffOperations';
 export { StaffOrderAlert } from './components/StaffOrderAlert';
 

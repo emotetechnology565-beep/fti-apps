@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStore } from '@core/state/workspace-store';
 import { useAuth } from '@features/auth/ui';
 import { Button, Card, Chip, Field, Row, Txt, c, s } from '@shared/ui';
 import {
@@ -21,6 +22,11 @@ import {
   type SelectionDraft,
 } from '../model/material-selection';
 import { CatalogFilter } from './CatalogFilter';
+import {
+  MaterialQuantity,
+  MaterialSectionTitle,
+  MaterialSpecFilter,
+} from './MaterialSpecification';
 import { ProductReferenceCharts } from './ProductReferenceCharts';
 import {
   manualEstimate,
@@ -65,6 +71,7 @@ function SelectionForm({
   renderAdapter,
   renderMaterials,
 }: Props) {
+  const SpecificationFilter = productId ? MaterialSpecFilter : CatalogFilter;
   const auth = useAuth();
   const owner = auth.session?.user.id ?? null;
   const [draft, setDraft] = useState<SelectionDraft | null>(null);
@@ -74,6 +81,7 @@ function SelectionForm({
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [cartNotice, setCartNotice] = useState('');
   const [reference, setReference] = useState('');
   const [attempt, setAttempt] = useState<{
     id: string;
@@ -199,7 +207,8 @@ function SelectionForm({
             productId,
           };
         }
-        if (active) setDraft(restored);
+        if (active)
+          setDraft(productId ? { ...restored, review: false } : restored);
       })
       .catch(() => {
         if (active) {
@@ -237,6 +246,7 @@ function SelectionForm({
   ) => {
     if (locked) return;
     setMessage('');
+    setCartNotice('');
     setReference('');
     setDraft(changeSelection(draft, field, value));
   };
@@ -249,6 +259,7 @@ function SelectionForm({
   const setManualField = (field: 'material' | 'size', value: string) => {
     if (locked) return;
     setMessage('');
+    setCartNotice('');
     setDraft({
       ...draft,
       manual: { ...manualFields, [field]: value },
@@ -260,6 +271,7 @@ function SelectionForm({
   const chooseSize = (value: string) => {
     if (locked) return;
     setMessage('');
+    setCartNotice('');
     setDraft({
       ...changeSelection(draft, 'sizeId', value),
       grade: value === '__manual__' || manualGrade ? draft.grade : '',
@@ -269,6 +281,7 @@ function SelectionForm({
   const chooseGrade = (value: string) => {
     if (locked) return;
     setMessage('');
+    setCartNotice('');
     setDraft({
       ...changeSelection(draft, 'grade', value === '__manual__' ? '' : value),
       manual: { ...manualFields, gradeEntry: value === '__manual__' },
@@ -296,6 +309,50 @@ function SelectionForm({
       !errorQuantity
     : !!option && !!size && !errorQuantity && !query.isFetching;
 
+  function addToCart() {
+    if (!valid || !draft) return;
+    const manualRequest: ManualRequest | undefined =
+      manualActive && match
+        ? {
+            material: materialInput.trim(),
+            size: sizeInput.trim(),
+            grade: gradeInput.trim(),
+            uom: unit,
+            product_id: productId ?? null,
+            expected_match: match,
+            grade_entry: manualGrade ? 'manual' : 'list',
+          }
+        : undefined;
+    const key = manualRequest
+      ? JSON.stringify([
+          productId,
+          materialInput,
+          sizeInput,
+          gradeInput,
+          unit,
+          manualGrade,
+        ])
+      : option!.id;
+    useStore
+      .getState()
+      .addMaterial(
+        productId ?? option?.product_id ?? '',
+        Number(draft.quantity),
+        {
+          key,
+          name: option?.product_name ?? materialInput,
+          size: sizeInput,
+          grade: gradeInput,
+          unit,
+          minimum: Number(option?.min_order_qty ?? 0.001),
+          optionId: manualRequest ? undefined : option?.id,
+          manualRequest,
+        },
+      );
+    setCartNotice('Added to cart. Choose another size or proceed from your cart.');
+    setDraft({ ...draft, review: false });
+  }
+
   async function review() {
     if (!draft) return;
     if (!valid) {
@@ -313,6 +370,7 @@ function SelectionForm({
         };
     setDraft(next);
     setMessage('');
+    setCartNotice('');
     if (!auth.session) {
       setBusy(true);
       try {
@@ -391,6 +449,7 @@ function SelectionForm({
     submitting.current = true;
     setBusy(true);
     setMessage('');
+    setCartNotice('');
     try {
       const result = request.manualRequest
         ? await catalogApi.submitManual(
@@ -543,8 +602,21 @@ function SelectionForm({
               </Button>
             </Card>
           ) : (data?.category || manualMaterial) && !query.error ? (
-            <Card style={{ gap: 18 }}>
+            <Card
+              style={{
+                gap: 12,
+                ...(productId
+                  ? { borderWidth: 0, borderRadius: 8, padding: 14 }
+                  : {}),
+              }}
+            >
               <>
+                {productId ? (
+                  <MaterialSectionTitle
+                    number={1}
+                    title="Grade & Mill Specifications"
+                  />
+                ) : null}
                 {manualMaterial ? (
                   <Field
                     label="Material"
@@ -568,7 +640,7 @@ function SelectionForm({
                   }}
                 >
                   <View style={{ flex: 1, minWidth: 180, gap: 16 }}>
-                    <CatalogFilter
+                    <SpecificationFilter
                       label={data?.category?.dimension_label ?? 'Size (mm)'}
                       value={draft.sizeId}
                       options={[
@@ -593,7 +665,7 @@ function SelectionForm({
                     ) : null}
                   </View>
                   <View style={{ flex: 1, minWidth: 180, gap: 16 }}>
-                    <CatalogFilter
+                    <SpecificationFilter
                       label="Grade"
                       value={manualGrade ? '__manual__' : draft.grade}
                       options={[
@@ -731,27 +803,65 @@ function SelectionForm({
                     }
                   />
                 ) : null}
-                <Field
-                  label={
-                    option
-                      ? `Quantity (${option.uom}, minimum ${option.min_order_qty})`
-                      : manualActive
-                        ? `Quantity (${unit})`
-                        : 'Quantity'
-                  }
-                  value={draft.quantity}
-                  onChangeText={(value) => update('quantity', value)}
-                  numeric
-                  placeholder="Enter quantity"
-                  editable={(!!option || manualActive) && !locked}
-                />
+                {productId ? (
+                  <MaterialSectionTitle
+                    number={2}
+                    title="Consignment Quantity"
+                  />
+                ) : null}
+                {productId ? (
+                  <MaterialQuantity
+                    value={draft.quantity}
+                    onChange={(value) => update('quantity', value)}
+                    unit={unit}
+                    minimum={option?.min_order_qty}
+                    disabled={(!option && !manualActive) || locked}
+                  />
+                ) : (
+                  <Field
+                    label={
+                      option
+                        ? `Quantity (${option.uom}, minimum ${option.min_order_qty})`
+                        : manualActive
+                          ? `Quantity (${unit})`
+                          : 'Quantity'
+                    }
+                    value={draft.quantity}
+                    onChangeText={(value) => update('quantity', value)}
+                    numeric
+                    placeholder="Enter quantity"
+                    editable={(!!option || manualActive) && !locked}
+                  />
+                )}
                 {draft.quantity && errorQuantity ? (
                   <Txt accessibilityRole="alert" style={{ color: c.red }}>
                     {errorQuantity}
                   </Txt>
                 ) : null}
                 {option || manualActive ? (
-                  <View style={{ gap: 6 }}>
+                  <View
+                    style={{
+                      gap: 6,
+                      ...(productId
+                        ? {
+                            padding: 14,
+                            borderRadius: 8,
+                            backgroundColor: '#eff4ff',
+                          }
+                        : {}),
+                    }}
+                  >
+                    {productId ? (
+                      <Txt
+                        style={{
+                          color: '#485f83',
+                          fontSize: 12,
+                          fontWeight: '600',
+                        }}
+                      >
+                        Commercial Price Matrix
+                      </Txt>
+                    ) : null}
                     <Txt style={{ fontWeight: '700' }}>
                       {option?.product_name ?? materialInput}
                     </Txt>
@@ -773,12 +883,62 @@ function SelectionForm({
                   </View>
                 ) : null}
                 {!draft.review ? (
-                  <Button
-                    disabled={!valid || busy}
-                    onPress={() => void review()}
-                  >
-                    {auth.session ? 'Review request' : 'Sign in to continue'}
-                  </Button>
+                  productId ? (
+                    <View
+                      style={{
+                        backgroundColor: '#ffffff',
+                        padding: 16,
+                        borderTopWidth: 1,
+                        borderTopColor: '#e6eeff',
+                      }}
+                    >
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          gap: 8,
+                          width: '100%',
+                          maxWidth: 640,
+                          alignSelf: 'center',
+                        }}
+                      >
+                        <Button
+                          secondary
+                          icon="file-text"
+                          disabled={!valid || busy}
+                          onPress={() => void review()}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#e6eeff',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            minHeight: 48,
+                          }}
+                        >
+                          Get RFQ
+                        </Button>
+                        <Button
+                          icon="shopping-cart"
+                          disabled={!valid || busy}
+                          onPress={addToCart}
+                          style={{
+                            flex: 1.8,
+                            backgroundColor:
+                              valid && !busy ? '#d32f2f' : '#d7e3f9',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            minHeight: 48,
+                          }}
+                        >{`Add to Cart${draft.quantity ? ` · ${draft.quantity} ${unit}` : ''}`}</Button>
+                      </View>
+                    </View>
+                  ) : (
+                    <Button
+                      disabled={!valid || busy}
+                      onPress={() => void review()}
+                    >
+                      {auth.session ? 'Review request' : 'Sign in to continue'}
+                    </Button>
+                  )
                 ) : (
                   <>
                     <View
@@ -824,6 +984,12 @@ function SelectionForm({
                       </Button>
                     ) : (
                       <>
+                        {productId ? (
+                          <MaterialSectionTitle
+                            number={3}
+                            title="Dispatch Destination"
+                          />
+                        ) : null}
                         <Field
                           label="Buyer name"
                           value={name}
@@ -927,6 +1093,23 @@ function SelectionForm({
             !draft.category,
           )
         )
+      ) : null}
+      {productId ? (
+        <Button secondary onPress={() => router.push('/cart')}>
+          View cart
+        </Button>
+      ) : null}
+      {cartNotice ? (
+        <View
+          style={{ padding: 12, borderRadius: 8, backgroundColor: '#ecfdf3' }}
+        >
+          <Txt
+            accessibilityLiveRegion="polite"
+            style={{ color: '#166534', fontSize: 13 }}
+          >
+            {cartNotice}
+          </Txt>
+        </View>
       ) : null}
       {message ? (
         <Txt accessibilityRole="alert" style={{ color: c.red }}>

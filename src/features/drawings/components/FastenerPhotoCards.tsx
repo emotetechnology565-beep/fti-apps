@@ -6,11 +6,13 @@ import { Button, Txt, c, s } from '@shared/ui';
 import { drawingApi } from '../services/drawing-api';
 import type { DrawingDefinition } from '../model/types';
 import { FastenerSupplyDetails } from './FastenerSupplyDetails';
+import { MatrixFastenerCard } from './MatrixFastenerCard';
 import { productCard, productCardWidth } from '@shared/theme/product-card';
 import {
   matchesFastenerSearch,
   subcategoryLabel,
   drawingSubcategory,
+  allSubcategories,
 } from '../model/subcategories';
 
 export function FastenerPhotoCards({
@@ -19,12 +21,16 @@ export function FastenerPhotoCards({
   onlySelected = false,
   search = '',
   drawings = [],
+  fallbackWhenEmpty = false,
+  matrix = false,
 }: {
   selected: string;
   onSelect: (slug: string) => void;
   onlySelected?: boolean;
   search?: string;
   drawings?: DrawingDefinition[];
+  fallbackWhenEmpty?: boolean;
+  matrix?: boolean;
 }) {
   const [gridWidth, setGridWidth] = useState(0);
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>(
@@ -62,7 +68,30 @@ export function FastenerPhotoCards({
       ? card.slug === selected
       : matchesFastenerSearch(card.slug, search),
   );
-  if (!cards.length) return null;
+  if (!cards.length) {
+    if (!fallbackWhenEmpty) return null;
+    const categories = allSubcategories.filter((item) =>
+      matchesFastenerSearch(item.value, search),
+    );
+    return (
+      <View style={{ gap: 12 }}>
+        <Txt style={s.muted}>
+          {categories.length
+            ? 'Choose a fastener to view sizes, standards and drawings.'
+            : 'No matching fasteners. Try another search.'}
+        </Txt>
+        {categories.map((item) => (
+          <Button
+            key={item.value}
+            secondary
+            onPress={() => onSelect(item.value)}
+          >
+            {item.label}
+          </Button>
+        ))}
+      </View>
+    );
+  }
   return (
     <View style={{ gap: 12, marginBottom: 18 }}>
       {!onlySelected ? (
@@ -87,6 +116,26 @@ export function FastenerPhotoCards({
           const productDrawings = drawings.filter(
             (row) => drawingSubcategory(row) === card.slug,
           );
+          if (matrix && !onlySelected) {
+            const columns = gridWidth >= 920 ? 3 : gridWidth >= 630 ? 2 : 1;
+            return (
+              <View
+                key={card.slug}
+                style={{
+                  width: gridWidth
+                    ? (gridWidth - 12 * (columns - 1)) / columns
+                    : '100%',
+                }}
+              >
+                <MatrixFastenerCard
+                  slug={card.slug}
+                  imageUrl={card.image_url}
+                  drawings={productDrawings}
+                  onSelect={() => onSelect(card.slug)}
+                />
+              </View>
+            );
+          }
           if (onlySelected)
             return (
               <View

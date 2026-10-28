@@ -1,239 +1,401 @@
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { TextInput, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { StockSourceDropdown } from '@features/business-stock/ui';
 import { useStore } from '@core/state/workspace-store';
-import { Button, Card, Chip, Empty, Icon, Row, Txt, c, s } from '@shared/ui';
-import { ProductCard } from '../components/ProductCard';
+import { Button, Card, Empty, Icon, Row, Txt } from '@shared/ui';
+import { MatrixProductCard } from '../components/MatrixProductCard';
 import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
-import type { CatalogQuery } from '../data/catalog-repository';
+import {
+  catalogueCategoryLabel,
+  isFastenerCategory,
+} from '../model/category-navigation';
 import {
   FastenerCatalogueCards,
   FastenerDimensions,
 } from '@features/drawings/ui';
-import { productCardWidth } from '@shared/theme/product-card';
 
-const PRODUCTS_PER_PAGE = 8;
-
+const tabs = [
+  { value: 'steel', label: 'Raw Steel', icon: 'download' },
+  { value: 'fastener', label: 'Fastener', icon: 'tool' },
+  { value: 'tractor_part', label: 'Tractor Spares', icon: 'truck' },
+] as const;
+const limit = 8;
 export function Catalogue() {
   const params = useLocalSearchParams<{
     search?: string;
     category?: string;
     kind?: string;
   }>();
-  const search = typeof params.search === 'string' ? params.search.trim() : '';
-  const category = typeof params.category === 'string' ? params.category : '';
-  const kind =
-    params.kind === 'fastener' || params.kind === 'tractor_part'
-      ? params.kind
-      : null;
-  if (kind)
-    return (
-      <View style={{ gap: 18 }}>
-        <Button secondary onPress={() => router.replace('/products')}>
-          Browse all products
-        </Button>
-        <Txt accessibilityRole="header" style={s.h2}>
-          {kind === 'fastener' ? 'Fasteners' : 'Tractor parts'}
-        </Txt>
-        {kind === 'fastener' ? <FastenerDimensions /> : null}
-        <ProductsCatalogue
-          key={`${kind}:${search}`}
-          kind={kind}
-          initialSearch={search}
-        />
-      </View>
-    );
-  if (search || category)
-    return (
-      <View style={{ gap: 18 }}>
-        <Button secondary onPress={() => router.replace('/products')}>
-          Browse all materials
-        </Button>
-        <Txt accessibilityRole="header" style={s.h2}>
-          {search ? `Search results for “${search}”` : 'Material catalogue'}
-        </Txt>
-        <ProductsCatalogue
-          key={`${category}:${search}`}
-          kind={category ? 'steel' : 'all'}
-          filters={category ? { category } : {}}
-          initialSearch={search}
-        />
-      </View>
-    );
   return (
-    <View>
-      <StockSourceDropdown source="fti" />
-      <MaterialSelection
-        renderAdapter={(kind) =>
-          kind === 'fastener' ? (
-            <View style={{ gap: 24 }}>
-              <FastenerDimensions />
-              <ProductsCatalogue kind={kind} />
-            </View>
-          ) : (
-            <ProductsCatalogue key={kind} kind={kind} />
-          )
-        }
-        renderMaterials={(filters, allCategories) =>
-          allCategories ? (
-            <ProductsCatalogue key="all" kind="all" />
-          ) : (
-            <ProductsCatalogue
-              key={JSON.stringify(filters)}
-              kind="steel"
-              filters={filters}
-            />
-          )
-        }
-      />
-    </View>
+    <CatalogueMatrix
+      key={JSON.stringify(params)}
+      initialKind={
+        isFastenerCategory(params.category ?? '')
+          ? 'fastener'
+          : params.kind === 'fastener' || params.kind === 'tractor_part'
+            ? params.kind
+            : 'steel'
+      }
+      initialSearch={typeof params.search === 'string' ? params.search : ''}
+      initialCategory={
+        typeof params.category === 'string' &&
+        !isFastenerCategory(params.category)
+          ? params.category
+          : ''
+      }
+    />
   );
 }
-
-// These categories retain their existing quotation and cart behavior.
-function ProductsCatalogue({
-  kind,
-  filters = {},
-  initialSearch = '',
+function CatalogueMatrix({
+  initialKind,
+  initialSearch,
+  initialCategory,
 }: {
-  kind: 'all' | 'steel' | 'fastener' | 'tractor_part';
-  filters?: Pick<CatalogQuery, 'category' | 'ids'>;
-  initialSearch?: string;
+  initialKind: (typeof tabs)[number]['value'];
+  initialSearch: string;
+  initialCategory: string;
 }) {
+  const viewport = useWindowDimensions();
+  const [selectionIds, setSelectionIds] = useState<string[] | undefined>();
+  const [kind, setKind] = useState(initialKind);
   const [search, setSearch] = useState(initialSearch);
+  const [category, setCategory] = useState(initialCategory);
+  const [grade, setGrade] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
+  const [specs, setSpecs] = useState(false);
   const [page, setPage] = useState(0);
-  const [gridWidth, setGridWidth] = useState(0);
-  const savedIds = useStore((state) => state.saved);
-  const cardWidth = productCardWidth(gridWidth);
-  const ids = savedOnly
-    ? savedIds.filter((id) => !filters.ids || filters.ids.includes(id))
-    : filters.ids;
+  const [width, setWidth] = useState(0);
+  const saved = useStore((state) => state.saved);
   const query = useProducts({
-    ...filters,
-    productKind: kind === 'all' ? undefined : kind,
+    productKind: kind,
     search: search.trim(),
-    limit: PRODUCTS_PER_PAGE,
-    offset: page * PRODUCTS_PER_PAGE,
-    ids,
+    category: category || undefined,
+    grade: grade || undefined,
+    ids: savedOnly
+      ? saved.filter((id) => !selectionIds || selectionIds.includes(id))
+      : selectionIds,
+    limit,
+    offset: page * limit,
   });
-  const total = query.data?.total ?? 0;
   const items = query.data?.items ?? [];
-  if (
-    kind === 'fastener' &&
-    query.isSuccess &&
-    total === 0 &&
-    !search.trim() &&
-    !savedOnly &&
-    page === 0
-  )
-    return null;
+  const total = query.data?.total ?? 0;
+  const columns = width >= 920 ? 3 : width >= 630 ? 2 : 1;
+  const cardWidth = width ? (width - 12 * (columns - 1)) / columns : '100%';
+  const activeFilters =
+    Number(!!category) + Number(!!grade) + Number(savedOnly);
+  const reset = () => {
+    setSearch('');
+    setCategory('');
+    setSelectionIds(undefined);
+    setGrade('');
+    setSavedOnly(false);
+    setPage(0);
+  };
   return (
-    <View style={{ gap: 16 }}>
-      {kind !== 'steel' ? (
-        <Row style={{ flexWrap: 'wrap' }}>
-          <Row
-            style={{
-              flex: 1,
-              minWidth: 220,
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderColor: c.line,
-              borderRadius: 7,
-              paddingHorizontal: 14,
-            }}
-          >
-            <Icon name="search" size={17} />
+    <View
+      style={[
+        styles.page,
+        viewport.width < 600 && { marginHorizontal: -18, borderRadius: 0 },
+      ]}
+    >
+      <View style={styles.ticker}>
+        <View style={styles.inline}>
+          <View style={styles.dot} />
+          <Txt style={styles.tickerText}>FTI INDUSTRIAL SUPPLY</Txt>
+        </View>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => router.push('/rates')}
+        >
+          <Txt style={styles.tickerLink}>Market rates ↗</Txt>
+        </Pressable>
+      </View>
+      <View style={styles.hero}>
+        <View style={styles.inline}>
+          <Txt style={styles.badge}>B2B MATERIAL CATALOGUE</Txt>
+          <Icon name="layers" size={16} color="#485f83" />
+        </View>
+        <View
+          style={[
+            styles.inline,
+            { justifyContent: 'space-between', alignItems: 'flex-start' },
+          ]}
+        >
+          <View style={{ flex: 1, gap: 4 }}>
+            <Txt accessibilityRole="header" style={styles.heading}>
+              Industrial Spec Matrix
+            </Txt>
+            <Txt style={styles.caption}>
+              Raw materials, fasteners & tractor spares
+            </Txt>
+          </View>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Txt style={styles.label}>CATALOGUE</Txt>
+            <Txt accessibilityLiveRegion="polite" style={styles.total}>
+              {query.isPending ? '—' : total} products
+            </Txt>
+          </View>
+        </View>
+      </View>
+      <View style={styles.controls}>
+        <View style={styles.inline}>
+          <View style={styles.search}>
+            <Icon name="search" size={18} color="#485f83" />
             <TextInput
               accessibilityLabel="Search catalogue"
-              placeholder={
-                kind === 'all'
-                  ? 'Search all products'
-                  : kind === 'fastener'
-                    ? 'Search fasteners'
-                    : 'Search tractor parts'
-              }
+              placeholder="Search specs, grade, size or product..."
               value={search}
               onChangeText={(value) => {
                 setSearch(value);
                 setPage(0);
               }}
               returnKeyType="search"
-              style={{ height: 48, flex: 1, fontSize: 13, color: c.ink }}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                height: 44,
+                fontSize: 12,
+                color: '#101c2c',
+              }}
             />
-          </Row>
-          <Chip
-            selected={savedOnly}
+            {search ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+                onPress={() => {
+                  setSearch('');
+                  setPage(0);
+                }}
+                style={{ padding: 8 }}
+              >
+                <Icon name="x" size={16} />
+              </Pressable>
+            ) : null}
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Filter specifications"
+            onPress={() => setSpecs(true)}
+            style={styles.specs}
+          >
+            <Icon name="sliders" size={18} color="#af101a" />
+            <Txt style={styles.pillText}>
+              Specs{activeFilters ? ` (${activeFilters})` : ''}
+            </Txt>
+          </Pressable>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 6 }}
+        >
+          <Pressable
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: savedOnly }}
             onPress={() => {
               setSavedOnly(!savedOnly);
               setPage(0);
             }}
+            style={[styles.pill, savedOnly && styles.activePill]}
           >
-            Saved materials
-          </Chip>
-        </Row>
-      ) : null}
-      {kind === 'all' && !savedOnly && page === 0 ? (
-        <FastenerCatalogueCards search={search.trim()} />
-      ) : null}
-      {query.isPending ? (
-        <Card>
-          <Txt style={s.muted}>Loading catalogue…</Txt>
-        </Card>
-      ) : query.error ? (
-        <Empty
-          title="Catalogue unavailable"
-          description={query.error.message}
-          action={
-            <Button secondary onPress={() => void query.refetch()}>
-              Try again
-            </Button>
-          }
-        />
-      ) : (
-        <>
-          <Txt style={s.muted}>{total} products</Txt>
-          {items.length ? (
-            <View
-              onLayout={(event) => setGridWidth(event.nativeEvent.layout.width)}
-              style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}
+            <Icon
+              name="bookmark"
+              size={14}
+              color={savedOnly ? '#fff' : '#485f83'}
+            />
+            <Txt style={[styles.pillText, savedOnly && styles.white]}>
+              Saved materials
+            </Txt>
+          </Pressable>
+          <Pressable
+            accessibilityRole="link"
+            onPress={() => router.push('/calculator')}
+            style={styles.pill}
+          >
+            <Icon name="cpu" size={14} color="#af101a" />
+            <Txt style={styles.pillText}>Weight calculator</Txt>
+          </Pressable>
+          <Pressable
+            accessibilityRole="link"
+            onPress={() => router.push('/cart')}
+            style={styles.pill}
+          >
+            <Icon name="shopping-cart" size={14} color="#485f83" />
+            <Txt style={styles.pillText}>Staged cart</Txt>
+          </Pressable>
+        </ScrollView>
+        <View style={styles.tabs}>
+          {tabs.map((tab) => (
+            <Pressable
+              key={tab.value}
+              accessibilityRole="tab"
+              accessibilityLabel={tab.label}
+              accessibilityState={{ selected: kind === tab.value }}
+              onPress={() => {
+                setKind(tab.value);
+                setCategory('');
+                setSelectionIds(undefined);
+                setGrade('');
+                setPage(0);
+              }}
+              style={[
+                styles.tab,
+                kind === tab.value && { backgroundColor: '#fff' },
+              ]}
             >
-              {items.map((product) => (
-                <View key={product.id} style={{ width: cardWidth ?? '48%' }}>
-                  <ProductCard product={product} />
-                </View>
+              <Icon
+                name={tab.icon}
+                size={18}
+                color={kind === tab.value ? '#af101a' : '#485f83'}
+              />
+              <Txt
+                style={[
+                  styles.tabText,
+                  kind === tab.value && { color: '#af101a' },
+                ]}
+              >
+                {tab.label}
+              </Txt>
+            </Pressable>
+          ))}
+        </View>
+        {kind === 'steel' ? (
+          <>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 6 }}
+            >
+              {[
+                { value: '', label: 'All categories' },
+                ...(query.data?.categories ?? []).map((item) => ({
+                  value: item.slug,
+                  label: catalogueCategoryLabel(item.name),
+                })),
+              ].map((item) => (
+                <Pressable
+                  key={item.value}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: category === item.value }}
+                  onPress={() => {
+                    setSelectionIds(undefined);
+                    if (
+                      isFastenerCategory(item.value) ||
+                      item.label === 'Fastener'
+                    ) {
+                      setKind('fastener');
+                      setCategory('');
+                      setGrade('');
+                    } else {
+                      setCategory(item.value);
+                    }
+                    setPage(0);
+                  }}
+                  style={[
+                    styles.pill,
+                    category === item.value && styles.activePill,
+                  ]}
+                >
+                  <Txt
+                    style={[
+                      styles.pillText,
+                      category === item.value && styles.white,
+                    ]}
+                  >
+                    {item.label}
+                  </Txt>
+                </Pressable>
               ))}
-            </View>
-          ) : (
-            <Empty
-              title={
-                kind === 'all'
-                  ? 'No matching raw materials or tractor parts'
-                  : 'No products available'
-              }
-              description={
-                search || savedOnly
-                  ? 'Try another search or clear your filters.'
-                  : 'Published products will appear here once FTI adds them.'
-              }
-              action={
-                search || savedOnly ? (
-                  <Button
-                    secondary
+            </ScrollView>
+            {query.data?.grades?.length ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 6 }}
+              >
+                {['', ...query.data.grades].map((value) => (
+                  <Pressable
+                    key={value}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: grade === value }}
                     onPress={() => {
-                      setSearch('');
-                      setSavedOnly(false);
+                      setGrade(value);
                       setPage(0);
                     }}
+                    style={[styles.pill, grade === value && styles.activePill]}
                   >
-                    Clear filters
-                  </Button>
-                ) : undefined
-              }
-            />
-          )}
+                    <Txt
+                      style={[styles.pillText, grade === value && styles.white]}
+                    >
+                      {value || 'All grades'}
+                    </Txt>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            ) : null}
+          </>
+        ) : null}
+      </View>
+      <View style={{ padding: 16, gap: 12 }}>
+        {kind === 'fastener' ? (
+          <FastenerCatalogueCards search={search.trim()} />
+        ) : null}
+        <View style={[styles.inline, { justifyContent: 'space-between' }]}>
+          <Txt style={styles.label}>
+            {tabs.find((tab) => tab.value === kind)?.label.toUpperCase()} /
+            SPECIFICATIONS
+          </Txt>
+          {activeFilters || search ? (
+            <Pressable accessibilityRole="button" onPress={reset}>
+              <Txt style={styles.clear}>Clear filters</Txt>
+            </Pressable>
+          ) : null}
+        </View>
+        {query.isPending ? (
+          <Card>
+            <Txt style={styles.caption}>Loading catalogue...</Txt>
+          </Card>
+        ) : query.error ? (
+          <Empty
+            title="Catalogue unavailable"
+            description={query.error.message}
+            action={
+              <Button onPress={() => void query.refetch()}>Try again</Button>
+            }
+          />
+        ) : items.length ? (
+          <View
+            onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
+            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}
+          >
+            {items.map((product) => (
+              <View key={product.id} style={{ width: cardWidth }}>
+                <MatrixProductCard product={product} />
+              </View>
+            ))}
+          </View>
+        ) : kind !== 'fastener' ? (
+          <Empty
+            title="No matching products"
+            description="Try another search or clear the filters."
+            action={
+              <Button secondary onPress={reset}>
+                Clear filters
+              </Button>
+            }
+          />
+        ) : null}
+        {kind !== 'fastener' || items.length ? (
           <Row style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
             <Button
               secondary
@@ -242,20 +404,198 @@ function ProductsCatalogue({
             >
               Previous
             </Button>
-            <Txt style={s.muted}>
-              Page {page + 1} of{' '}
-              {Math.max(1, Math.ceil(total / PRODUCTS_PER_PAGE))}
+            <Txt style={styles.caption}>
+              Page {page + 1} of {Math.max(1, Math.ceil(total / limit))}
             </Txt>
             <Button
               secondary
-              disabled={(page + 1) * PRODUCTS_PER_PAGE >= total}
+              disabled={(page + 1) * limit >= total}
               onPress={() => setPage(page + 1)}
             >
               Next
             </Button>
           </Row>
-        </>
-      )}
+        ) : null}
+      </View>
+      <Modal
+        visible={specs}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSpecs(false)}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.sheet}>
+            <View style={styles.inline}>
+              <Txt
+                accessibilityRole="header"
+                style={[styles.heading, { flex: 1 }]}
+              >
+                Specification filters
+              </Txt>
+              <Button secondary onPress={() => setSpecs(false)}>
+                Close
+              </Button>
+            </View>
+            <ScrollView contentContainerStyle={{ gap: 16, paddingBottom: 16 }}>
+              <StockSourceDropdown source="fti" />
+              <MaterialSelection
+                renderAdapter={(adapter) =>
+                  adapter === 'fastener' ? (
+                    <FastenerDimensions />
+                  ) : (
+                    <Button
+                      onPress={() => {
+                        setKind('tractor_part');
+                        setSpecs(false);
+                      }}
+                    >
+                      Browse tractor spares
+                    </Button>
+                  )
+                }
+                renderMaterials={(filters) => (
+                  <Button
+                    onPress={() => {
+                      setSelectionIds(filters.ids);
+                      setCategory(filters.category ?? '');
+                      setKind('steel');
+                      setPage(0);
+                      setSpecs(false);
+                    }}
+                  >
+                    Apply size & grade filters
+                  </Button>
+                )}
+              />
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+const styles = StyleSheet.create({
+  page: { backgroundColor: '#f8f9ff', borderRadius: 8, overflow: 'hidden' },
+  inline: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  ticker: {
+    backgroundColor: '#253142',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#d32f2f' },
+  tickerText: {
+    color: '#ebf1ff',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+  },
+  tickerLink: { color: '#b0c8f1', fontSize: 11, fontWeight: '600' },
+  hero: { backgroundColor: '#eff4ff', padding: 16, gap: 10 },
+  badge: {
+    backgroundColor: '#d7e3f9',
+    color: '#485f83',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    fontSize: 10,
+    fontWeight: '700',
+    borderRadius: 4,
+  },
+  heading: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#101c2c',
+  },
+  caption: { fontSize: 12, lineHeight: 18, color: '#485f83' },
+  label: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+    color: '#485f83',
+    letterSpacing: 0.4,
+  },
+  total: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#af101a' },
+  controls: { padding: 16, paddingBottom: 8, gap: 8 },
+  search: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingLeft: 12,
+  },
+  specs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    height: 44,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#dde9ff',
+  },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: 36,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: '#e6eeff',
+    borderRadius: 12,
+  },
+  activePill: { backgroundColor: '#253142' },
+  pillText: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: '600',
+    color: '#101c2c',
+  },
+  white: { color: '#ebf1ff' },
+  tabs: {
+    flexDirection: 'row',
+    backgroundColor: '#e6eeff',
+    padding: 4,
+    gap: 6,
+    borderRadius: 8,
+  },
+  tab: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 64,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    padding: 4,
+  },
+  tabText: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#485f83',
+  },
+  clear: { fontSize: 12, color: '#af101a', fontWeight: '600' },
+  overlay: {
+    flex: 1,
+    backgroundColor: '#101c2c66',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    maxHeight: '90%',
+    width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
+    backgroundColor: '#f8f9ff',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    padding: 16,
+    gap: 16,
+  },
+});

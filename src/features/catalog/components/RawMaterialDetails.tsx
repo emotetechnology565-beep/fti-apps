@@ -37,7 +37,7 @@ export function RawMaterialDetails({
       <Txt accessibilityRole="header" style={styles.title}>
         Material specifications
       </Txt>
-      {summary}
+      <View style={styles.grid}>{summary}</View>
       {profile?.details.map(([label, value]) => (
         <Detail key={label} label={label} value={value} />
       ))}
@@ -73,10 +73,31 @@ function Detail({
 }
 const styles = StyleSheet.create({
   summary: { gap: 4 },
-  full: { gap: 16, marginBottom: 18 },
-  title: { fontSize: 20, lineHeight: 27, fontWeight: '700' },
-  detail: { gap: 4 },
-  compactDetail: { minHeight: 52, gap: 2 },
+  full: {
+    gap: 12,
+    marginBottom: 16,
+    padding: 14,
+    borderWidth: 0,
+    borderRadius: 8,
+  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  title: { fontSize: 18, lineHeight: 24, fontWeight: '600', color: '#101c2c' },
+  detail: {
+    gap: 4,
+    backgroundColor: '#eff4ff',
+    padding: 12,
+    borderRadius: 6,
+    minWidth: 0,
+    maxWidth: '100%',
+  },
+  compactDetail: {
+    minHeight: 52,
+    gap: 2,
+    backgroundColor: 'transparent',
+    padding: 0,
+    flexGrow: 0,
+    flexBasis: 'auto',
+  },
   compactLabel: { fontSize: 10, lineHeight: 15 },
   compactValue: { fontSize: 11, lineHeight: 17 },
   label: { fontSize: 11, lineHeight: 17, fontWeight: '700', color: c.ink },

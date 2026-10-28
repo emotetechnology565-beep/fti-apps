@@ -1,3 +1,8 @@
+import {
+  MaterialSpecificationHeader,
+  MaterialSectionTitle,
+  MaterialSpecFilter,
+} from '@features/catalog/ui';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -35,6 +40,12 @@ export function FastenerDimensions({
     queryFn: drawingApi.list,
     staleTime: 30000,
   });
+  const photos = useQuery({
+    queryKey: ['fastener-photos', 'public'],
+    queryFn: drawingApi.photos,
+    staleTime: 30000,
+  });
+  const SpecificationFilter = subcategory ? MaterialSpecFilter : CatalogFilter;
   const [search, setSearch] = useState('');
   const type = subcategory;
   const [shape, setShape] = useState('');
@@ -110,7 +121,7 @@ export function FastenerDimensions({
     };
     return (
       <View style={{ gap: 20 }}>
-        <CatalogFilter
+        <SpecificationFilter
           label="Fastener subcategory"
           value=""
           options={[{ value: '', label: 'Choose fastener' }, ...types]}
@@ -135,18 +146,38 @@ export function FastenerDimensions({
     );
   }
   return (
-    <View style={{ gap: 16 }}>
-      <Card>
-        {subcategory ? (
-          <Button secondary onPress={() => router.navigate('/products')}>
-            Back to fasteners
-          </Button>
-        ) : null}
-        <Txt style={s.h2}>
-          {subcategory
-            ? types.find((item) => item.value === selectedType)?.label
-            : 'Fastener selection'}
-        </Txt>
+    <View
+      style={{
+        gap: 16,
+        backgroundColor: '#f8f9ff',
+        padding: 16,
+        paddingBottom: 32,
+      }}
+    >
+      <MaterialSpecificationHeader
+        fastener
+        product={{
+          name:
+            types.find((item) => item.value === selectedType)?.label ??
+            'Fastener',
+          category: 'Fastener',
+          description:
+            'Select standard, size and grade for your fastener requirement.',
+          images: (photos.data ?? [])
+            .filter((photo) => photo.slug === selectedType && photo.image_url)
+            .map((photo) => ({
+              id: photo.slug,
+              product_id: photo.slug,
+              url: photo.image_url!,
+              mime_type: 'image/jpeg',
+            })),
+        }}
+      />
+      <Card style={{ gap: 12, padding: 12, borderWidth: 0, borderRadius: 8 }}>
+        <MaterialSectionTitle
+          number={1}
+          title="Standard & size specifications"
+        />
         {!subcategory ? (
           <Field
             label="Search fasteners"
@@ -156,7 +187,7 @@ export function FastenerDimensions({
           />
         ) : null}
         {!subcategory ? (
-          <CatalogFilter
+          <SpecificationFilter
             label="Fastener subcategory"
             value={selectedType}
             options={[
@@ -172,19 +203,6 @@ export function FastenerDimensions({
             }}
           />
         ) : null}
-        <FastenerPhotoCards
-          drawings={all}
-          selected={selectedType}
-          onlySelected={!!subcategory}
-          search={search}
-          onSelect={(value) => {
-            if (!subcategory)
-              router.push({
-                pathname: '/fastener/[slug]',
-                params: { slug: value },
-              });
-          }}
-        />
         {subcategory && selectedType ? (
           <Txt style={s.muted}>
             Choose an IS standard to load the available details for{' '}
@@ -200,7 +218,7 @@ export function FastenerDimensions({
           ) : null}
           {subcategory && selectedType && typed.length > 0 ? (
             <>
-              <CatalogFilter
+              <SpecificationFilter
                 label="IS standard"
                 value={selectedVersion}
                 options={[
@@ -214,7 +232,7 @@ export function FastenerDimensions({
                 }}
               />
               {selectedVersion && shapes.length > 1 ? (
-                <CatalogFilter
+                <SpecificationFilter
                   label="Shape"
                   value={selectedShape}
                   options={[
@@ -233,7 +251,7 @@ export function FastenerDimensions({
             </>
           ) : null}
           {selectedShape && selectedVersion && rows.length > 1 ? (
-            <CatalogFilter
+            <SpecificationFilter
               label="Size"
               value={selected?.id ?? ''}
               options={[
@@ -297,7 +315,7 @@ export function ConfiguredDrawing({
   };
   return (
     <View style={{ gap: 16 }}>
-      <Card>
+      <Card style={{ padding: 12, borderWidth: 0, borderRadius: 8, gap: 12 }}>
         <Txt style={s.h2}>
           {shapeLabels[definition.shape]} · {definition.size}
         </Txt>

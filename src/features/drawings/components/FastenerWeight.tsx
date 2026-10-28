@@ -1,3 +1,8 @@
+import {
+  MaterialSectionTitle,
+  MaterialQuantity,
+  MaterialSpecFilter,
+} from '@features/catalog/ui';
 import { FastenerOrder } from './FastenerOrder';
 import { gradeKey, loadGradeRates } from '../services/grade-api';
 import { FastenerPrice } from './FastenerPrice';
@@ -135,10 +140,10 @@ export function DrawingWeight({
     retry: 1,
   });
   return (
-    <Card style={{ gap: 12 }}>
-      <Txt style={s.h2}>Weight and order</Txt>
-      <CatalogFilter
-        label="Order grade"
+    <Card style={{ gap: 12, padding: 12, borderWidth: 0, borderRadius: 8 }}>
+      <MaterialSectionTitle number={2} title="Consignment Quantity" />
+      <MaterialSpecFilter
+        label="Grade"
         value={grade}
         onChange={setGrade}
         options={[
@@ -152,11 +157,12 @@ export function DrawingWeight({
       {grades.isError ? (
         <Txt>Grade rates unavailable. Please retry later.</Txt>
       ) : null}
-      <Field
-        label="Quantity (pieces)"
-        numeric
+      <MaterialQuantity
         value={quantity}
-        onChangeText={setQuantity}
+        onChange={setQuantity}
+        unit="piece"
+        minimum={1}
+        disabled={false}
       />
 
       {target ? (

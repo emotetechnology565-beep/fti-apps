@@ -73,7 +73,20 @@ function OrderPanel({
           Stock reserved until {new Date(expiry).toLocaleString()}
         </Txt>
       ) : null}
-      {!awaitingConfirmation ? <ShipmentTracking orderId={order.id} /> : null}
+      <ShipmentTracking
+        orderId={order.id}
+        orderNo={order.order_no}
+        status={order.status}
+        createdAt={order.created_at}
+        destination={[
+          order.delivery_address_snapshot.line1,
+          order.delivery_address_snapshot.city,
+          order.delivery_address_snapshot.state,
+          order.delivery_address_snapshot.pincode,
+        ]
+          .filter(Boolean)
+          .join(', ')}
+      />
       {!awaitingConfirmation ? (
         <Card style={{ gap: 9 }}>
           <Txt style={s.h2}>Bank transfer review</Txt>
@@ -157,16 +170,61 @@ export function Orders({ financeOnly = false }: { financeOnly?: boolean }) {
     await client.invalidateQueries({ queryKey: ['commerce'] });
   }
   return (
-    <View style={{ gap: 16 }}>
-      <Heading
-        eyebrow={financeOnly ? 'PAYMENTS' : 'ORDERS & LOGISTICS'}
-        title={financeOnly ? 'Payments & credit' : 'Orders & dispatch'}
-        description={
-          financeOnly
-            ? 'Transfer references and verified order payments. Credit is not offered without an approved policy.'
-            : 'Tractor cart orders, accepted quotation orders and their current status.'
-        }
-      />
+    <View
+      style={{
+        gap: 16,
+        ...(!financeOnly
+          ? { backgroundColor: '#f8f9ff', padding: 12, borderRadius: 12 }
+          : {}),
+      }}
+    >
+      {!financeOnly ? (
+        <View
+          style={{
+            backgroundColor: '#001835',
+            borderRadius: 12,
+            padding: 16,
+            gap: 6,
+          }}
+        >
+          <Txt
+            style={{
+              color: '#b0c8f1',
+              fontSize: 10,
+              fontWeight: '700',
+              letterSpacing: 1,
+            }}
+          >
+            YOUR LOGISTICS DESK
+          </Txt>
+          <Txt
+            accessibilityRole="header"
+            style={{
+              color: '#fff',
+              fontSize: 22,
+              lineHeight: 29,
+              fontWeight: '700',
+            }}
+          >
+            Orders, dispatch & tracking
+          </Txt>
+          <Txt style={{ color: '#d5e3ff', fontSize: 12, lineHeight: 19 }}>
+            Follow your consignment, view carrier details and access delivery
+            documents.
+          </Txt>
+        </View>
+      ) : null}
+      {financeOnly ? (
+        <Heading
+          eyebrow={financeOnly ? 'PAYMENTS' : 'ORDERS & LOGISTICS'}
+          title={financeOnly ? 'Payments & credit' : 'Orders & dispatch'}
+          description={
+            financeOnly
+              ? 'Transfer references and verified order payments. Credit is not offered without an approved policy.'
+              : 'Tractor cart orders, accepted quotation orders and their current status.'
+          }
+        />
+      ) : null}
       <Button secondary onPress={() => void refresh()}>
         Refresh
       </Button>
@@ -203,11 +261,20 @@ export function Orders({ financeOnly = false }: { financeOnly?: boolean }) {
               {!list.data.length && (
                 <Empty
                   title="No orders yet"
-                  description="Submit tractor parts from your cart or place an order from an accepted quotation."
+                  description="Place an order from your cart or an accepted quotation to see dispatch and tracking updates here."
                 />
               )}
               {list.data.map((order) => (
-                <Card key={order.id} style={{ gap: 8 }}>
+                <Card
+                  key={order.id}
+                  style={{
+                    gap: 12,
+                    borderWidth: 0,
+                    borderRadius: 12,
+                    padding: 16,
+                    backgroundColor: '#fff',
+                  }}
+                >
                   <Row
                     style={{
                       justifyContent: 'space-between',
@@ -224,7 +291,9 @@ export function Orders({ financeOnly = false }: { financeOnly?: boolean }) {
                   </Txt>
                   <Txt>{new Date(order.created_at).toLocaleString()}</Txt>
                   <Button secondary onPress={() => setSelected(order.id)}>
-                    View order and payment
+                    {financeOnly
+                      ? 'View order and payment'
+                      : 'Track dispatch & view order'}
                   </Button>
                 </Card>
               ))}

@@ -1,217 +1,589 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FTI | Standard drawing studio</title>
-<style>
-:root{color-scheme:light;--ink:#24333d;--blue:#075299;--muted:#526473;--line:#d5dfe5;--ground:#f0f3f5}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--ground);font:15px "Segoe UI",sans-serif}button,input,select{font:inherit}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #4185bf;outline-offset:3px}[hidden]{display:none!important}header{display:flex;align-items:center;gap:20px;padding:22px 32px;background:white;border-bottom:1px solid var(--line)}.brand{font:bold 28px Georgia,serif;color:var(--blue);padding-right:20px;border-right:1px solid var(--line)}h1{margin:0;font-size:22px;font-weight:600}header p{margin:5px 0 0;font-size:13px;color:var(--muted)}.flow{margin-left:auto;font:12px Consolas,monospace;color:var(--muted)}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:22px;max-width:1500px;padding:26px;margin:auto;align-items:start}aside,.sheet,.data-panel{background:white;border:1px solid var(--line);border-radius:5px;min-width:0}aside{padding:23px}h2{font-size:17px;font-weight:600;margin:0 0 18px}.step{color:var(--blue);font:12px Consolas,monospace;margin:0 0 9px}.field{display:block;font-size:13px;font-weight:600;margin-bottom:18px}input,select{width:100%;height:44px;border:1px solid #acbdc8;border-radius:4px;padding:9px 10px;background:white;color:var(--ink);margin-top:7px}.hint{display:block;color:var(--muted);font-size:12px;line-height:1.5;font-weight:400;margin-top:7px}fieldset{padding:0;border:0;margin:0;min-width:0}fieldset:disabled{opacity:.55}.standard-info{background:#f0f6fa;border-left:3px solid var(--blue);padding:12px;font-size:12px;line-height:1.6;margin-bottom:22px;overflow-wrap:anywhere}.standard-info strong{display:block;color:var(--blue);font-size:13px}.note{font-size:12px;line-height:1.65;color:var(--muted);margin:16px 0 0}.error{font-size:13px;color:#9a3029;line-height:1.6;margin:0 0 17px}.workspace{display:grid;gap:18px;min-width:0}button{background:white;color:var(--ink);border:1px solid #afc0ca;border-radius:4px;min-height:42px;padding:9px 14px;cursor:pointer}button:hover{background:#edf3f7}button:disabled{opacity:.45;cursor:default}.primary{background:var(--ink);color:white;border-color:var(--ink)}.primary:hover{background:#3b4e5b}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line)}.toolbar h2{margin:0 0 5px}.toolbar p{margin:0;font-size:12px;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.viewport{overflow:auto;max-width:100%;background:white}.viewport svg{display:block;width:100%;min-width:640px;height:auto}.empty{min-height:360px;padding:65px 35px;color:var(--muted);display:flex;justify-content:center;flex-direction:column;gap:12px}.empty strong{font:22px Georgia,serif;color:var(--ink)}.drawing-foot{border-top:1px solid var(--line);padding:13px 22px;font-size:12px;line-height:1.65;color:var(--muted)}.drawing-foot strong{color:var(--ink)}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding:18px 22px;border-top:1px solid var(--line)}.summary small{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.summary strong{font:14px Consolas,monospace;overflow-wrap:anywhere}.data-panel{padding:20px 22px}.data-panel h2{margin-bottom:7px}.data-panel>p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 13px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px 9px;border-bottom:1px solid #e3e9ed;text-align:left;vertical-align:top}th{font-size:12px;color:var(--muted);font-weight:500}td:nth-child(2){font-family:Consolas,monospace;color:var(--blue);white-space:nowrap}td:last-child{color:var(--muted);font-size:12px}details{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}summary{cursor:pointer;color:var(--blue);font-size:13px;min-height:28px}details p{font-size:12px;line-height:1.75;color:var(--muted);margin:10px 0}a{color:var(--blue)}footer{max-width:1500px;padding:0 26px 24px;margin:auto;color:var(--muted);font-size:12px;line-height:1.7}.data-state{color:var(--muted);font-size:13px;padding:12px 0}
-@media(max-width:1050px){.flow{display:none}.toolbar{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr 1fr}}@media(max-width:760px){header{padding:17px 18px;gap:13px}.brand{font-size:24px;padding-right:13px}h1{font-size:19px}header p{font-size:12px}main{grid-template-columns:minmax(0,1fr);padding:16px;gap:16px}aside{padding:20px}.toolbar,.data-panel{padding:18px}.summary{padding:16px 18px;gap:13px}.summary strong{font-size:13px}.drawing-foot{padding:13px 18px}footer{padding:0 16px 20px}.actions{width:100%}.actions button{flex:1}}@media print{@page{size:A4 landscape;margin:12mm}header,aside,.toolbar .actions,footer,details{display:none}body{background:white}main{display:block;padding:0}.sheet,.data-panel{border:0}.viewport{overflow:visible}.viewport svg{min-width:0;width:100%;max-height:120mm}.workspace{display:block}.summary{grid-template-columns:repeat(3,1fr)}.data-panel{break-before:page}.toolbar{border:0;padding:0 0 10px}}
-.drawing-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:-7px 0 20px}.drawing-choices button{padding:8px 5px;background:white;min-width:0;text-align:center;font-size:11px;line-height:1.4}.drawing-choices button[aria-pressed="true"]{border:2px solid var(--blue);padding:7px 4px;background:#f1f7fb;color:var(--blue)}.drawing-choices svg{display:block;width:100%;height:90px;margin-bottom:5px}.drawing-choices.family-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.drawing-choices.family-choices svg{height:65px}.example-note{font-size:12px;line-height:1.6;color:#72501b;background:#fff7e8;padding:10px 12px;margin-bottom:18px}
-</style>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport" />
+    <meta content="mobile_stack" name="shell-type" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "error-container": "#ffdad6", "on-error-container": "#93000a", "inverse-on-surface": "#ebf1ff", "on-background": "#101c2c", "on-error": "#ffffff", "on-primary-container": "#7e95bc", "surface-container-low": "#eff4ff", "surface-bright": "#f8f9ff", "on-tertiary-fixed": "#131d24", "surface-container-lowest": "#ffffff", "surface-container": "#e6eeff", "secondary-container": "#da3433", "on-surface": "#101c2c", "inverse-primary": "#b0c8f1", "error": "#ba1a1a", "outline": "#74777f", "tertiary-fixed-dim": "#bec8d2", "on-primary": "#ffffff", "surface-container-highest": "#d7e3f9", "on-primary-fixed": "#001b3b", "surface-variant": "#d7e3f9", "tertiary-fixed": "#dae4ee", "surface": "#f8f9ff", "surface-tint": "#485f83", "on-tertiary-container": "#8b959f", "primary-fixed-dim": "#b0c8f1", "surface-container-high": "#dde9ff", "secondary": "#b6171e", "on-secondary-container": "#fffbff", "surface-dim": "#cedbf1", "on-primary-fixed-variant": "#30476a", "secondary-fixed": "#ffdad6", "on-secondary-fixed": "#410003", "outline-variant": "#c4c6cf", "primary-container": "#142d4e", "on-surface-variant": "#44474e", "on-secondary": "#ffffff", "background": "#f8f9ff", "tertiary-container": "#242e36", "tertiary": "#101921", "on-tertiary-fixed-variant": "#3e4850", "primary": "#001835", "on-tertiary": "#ffffff", "inverse-surface": "#253142", "primary-fixed": "#d5e3ff", "on-secondary-fixed-variant": "#930010", "secondary-fixed-dim": "#ffb3ac" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "margin": "1.5rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "space-md": "1rem", "gutter": "1rem", "space-xl": "2.25rem" }, "fontFamily": { "ticker-price": ["Inter"], "headline-sm": ["Inter"], "body-lg": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"], "body-md": ["Inter"], "display": ["Inter"], "headline-lg-mobile": ["Inter"], "label-lg": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Inter"], "label-sm": ["Inter"] }, "fontSize": { "ticker-price": ["1.125rem", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-sm": ["1.25rem", { "lineHeight": "1.35", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["1.125rem", { "lineHeight": "1.5", "letterSpacing": "-0.01em", "fontWeight": "400" }], "headline-md": ["1.5rem", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-md": ["0.75rem", { "lineHeight": "1.2", "letterSpacing": "0.025em", "fontWeight": "600" }], "body-md": ["0.9375rem", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400" }], "display": ["3rem", { "lineHeight": "1.15", "letterSpacing": "-0.03em", "fontWeight": "700" }], "headline-lg-mobile": ["1.5rem", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-lg": ["0.875rem", { "lineHeight": "1.25", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-sm": ["0.8125rem", { "lineHeight": "1.45", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-lg": ["2rem", { "lineHeight": "1.25", "letterSpacing": "-0.025em", "fontWeight": "700" }], "label-sm": ["0.6875rem", { "lineHeight": "1.15", "letterSpacing": "0.05em", "fontWeight": "700" }] } } } }</script>
+    <style>
+        @layer base {
+
+            html,
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                min-height: 100%;
+            }
+
+            body {
+                overscroll-behavior-y: none;
+            }
+
+            .pb-safe {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            .pt-safe {
+                padding-top: env(safe-area-inset-top, 0px);
+            }
+
+            main>:first-child {
+                margin-top: 0 !important;
+            }
+
+            main>:last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
 </head>
-<body>
-<header><div class="brand">FTI</div><div><h1>Standard drawing studio</h1><p>A standard, a size, a drawing.</p></div><div class="flow">IS standard → Product → Size → Drawing</div></header>
-<main>
-<aside aria-label="Drawing configuration"><p class="step">01 / Find your standard</p>
-<form id="controls" novalidate>
-<label class="field">IS standard number<input id="standard" list="standard-list" value="IS 730:1978" placeholder="e.g. IS 730" autocomplete="off" spellcheck="false" aria-describedby="standard-hint standard-error"><span class="hint" id="standard-hint">Available in this example: IS 730 and IS 1120.</span></label>
-<datalist id="standard-list"><option value="IS 730:1978"></option><option value="IS 1120:1975"></option></datalist>
-<p id="standard-error" class="error" role="alert" hidden></p><div id="standard-info" class="standard-info" aria-live="polite"></div>
-<fieldset id="choices"><p class="step">02 / Configure the fastener</p>
-<label class="field">Product type<select id="family"></select></label>
-<div id="family-drawings" class="drawing-choices family-choices" role="group" aria-label="Choose product by drawing"></div>
-<label class="field" id="subtype-field">Shape / subtype<select id="subtype"></select></label>
-<div id="subtype-drawings" class="drawing-choices" role="group" aria-label="Choose shape by drawing"></div>
-<p id="round-example-note" class="example-note" hidden>Round forms start with example dimensions so you can see the shape immediately. Replace the radius, length and return height with the purchaser’s dimensions.</p>
-<label class="field"><span id="size-label">Nominal size</span><select id="size"></select></label>
-<label class="field" id="width-field">Width w (mm)<select id="width"></select><span class="hint">Options from the supplied table.</span></label>
-<label class="field" id="radius-field" hidden>Inside bend radius R1 (mm)<input id="radius" type="number" min="0.1" max="250" step="any" placeholder="Enter purchaser-specified radius"><span class="hint">Required for the round form. The scan says the purchaser specifies R1 for the pipe. Opening w = 2 × R1.</span></label>
-<label class="field" id="return-field" hidden>Return leg height C (mm)<input id="return-height" type="number" min="0.1" max="500" step="any" placeholder="Enter return leg height"><span class="hint">Customer dimension for J Type II, measured from the outer bottom to the free end.</span></label>
-<label class="field" id="angle-field">Return angle θ (degrees)<input id="angle" type="number" min="1" max="75" step="any" value="25"><span class="hint">J Type I has an inclined return. 25° is an illustrative preview angle; the scan does not give a numeric angle. Enter the required angle if known.</span></label>
-<label class="field" id="preferred-length-field">Preferred length L (mm)<select id="length"></select></label>
-<label class="field" id="custom-length-field" hidden>Length L (mm)<input id="custom-length" type="number" min="10" max="500" step="any" value="75"><span class="hint" id="custom-length-hint">Customer input. Enter the required length. Example range: 10–500 mm.</span></label>
-<label class="field" id="pitch-field">Thread pitch P (mm), if known<input id="pitch" type="number" min="0.1" max="10" step="any" placeholder="Optional — not given in this table"><span class="hint">Leave blank to retain the printed thread-length formula.</span></label>
-<p id="input-error" class="error" role="alert" hidden></p><button id="reset-example" type="button">Reset example</button>
-</fieldset></form><p class="note">The standard fills the available dimensions. Type, size and length distinguish the individual fastener.</p></aside>
-<div class="workspace">
-<section class="sheet" aria-label="Generated technical drawing">
-<div class="toolbar"><div><h2>Drawing preview</h2><p id="description" aria-live="polite"></p></div><div class="actions"><button id="print" type="button">Print / PDF</button><button id="download" class="primary" type="button">Download SVG</button></div></div>
-<div class="viewport" id="drawing" tabindex="0" aria-label="Scrollable drawing preview"></div>
-<div class="summary"><div><small>Standard edition</small><strong id="summary-standard"></strong></div><div><small>Selected size</small><strong id="summary-size"></strong></div><div><small>Thread length b</small><strong id="summary-thread"></strong></div></div>
-<div class="drawing-foot"><strong>All dimensions in mm.</strong> Schematic preview; nuts, runout, thread profile and some bend details are simplified. Fits the viewport automatically; do not measure the image. On a phone, swipe the drawing to inspect it.</div>
-</section>
-<section class="data-panel" aria-label="Dimension lookup"><h2>Dimensions filled by the standard</h2><p id="dimension-caption">Dimensions and customer inputs are shown below.</p>
-<div class="table-wrap"><table id="dimension-table"><thead><tr><th scope="col">Dimension</th><th scope="col">Value</th></tr></thead><tbody id="dimension-rows"></tbody></table></div><p id="data-state" class="data-state" hidden>Select a supported standard to view dimensions.</p>
 
-</section></div></main><footer>FTI / Standard-driven drawing example · Schematic preview for selection and discussion · No data is sent or stored.</footer>
-<script>
-'use strict';
-const $=id=>document.getElementById(id);
-const fmt=value=>Number(value.toFixed(4)).toString();
-const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const range=(start,end,step=10)=>Array.from({length:Math.floor((end-start)/step)+1},(_,i)=>start+i*step);
-// Transcribed only from the supplied scan, page 1, Tables 1 and 1A.
-// The allowed choices preserve combinations rather than permitting arbitrary size cross-products.
-const library={
-'730':{edition:'1978',label:'IS 730:1978',name:'Hook bolts for corrugated-sheet roofing',families:{
- j:{name:'J-type hook bolt',baseThread:25,sizes:{
-  M6:{d:6,s:20,depth:15,widths:[12],radius:4,lengths:range(70,150)},
-  M8:{d:8,s:25,depth:20,widths:[14],radius:4,lengths:range(70,200)},
-  M10:{d:10,s:25,depth:20,widths:[16],radius:4,lengths:range(70,200)}}},
- l:{name:'L-type hook bolt',baseThread:30,sizes:{M8:{d:8,widths:[50,60,70],radius:1.5},M10:{d:10,widths:[80,95,110],radius:1.5}}},
- u:{name:'U-type hook bolt',baseThread:30,sizes:{M8:{d:8,widths:[50,60,80,90],radius:1.5},M10:{d:10,widths:[50,60,80,90],radius:1.5}}}
-}},
-'1120':{edition:'1975',label:'IS 1120:1975',name:'Hexagon-head coach screws / wood screws',families:{coach:{name:'Hexagon-head coach screw',sizes:{
- 'No. 10':{d:4.88,p:2.12,s:8,k:3.5,dMin:4.72,dMax:5,sMin:7.64,kMin:3.12,kMax:3.88},
- 'No. 14':{d:6.30,p:2.82,s:10,k:4,dMin:6.05,dMax:6.43,sMin:9.64,kMin:4.38,kMax:4.62},
- 'No. 18':{d:7.72,p:3.39,s:13,k:5.5,dMin:7.47,dMax:7.85,sMin:12.57,kMin:5.12,kMax:5.88},
- 'No. 24':{d:9.86,p:4.23,s:17,k:7,dMin:9,dMax:9.98,sMin:16.57,kMin:6.55,kMax:7.45},
- 'No. 28':{d:11.28,p:4.62,s:19,k:8,dMin:11.02,dMax:11.40,sMin:18.48,kMin:7.55,kMax:8.45},
- 'No. 32':{d:12.70,p:5.08,s:24,k:10,dMin:12.45,dMax:12.83,sMin:23.16,kMin:9.25,kMax:10.75}
-}}}}
-};
-let active=null;
-function options(id,values,preferred){const select=$(id),previous=preferred??select.value;select.replaceChildren(...values.map(value=>{const option=document.createElement('option');option.value=String(typeof value==='object'?value.value:value);option.textContent=String(typeof value==='object'?value.label:value);return option;}));if([...select.options].some(option=>option.value===String(previous)))select.value=String(previous);}
-function lookupStandard(raw){const match=raw.trim().match(/^(?:IS\s*[: -]?\s*)?(730|1120)(?:\s*[:/-]\s*(\d{4}))?$/i);if(!match)return null;const standard=library[match[1]];if(match[2]&&match[2]!==standard.edition)return null;return{id:match[1],...standard};}
-function clearDrawing(message){$('drawing').replaceChildren();const box=document.createElement('div');box.className='empty';const heading=document.createElement('strong');heading.textContent='No drawing generated';const detail=document.createElement('span');detail.textContent=message;box.append(heading,detail);$('drawing').append(box);$('download').disabled=true;$('print').disabled=true;$('dimension-rows').replaceChildren();$('dimension-table').hidden=true;$('data-state').hidden=false;for(const id of ['summary-standard','summary-size','summary-thread'])$(id).textContent='—';$('description').textContent=message;}
-function selectStandard(){const next=lookupStandard($('standard').value),changed=next?.id!==active?.id;active=next;$('choices').disabled=!active;$('standard-error').hidden=!!active;$('input-error').hidden=true;if(!active){const message='This standard or edition is not in the supplied library. Try IS 730:1978 or IS 1120:1975.';$('standard-error').textContent=message;$('standard-info').textContent='Two standards are available in this example.';clearDrawing(message);return;}$('standard-info').replaceChildren();const strong=document.createElement('strong');strong.textContent=active.label;$('standard-info').append(strong,document.createTextNode(active.name));if(changed){options('family',Object.entries(active.families).map(([value,family])=>({value,label:family.name})),Object.keys(active.families)[0]);selectFamily();}else render();}
-function isRound(){return ['round','type-ii'].includes($('subtype').value);}
-function customerLength(){return $('family').value==='coach'||isRound();}
-function shapeName(){return $('subtype-field').hidden?'':$('subtype').selectedOptions[0]?.textContent??'';}
-function selectFamily(){
- if(!active)return;const family=$('family').value,coach=family==='coach';
- options('size',Object.keys(active.families[family].sizes),coach?'No. 10':'M8');
- options('subtype',family==='j'?[{value:'type-i',label:'Type I \u2014 angled return'},{value:'type-ii',label:'Type II \u2014 round return'}]:family==='u'?[{value:'square',label:'Square bend'},{value:'round',label:'Round bend'}]:[],family==='j'?'type-i':'square');
- $('subtype-field').hidden=!['j','u'].includes(family);
- $('size-label').textContent=coach?'Screw number (not M diameter)':'Nominal size';
- $('pitch-field').hidden=coach;$('pitch').value='';$('radius').value='';$('return-height').value='';selectSize();
-}
-function selectSubtype(){
- if(isRound()){$('radius').value=25;$('return-height').value=60;$('custom-length').value=$('family').value==='u'?150:120;}
- else{$('radius').value='';$('return-height').value='';}
- selectSize();
-}
-function choiceSketch(family,subtype){
- const nuts=family==='u'?[35,85]:family==='l'?[35]:[78];
- const shape=family==='u'?(subtype==='round'?'M35 20V71A25 25 0 0 0 85 71V20':'M35 20V86Q35 96 45 96H75Q85 96 85 86V20'):family==='j'?(subtype==='type-ii'?'M78 20V71A25 25 0 0 1 28 71V48':'M78 20V71A25 25 0 0 1 31 83L22 63'):family==='l'?'M35 20V86Q35 96 45 96H80Q90 96 90 86V77':'M36 50H95L108 60L95 70H36';
- const nutDrawings=family==='coach'?'<path d="M23 45H36V75H23Z" fill="white" stroke="#24333d" stroke-width="2"/>':nuts.map(x=>`<path d="M${x-9} 32V26Q${x-9} 24 ${x-6} 24H${x+6}Q${x+9} 24 ${x+9} 26V32Z" fill="white" stroke="#24333d" stroke-width="1.5"/>`).join('');
- return `<svg viewBox="0 0 120 115" aria-hidden="true"><path d="${shape}" fill="none" stroke="#24333d" stroke-width="7" stroke-linejoin="round"/><path d="${shape}" fill="none" stroke="white" stroke-width="3.5" stroke-linejoin="round"/>${nutDrawings}</svg>`;
-}
-function refreshDrawingChoices(){
- const family=$('family').value;
- const makeButton=(value,label,sketch,selected,action)=>{
-  const button=document.createElement('button');button.type='button';button.dataset.value=value;button.setAttribute('aria-pressed',String(selected));
-  button.innerHTML=sketch;const caption=document.createElement('span');caption.textContent=label;button.append(caption);button.addEventListener('click',action);return button;
- };
- $('family-drawings').replaceChildren(...Object.entries(active.families).map(([key,item])=>makeButton(key,item.name,choiceSketch(key,key==='j'?'type-i':'square'),key===family,()=>{$('family').value=key;selectFamily();})));
- const subtypes=[...$('subtype').options];$('subtype-drawings').hidden=subtypes.length===0;
- $('subtype-drawings').replaceChildren(...subtypes.map(option=>makeButton(option.value,option.textContent,choiceSketch(family,option.value),option.selected,()=>{$('subtype').value=option.value;selectSubtype();})));
- $('round-example-note').hidden=!isRound();
-}
+<body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen">
+    <header
+        class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <div class="h-16 px-space-sm flex items-center justify-between gap-space-sm">
+            <div class="flex items-center gap-space-xs"><button
+                    class="w-11 h-11 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
+                    onclick="history.back()"><span
+                        class="material-symbols-outlined text-[24px]">arrow_back</span></button>
+                <h1 class="font-headline-sm text-headline-sm text-primary font-bold truncate max-w-[200px]">Product
+                    Details</h1>
+            </div>
+            <div class="flex items-center gap-space-xs"><button
+                    class="w-11 h-11 flex items-center justify-center text-on-surface hover:text-primary transition-colors"><span
+                        class="material-symbols-outlined text-[22px]">share</span></button><img alt="Profile"
+                    class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20"
+                    src="https://lh3.googleusercontent.com/aida/AEtjO1Xetge175C4Z8FGlBLuZ754QqDuz9dTJZdOhQJ8S5UR1-1zwcuF42MKQoLSPDYW_lQmCVNqUoucuWNi3LighjHOfNShKAlJJ7SuW7EXwUuAUxXBOSLhUt-p7OZqMJiP1O3C-7oY7vo_pVgwBZS6Ina_RMMxjxiCx2blQ8HZfB3Q1M9l0dUMaMzOZOc4ekD2pSMYkygRX9W26bv19-504cI_d5pLqwsOGSJ3F1dF33octCKYZajsEKKLS0DUMsY90GsELwyIk9Q5FQ" />
+            </div>
+        </div>
+    </header>
+    <main class="flex flex-col relative w-full pt-16 pb-safe bg-surface min-h-screen">
+        <div class="flex flex-col w-full pb-32">
+            <!-- Stepper & Quotation Compilation Notice -->
+            <div class="bg-primary text-on-primary px-space-md py-space-md shadow-sm">
+                <div class="flex items-center justify-between mb-space-sm">
+                    <span
+                        class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-container text-inverse-primary font-label-sm text-label-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+                        QUOTATION COMPILATION MODE
+                    </span>
+                    <span class="font-label-sm text-label-sm text-surface-variant font-medium">STEP 1 OF 3</span>
+                </div>
+                <!-- Visual Stepper Progress -->
+                <div class="grid grid-cols-3 gap-2 items-center mb-space-sm">
+                    <div class="flex flex-col gap-1">
+                        <div class="h-1.5 rounded-full bg-secondary-container"></div>
+                        <span class="font-label-sm text-label-sm text-on-primary font-semibold">1. Cart Lots</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="h-1.5 rounded-full bg-primary-container"></div>
+                        <span class="font-label-sm text-label-sm text-surface-variant">2. Freight &amp; Mill</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="h-1.5 rounded-full bg-primary-container"></div>
+                        <span class="font-label-sm text-label-sm text-surface-variant">3. Proforma PO</span>
+                    </div>
+                </div>
+                <!-- Commercial Policy Banner -->
+                <div class="flex items-start gap-2 bg-primary-container/80 p-space-sm rounded-lg mt-1">
+                    <span class="material-symbols-outlined text-[18px] text-surface-variant shrink-0 mt-0.5">info</span>
+                    <p class="font-body-sm text-body-sm text-inverse-on-surface leading-tight">
+                        All listings are ex-yard base rates. Freight corridor rates, statutory GST (18%), and
+                        weighbridge tolerances finalize in the formal Proforma Invoice.
+                    </p>
+                </div>
+            </div>
+            <div class="px-space-md flex flex-col gap-space-md mt-space-md">
+                <!-- Cart Header Bar -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Configured Lots</h2>
+                        <span
+                            class="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-md text-label-md font-semibold">2
+                            Active</span>
+                    </div>
+                    <button
+                        class="font-label-md text-label-md text-secondary font-semibold flex items-center gap-1 hover:underline">
+                        <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+                        Clear Cart
+                    </button>
+                </div>
+                <!-- CART ITEM 1: Forging Grade MS Round Bar -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden"
+                    id="cart-item-1">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span
+                                    class="bg-surface-container-high text-primary px-2 py-0.5 rounded text-label-sm font-label-sm font-bold">
+                                    EN8D / AISI 1045
+                                </span>
+                                <span
+                                    class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded text-label-sm font-label-sm">
+                                    Bay 4-C Ludhiana
+                                </span>
+                            </div>
+                            <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold leading-snug">
+                                Forging Grade MS Round Bar
+                            </h3>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                                Dia 32mm • Length 6.0m • 100 Pcs • Std Saw Cut
+                            </p>
+                        </div>
+                        <button class="text-on-surface-variant hover:text-error p-1 transition-colors"
+                            onclick="document.getElementById('cart-item-1').remove()" title="Remove Lot">
+                            <span class="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                    </div>
+                    <!-- Item Specification Micro-Chips -->
+                    <div
+                        class="grid grid-cols-2 gap-2 bg-surface-container-low p-2 rounded-lg text-body-sm font-body-sm">
+                        <div class="flex flex-col">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">TOTAL TONNAGE</span>
+                            <span class="font-bold text-on-surface font-ticker-price text-ticker-price">3.79 MT (Metric
+                                Tonnes)</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">BASE EX-YARD RATE</span>
+                            <span class="font-bold text-on-surface">₹58.20 / kg <span
+                                    class="font-normal text-on-surface-variant text-label-sm">(₹58,200/MT)</span></span>
+                        </div>
+                    </div>
+                    <!-- MTC Quality Tag -->
+                    <div
+                        class="flex items-center gap-1.5 text-label-md font-label-md text-on-surface-variant bg-surface-container-lowest px-1">
+                        <span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+                        <span>MTC 3.1 Included • Jindal / SAIL Primary Heat Code Verified</span>
+                    </div>
+                    <!-- Price & Quantity Interaction Tier -->
+                    <div class="pt-2 flex items-center justify-between gap-3">
+                        <!-- Interactive Weight Adjustment -->
+                        <div class="flex items-center bg-surface-container-low rounded-lg p-0.5">
+                            <button
+                                class="w-8 h-8 rounded flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"
+                                onclick="adjustWeight('qty-1', -1)">
+                                <span class="material-symbols-outlined text-[16px]">remove</span>
+                            </button>
+                            <div class="px-2 flex items-center gap-0.5">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface"
+                                    id="qty-1">100</span>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant">pcs</span>
+                            </div>
+                            <button
+                                class="w-8 h-8 rounded flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"
+                                onclick="adjustWeight('qty-1', 1)">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">INDICATIVE LOT
+                                TOTAL</span>
+                            <span class="font-ticker-price text-ticker-price text-primary font-bold">₹2,20,449</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- CART ITEM 2: TMT Rebars Fe 550D -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden"
+                    id="cart-item-2">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span
+                                    class="bg-surface-container-high text-primary px-2 py-0.5 rounded text-label-sm font-label-sm font-bold">
+                                    IS 1786 Fe 550D
+                                </span>
+                                <span
+                                    class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded text-label-sm font-label-sm">
+                                    Mandi Gobindgarh Siding
+                                </span>
+                            </div>
+                            <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold leading-snug">
+                                TMT Rebars Fe 550D High Ductility
+                            </h3>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                                16mm Primary Billet • Standard 12m Commercial Bundles
+                            </p>
+                        </div>
+                        <button class="text-on-surface-variant hover:text-error p-1 transition-colors"
+                            onclick="document.getElementById('cart-item-2').remove()" title="Remove Lot">
+                            <span class="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                    </div>
+                    <!-- Item Specification Micro-Chips -->
+                    <div
+                        class="grid grid-cols-2 gap-2 bg-surface-container-low p-2 rounded-lg text-body-sm font-body-sm">
+                        <div class="flex flex-col">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">COMMITTED BUNDLE
+                                WEIGHT</span>
+                            <span class="font-bold text-on-surface font-ticker-price text-ticker-price">5.00 MT
+                                Lot</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">BASE EX-YARD RATE</span>
+                            <span class="font-bold text-on-surface">₹52.40 / kg <span
+                                    class="font-normal text-on-surface-variant text-label-sm">(₹52,400/MT)</span></span>
+                        </div>
+                    </div>
+                    <!-- Quality Tag -->
+                    <div
+                        class="flex items-center gap-1.5 text-label-md font-label-md text-on-surface-variant bg-surface-container-lowest px-1">
+                        <span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+                        <span>BIS ISI Mark • Earthquake Resistant High Elongation</span>
+                    </div>
+                    <!-- Price & Quantity Interaction Tier -->
+                    <div class="pt-2 flex items-center justify-between gap-3">
+                        <!-- Interactive Weight Stepper -->
+                        <div class="flex items-center bg-surface-container-low rounded-lg p-0.5">
+                            <button
+                                class="w-8 h-8 rounded flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"
+                                onclick="adjustWeight('qty-2', -0.5)">
+                                <span class="material-symbols-outlined text-[16px]">remove</span>
+                            </button>
+                            <div class="px-2 flex items-center gap-0.5">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface"
+                                    id="qty-2">5.0</span>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant">MT</span>
+                            </div>
+                            <button
+                                class="w-8 h-8 rounded flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"
+                                onclick="adjustWeight('qty-2', 0.5)">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">INDICATIVE LOT
+                                TOTAL</span>
+                            <span class="font-ticker-price text-ticker-price text-primary font-bold">₹2,62,000</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Consignee Logistics & Commercial Preferences -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px] text-primary">local_shipping</span>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Consignee &amp;
+                                Delivery Route</h3>
+                        </div>
+                        <button
+                            class="text-secondary font-label-md text-label-md font-semibold hover:underline">Change</button>
+                    </div>
+                    <!-- Selected Consignee Card -->
+                    <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-1">
+                        <div class="flex items-center justify-between">
+                            <span class="font-label-lg text-label-lg text-on-surface font-bold">Apex Fabricators Pvt.
+                                Ltd.</span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-on-surface font-medium">GSTIN
+                                Active</span>
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                            Plot No. 42-B, Focal Point Phase V, Ludhiana, Punjab • PIN 141010
+                        </p>
+                        <div class="flex items-center gap-2 mt-1 text-label-sm font-label-sm text-primary">
+                            <span class="material-symbols-outlined text-[14px]">distance</span>
+                            <span>Corridor Distance: ~14.2 km from Ludhiana Depot</span>
+                        </div>
+                    </div>
+                    <!-- Delivery Timeline Selector -->
+                    <div class="flex flex-col gap-2">
+                        <label class="font-label-md text-label-md text-on-surface font-semibold">REQUIRED DELIVERY
+                            TIMELINE</label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <label
+                                class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+                                <div class="flex items-center gap-2">
+                                    <input class="text-secondary focus:ring-0" name="timeline" type="radio"
+                                        value="express" />
+                                    <div class="flex flex-col">
+                                        <span class="font-label-lg text-label-lg text-on-surface font-semibold">Within
+                                            48 Hours (Express Dispatch)</span>
+                                        <span class="font-body-sm text-body-sm text-on-surface-variant">Priority mill
+                                            loading slot assigned</span>
+                                    </div>
+                                </div>
+                                <span
+                                    class="font-label-sm text-label-sm text-on-surface-variant font-medium">+₹150/MT</span>
+                            </label>
+                            <label
+                                class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container cursor-pointer">
+                                <div class="flex items-center gap-2">
+                                    <input checked="" class="text-secondary focus:ring-0" name="timeline" type="radio"
+                                        value="standard" />
+                                    <div class="flex flex-col">
+                                        <span class="font-label-lg text-label-lg text-on-surface font-semibold">3-5
+                                            Working Days (Standard)</span>
+                                        <span class="font-body-sm text-body-sm text-secondary font-medium">Optimal
+                                            consolidated trailer rate</span>
+                                    </div>
+                                </div>
+                                <span class="font-label-sm text-label-sm text-secondary font-bold">Standard</span>
+                            </label>
+                            <label
+                                class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+                                <div class="flex items-center gap-2">
+                                    <input class="text-secondary focus:ring-0" name="timeline" type="radio"
+                                        value="scheduled" />
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-label-lg text-label-lg text-on-surface font-semibold">Scheduled
+                                            Monthly Tranches</span>
+                                        <span class="font-body-sm text-body-sm text-on-surface-variant">Split trailer
+                                            deliveries against rolling schedule</span>
+                                    </div>
+                                </div>
+                                <span
+                                    class="font-label-sm text-label-sm text-on-surface-variant font-medium">Custom</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Logistics Equipment & Compliance Checkboxes -->
+                    <div class="flex flex-col gap-2 pt-1">
+                        <label class="font-label-md text-label-md text-on-surface font-semibold">SITE CAPABILITY &amp;
+                            CERTIFICATION</label>
+                        <label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-low cursor-pointer">
+                            <input checked="" class="mt-1 rounded text-secondary focus:ring-0" type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="font-label-md text-label-md text-on-surface font-medium">Consignee Site has
+                                    Overhead Gantry / Forklift</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">Capable of offloading
+                                    12m steel bundles and round bars safely.</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-low cursor-pointer">
+                            <input class="mt-1 rounded text-secondary focus:ring-0" type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="font-label-md text-label-md text-on-surface font-medium">Require On-Trailer
+                                    Hydraulic Crane Assist (+₹450/MT)</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">Self-unloading boom
+                                    truck will be scheduled for drop location.</span>
+                            </div>
+                        </label>
+                        <!-- MTC Hardcopy Clause Toggle -->
+                        <label
+                            class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low cursor-pointer mt-1">
+                            <div class="flex flex-col pr-2">
+                                <span class="font-label-md text-label-md text-on-surface font-medium">Physical Mill Test
+                                    Certificate (Stamp Signed)</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">Hard copy attached with
+                                    driver e-Way bill &amp; consignment</span>
+                            </div>
+                            <div class="relative inline-flex items-center cursor-pointer">
+                                <input checked="" class="sr-only peer" type="checkbox" />
+                                <div
+                                    class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <!-- PO & Engineering Drawing Upload Tray -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px] text-primary">attachment</span>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Purchase Order &amp;
+                                BOM</h3>
+                        </div>
+                        <span class="text-label-sm font-label-sm text-on-surface-variant">Optional</span>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Attach your formal ERP Purchase Order or technical drawing for dimensional tolerance
+                        verification.
+                    </p>
+                    <!-- Attached File Card -->
+                    <div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div
+                                class="w-9 h-9 rounded bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold truncate">PO_Apex_OCT_2026_Rev2.pdf</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">1.2 MB • Uploaded &amp;
+                                    Validated</span>
+                            </div>
+                        </div>
+                        <button class="p-1 text-on-surface-variant hover:text-error" title="Remove attachment">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                    </div>
+                    <!-- Add Secondary Drawing Button -->
+                    <button
+                        class="w-full py-2.5 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                        Add Technical Drawing or Cutting Plan
+                    </button>
+                </div>
+                <!-- Commercial Summary & Settlement Structure -->
+                <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Commercial Breakdown</h3>
+                        <span
+                            class="px-2 py-0.5 rounded bg-surface-container-highest text-primary font-label-sm text-label-sm font-semibold">
+                            8.79 MT Net Tonnage
+                        </span>
+                    </div>
+                    <!-- Ledger Breakdown Table -->
+                    <div class="flex flex-col gap-2 py-1 text-body-md font-body-md">
+                        <div class="flex items-center justify-between">
+                            <span class="text-on-surface-variant">Indicative Base Material Value</span>
+                            <span class="text-on-surface font-semibold">₹4,82,449</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1">
+                                <span class="text-on-surface-variant">Est. Freight (Ludhiana Corridor)</span>
+                                <span class="material-symbols-outlined text-[14px] text-on-surface-variant"
+                                    title="Based on 8.79 MT trailer dispatch">help_outline</span>
+                            </div>
+                            <span class="text-on-surface font-semibold">₹8,400</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-on-surface-variant">Transit Insurance (0.05% Mill Policy)</span>
+                            <span class="text-secondary font-semibold">Complimentary</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-on-surface-variant">Statutory GST (18.0%)</span>
+                            <span class="text-on-surface font-semibold">₹88,353</span>
+                        </div>
+                        <div class="my-1 h-[1px] bg-surface-container-highest"></div>
+                        <div class="flex items-baseline justify-between">
+                            <div class="flex flex-col">
+                                <span class="font-headline-sm text-headline-sm text-primary font-bold">Estimated Landing
+                                    Cost</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">Subject to certified
+                                    weighbridge slip</span>
+                            </div>
+                            <span
+                                class="font-headline-md text-headline-md text-primary font-bold font-ticker-price text-ticker-price">₹5,79,202</span>
+                        </div>
+                    </div>
+                    <!-- Credit / Payment Mechanism Dropdown -->
+                    <div class="flex flex-col gap-1.5 pt-2">
+                        <label class="font-label-md text-label-md text-on-surface font-semibold">PROPOSED SETTLEMENT
+                            TERMS</label>
+                        <div class="relative">
+                            <select
+                                class="w-full bg-surface-container-low rounded-lg p-space-sm font-label-lg text-label-lg text-on-surface font-medium pr-8 appearance-none focus:outline-none focus:bg-surface-container">
+                                <option>20% Advance RTGS + 80% on Electronic Weighbridge Slip</option>
+                                <option>FTI Approved Revolving Credit (30 Days LC / Bank Guarantee)</option>
+                                <option>100% Advance RTGS (Eligible for 0.5% Cash Discount)</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined text-[20px] text-on-surface-variant absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- FIXED BOTTOM EXECUTION TRAY (Level 4 Ticker Dock) -->
+            <div
+                class="fixed bottom-0 inset-x-0 bg-primary text-on-primary z-40 px-space-md py-3 shadow-[0_-4px_16px_rgba(20,45,78,0.2)]">
+                <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+                    <!-- Weight & Price Metric Display -->
+                    <div class="flex flex-col min-w-0 shrink-0">
+                        <div class="flex items-center gap-1">
+                            <span class="font-label-sm text-label-sm text-surface-variant">8.79 MT</span>
+                            <span class="text-surface-variant text-[10px]">•</span>
+                            <span class="font-label-sm text-label-sm text-surface-variant">2 Lots</span>
+                        </div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="font-ticker-price text-ticker-price text-on-primary font-bold">₹5,79,202</span>
+                            <span class="font-label-sm text-label-sm text-inverse-primary font-normal">Est.</span>
+                        </div>
+                    </div>
+                    <!-- Primary Quotation Action Button -->
+                    <div class="flex flex-col flex-1 items-stretch">
+                        <button
+                            class="w-full h-11 px-space-md rounded-xl bg-secondary-container hover:bg-secondary text-on-secondary font-label-lg text-label-lg font-bold flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98] shadow-sm"
+                            id="submitQuotationBtn">
+                            <span>Request Quotation</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                        <span class="text-center text-surface-variant font-label-sm text-label-sm mt-0.5">
+                            Official Proforma delivered in &lt;15 mins
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- Confirmation Sheet / Toast Dynamic Notification Container -->
+            <div class="fixed top-20 inset-x-4 z-50 transition-all duration-300 transform -translate-y-16 opacity-0 pointer-events-none"
+                id="toastNotification">
+                <div class="bg-primary text-on-primary p-space-md rounded-xl shadow-xl flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[24px] text-surface-variant">task_alt</span>
+                    <div class="flex flex-col flex-1">
+                        <span class="font-label-lg text-label-lg font-bold">Quotation RFQ Dispatched</span>
+                        <span class="font-body-sm text-body-sm text-inverse-primary">Reference #FTI-LUD-8924 assigned.
+                            Yard reservation lock active for 4 hours.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function adjustWeight(elementId, delta) {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                let currentVal = parseFloat(el.innerText);
+                let newVal = Math.max(1, currentVal + delta);
+                el.innerText = Number.isInteger(newVal) ? newVal : newVal.toFixed(1);
 
-function selectSize(){
- const family=$('family').value,data=active.families[family].sizes[$('size').value],widths=data.widths??[],rounded=isRound();
- $('width-field').hidden=widths.length<=1||rounded;
- $('radius-field').hidden=!rounded;$('angle-field').hidden=family!=='j'||rounded;$('return-field').hidden=!(family==='j'&&rounded);
- $('custom-length-field').hidden=!customerLength();$('preferred-length-field').hidden=customerLength();
- $('custom-length-hint').textContent=rounded?'Customer length for the pipe-dependent round form. R1 and length must fit together. Example range: 10-500 mm.':'Customer input. Enter the required length. Example range: 10-500 mm.';
- refreshDrawingChoices();
- options('width',widths,widths[0]);selectWidth();
-}
-function lengthsFor(family,data,width){if(family==='j')return data.lengths;if(family==='u')return width===90?[225]:range(150,200);if(family==='l')return data.d===8?range(120,200):width===110?[180,190,200,225]:range(150,200);return[];}
-function selectWidth(){const family=$('family').value,data=active.families[family].sizes[$('size').value];if(family!=='coach')options('length',lengthsFor(family,data,Number($('width').value)),120);render();}
-function dimensionsRows(rows){$('dimension-rows').replaceChildren(...rows.map(values=>{const tr=document.createElement('tr');for(const value of values.slice(0,2)){const td=document.createElement('td');td.textContent=value;tr.append(td);}return tr;}));$('dimension-table').hidden=false;$('data-state').hidden=true;}
-function line(x1,y1,x2,y2,extra=''){return`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;}
-function text(x,y,value,extra=''){return`<text x="${x}" y="${y}" ${extra}>${esc(value)}</text>`;}
-function dimH(x1,x2,y,origin,label){return`<g class="dim">${line(x1,origin,x1,y+7)}${line(x2,origin,x2,y+7)}${line(x1,y,x2,y,'marker-start="url(#arrow)" marker-end="url(#arrow)"')}${text((x1+x2)/2,y-10,label,'text-anchor="middle"')}</g>`;}
-function dimV(x,y1,y2,origin,label){return`<g class="dim">${line(origin,y1,x+7,y1)}${line(origin,y2,x+7,y2)}${line(x,y1,x,y2,'marker-start="url(#arrow)" marker-end="url(#arrow)"')}${text(x-13,(y1+y2)/2,label,`text-anchor="middle" transform="rotate(-90 ${x-13} ${(y1+y2)/2})"`)}</g>`;}
-function svgWrap(body,title,subtitle){return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" role="img" aria-labelledby="svg-title svg-desc"><title id="svg-title">${esc(title)}</title><desc id="svg-desc">${esc(subtitle)}. Schematic with dimensions in millimetres.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#075299"/></marker><pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#eaf0f3" stroke-width=".6"/></pattern></defs><style>text{font:14px Consolas,monospace;fill:#24333d}.outline{stroke:#24333d;stroke-width:1.6;fill:white;stroke-linejoin:round}.dim{stroke:#075299;stroke-width:1;fill:none}.dim text{fill:#075299;stroke:none}.center{stroke:#8ca0ad;stroke-width:1;stroke-dasharray:12 4 2 4}.thread{stroke:#24333d;stroke-width:1;fill:none}.meta{font:12px sans-serif;fill:#526473}.label{font:16px sans-serif;font-weight:600}.boundary{stroke:#d5dfe5;stroke-width:1;fill:none}</style><rect width="1000" height="660" fill="white"/><rect x="25" y="25" width="950" height="495" fill="url(#grid)"/>${body}<path class="boundary" d="M35 535H965M35 611H965"/>${text(45,560,title,'class="label"')}${text(45,585,subtitle,'class="meta"')}${text(45,635,'DIMENSIONS IN MM · SCHEMATIC PREVIEW · FIT TO VIEWPORT','class="meta"')}</svg>`;}
-function nutAssembly(x,top,diameter,leg){
- // Square-nut side elevation with chamfered upper corners, matching the scan's assembly.
- // The scan does not supply nut dimensions here, so these proportions are illustrative.
- const w=Math.max(diameter*2.15,20),h=Math.max(diameter*.68,8),y=top+diameter*.55,ch=Math.min(h*.32,5);
- return `<g class="nut-assembly" data-leg="${leg}"><path class="outline" d="M${x-w/2},${y+h}V${y+ch}Q${x-w/2},${y} ${x-w/2+ch},${y}H${x+w/2-ch}Q${x+w/2},${y} ${x+w/2},${y+ch}V${y+h}Z"/><path class="thread" d="M${x-w*.23},${y+ch}V${y+h}M${x+w*.23},${y+ch}V${y+h}"/></g>`;
-}
-function hookDrawing({family,data,length,width,depth,b,p,rounded,r1,returnHeight,angle}){
- const scale=Math.min(345/length,420/(width+data.d*2),4),d=data.d*scale,top=95,bottom=top+length*scale-d/2;
- const right=family==='l'?430:family==='u'?570:560,left=family==='l'?right+(width+data.d)*scale:right-(width+data.d)*scale;
- const radius=rounded?(r1+data.d/2)*scale:Math.max(data.radius*scale+d/2,8);
- let path='',returnTip=null;
- if(rounded){
-  const low=bottom-radius,mid=(left+right)/2,endY=family==='u'?top:top+(length-returnHeight)*scale;
-  path=`M${right},${top}V${low}A${radius},${radius} 0 0 1 ${mid},${bottom}A${radius},${radius} 0 0 1 ${left},${low}V${endY}`;
- }else if(family==='j'){
-  // A tangent circular bend flows into the tilted free leg, rather than a squared U return.
-  const a=(right-left)/2,cx=right-a,cy=bottom-a,theta=angle*Math.PI/180;
-  const arcX=cx-a*Math.cos(theta),arcY=cy+a*Math.sin(theta),tipY=bottom-depth*scale;
-  const tipX=arcX-(arcY-tipY)*Math.tan(theta);
-  returnTip={x:tipX,y:tipY};
-  path=`M${right},${top}V${cy}A${a},${a} 0 0 1 ${arcX},${arcY}L${tipX},${tipY}`;
- }else if(family==='l'){
-  path=`M${right},${top}V${bottom-radius}Q${right},${bottom} ${right+radius},${bottom}H${left-radius}Q${left},${bottom} ${left},${bottom-radius}V${bottom-depth*scale}`;
- }else{
-  const endY=bottom-depth*scale;
-  // J Type I has an inclined free leg; the inclination remains schematic because theta is not tabulated.
-  path=`M${right},${top}V${bottom-radius}Q${right},${bottom} ${right-radius},${bottom}H${left+radius}Q${left},${bottom} ${left},${bottom-radius}`;
-  path+=family==='u'?`V${top}`:family==='j'?`L${left-depth*scale*.28},${endY}`:`V${endY}`;
- }
- const threadLength=b===null?Math.min(38*scale,length*scale*.38):b*scale,pitch=p===null?7:Math.max(3,p*scale);let threads='';
- for(const x of family==='u'?[left,right]:[right])for(let y=top+3;y<top+threadLength-3;y+=pitch)threads+=line(x-d/2,y,x+d/2,Math.min(top+threadLength,y+pitch*.65));
- let body=`<path class="bolt-body" data-shape="${family}-${$('subtype').value}" d="${path}" fill="none" stroke="#24333d" stroke-width="${d+2}" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="white" stroke-width="${Math.max(d-1,1)}" stroke-linejoin="round"/><g class="thread">${threads}</g>${family==='u'?nutAssembly(left,top,d,'left'):''}${nutAssembly(right,top,d,'right')}<g class="center">${line(right,top-25,right,Math.min(bottom+40,500))}${family==='u'?line(left,top-25,left,bottom+35):''}</g>`;
- body+=dimV(Math.max(left,right)+100,top,bottom+d/2,right+d/2,`L = ${fmt(length)}`)+dimH(Math.min(left,right)+d/2,Math.max(left,right)-d/2,Math.min(bottom+60,505),bottom+d/2,`w = ${fmt(width)}`)+dimH(right-d/2,right+d/2,top-40,top,`d = ${fmt(data.d)}`);
- body+=`<g class="dim">${line(right+d/2+8,top+threadLength,right+60,top+threadLength)}${text(right+68,top+threadLength+5,b===null?`b = ${active.families[family].baseThread} + 2P`:`b = ${fmt(b)}`)}</g>`;
- if(rounded){
-  body+=text(120,160,`R1 = ${fmt(r1)} (customer)`,'class="meta"');
-  if(family==='j')body+=dimV(left-65,top+(length-returnHeight)*scale,bottom+d/2,left-d/2,`C = ${fmt(returnHeight)}`);
- }else if(family!=='u')body+=text(left-70,top+65,`D = ${fmt(depth)}`,'class="meta"')+text(left-70,top+85,family==='j'?`R \u2265 ${fmt(data.radius)}`:`R basic ${fmt(data.radius)}`,'class="meta"');
- else body+=text((left+right)/2,top+length*scale*.55,`R basic ${fmt(data.radius)}`,'text-anchor="middle" class="meta"');
- if(returnTip){
-  body+=`<g class="center">${line(returnTip.x,returnTip.y-12,returnTip.x,returnTip.y+42)}</g>`;
-  body+=text(returnTip.x-120,returnTip.y-18,`θ = ${fmt(angle)}° (preview)`,'class="meta"');
- }
- body+=text(75,475,'Nut assemblies shown; nut sizes and thread profiles are schematic.','class="meta"');
- return svgWrap(body,`${active.label} / ${active.families[family].name}${shapeName()?' / '+shapeName():''}`,`${$('size').value} \u00b7 L ${fmt(length)} \u00b7 w ${fmt(width)} \u00b7 Property class 4.6`);
-}
-function coachDrawing({data,length}){
- const scale=Math.min(570/(length+data.k),130/data.s,12),x=100,y=285,head=data.k*scale,flats=data.s*scale,d=data.d*scale,start=x+head,end=start+length*scale,ts=start+length*scale*.35,tip=Math.min(d,length*scale*.12),pitch=data.p*scale;
- let threads='';for(let at=ts;at<end-tip;at+=pitch)threads+=`<path d="M${at},${y-d/2}l${Math.min(pitch*.6,end-tip-at)},${d}M${at},${y+d/2}l${Math.min(pitch*.6,end-tip-at)},${-d}"/>`;
- const cx=830,r=flats/Math.sqrt(3),points=Array.from({length:6},(_,i)=>`${cx+r*Math.cos((30+60*i)*Math.PI/180)},${y+r*Math.sin((30+60*i)*Math.PI/180)}`).join(' ');
- let body=`<g class="outline"><rect x="${x}" y="${y-flats/2}" width="${head}" height="${flats}"/><path d="M${start},${y-d/2}H${end-tip}L${end},${y}L${end-tip},${y+d/2}H${start}Z"/><polygon points="${points}"/></g><g class="thread">${threads}</g><g class="center">${line(x-25,y,end+25,y)}${line(cx-r-20,y,cx+r+20,y)}${line(cx,y-r-20,cx,y+r+20)}</g>`;
- body+=dimH(start,end,425,y+d/2,`L = ${fmt(length)} (customer input)`)+dimH(x,start,150,y-flats/2,`k = ${fmt(data.k)}`)+dimH(cx-flats/2,cx+flats/2,150,y-r,`s = ${fmt(data.s)}`)+dimV(end+70,y-d/2,y+d/2,end,`d = ${fmt(data.d)}`)+text(100,470,`P = ${fmt(data.p)} · Threaded proportion and point are illustrative.`,'class="meta"');
- return svgWrap(body,`${active.label} / Hexagon-head coach screw`,`${$('size').value} · d ${fmt(data.d)} · L ${fmt(length)} · Wood screw, not a metric machine screw`);
-}
-function render(){
- if(!active)return;
- const family=$('family').value,definition=active.families[family],data=definition.sizes[$('size').value],coach=family==='coach',rounded=isRound();
- const length=Number(customerLength()?$('custom-length').value:$('length').value),r1=rounded?Number($('radius').value):null;
- const returnHeight=family==='j'&&rounded?Number($('return-height').value):null,width=rounded?2*r1:Number($('width').value);
- const p=coach?data.p:$('pitch').value.trim()===''?null:Number($('pitch').value),b=coach?null:p===null?null:definition.baseThread+2*p;
- const angle=Number($('angle').value);
- const depth=data.depth??(family==='l'?width===110?30:data.d===8?20:25:0);
- let error='';
- if(family==='j'&&!rounded&&(!$('angle').value||!$('angle').checkValidity()||!Number.isFinite(angle)))error='Enter a return angle between 1 and 75 degrees.';
- else if(customerLength()&&(!$('custom-length').checkValidity()||!Number.isFinite(length)||length<=0))error='Enter a length between 10 and 500 mm.';
- else if(rounded&&(!$('radius').value||!$('radius').checkValidity()||!Number.isFinite(r1)))error='Enter the purchaser-specified inside radius R1, between 0.1 and 250 mm.';
- else if(rounded&&length<=r1+data.d)error='Length L must exceed R1 plus the rod diameter to leave a straight leg.';
- else if(family==='j'&&rounded&&(!$('return-height').value||!$('return-height').checkValidity()||!Number.isFinite(returnHeight)||returnHeight<r1+data.d||returnHeight>=length))error='Enter return height C: at least R1 + diameter, and shorter than L.';
- else if(!coach&&$('pitch').value!==''&&(!$('pitch').checkValidity()||!Number.isFinite(p)))error='Enter a pitch between 0.1 and 10 mm, or leave it blank.';
- else if(!customerLength()&&!lengthsFor(family,data,width).includes(length))error='Choose one of the preferred lengths in the supplied table.';
- else if(b!==null&&b>=length-(rounded?r1+data.d:depth))error='The supplied pitch leaves insufficient straight length for the hook. Check pitch or choose a longer length.';
- $('input-error').textContent=error;$('input-error').hidden=!error;if(error){clearDrawing(error);return;}
- const model={family,data,length,width,depth,b,p,rounded,r1,returnHeight,angle};$('drawing').innerHTML=coach?coachDrawing(model):hookDrawing(model);$('download').disabled=false;$('print').disabled=false;
- $('description').textContent=`${active.label} \u00b7 ${definition.name}${shapeName()?' / '+shapeName():''} \u00b7 ${$('size').value} \u00b7 ${fmt(length)} mm`;
- $('summary-standard').textContent=active.label;$('summary-size').textContent=`${$('size').value} \u00d7 ${fmt(length)} mm`;$('summary-thread').textContent=coach?'Schematic portion':b===null?`${definition.baseThread} + 2P`:fmt(b)+' mm';
- const rows=coach?[
- ['Shank diameter d, nominal',fmt(data.d),'Supplied Table 1A; screw number is '+$('size').value],['Shank diameter d, range',`${fmt(data.dMin)}\u2013${fmt(data.dMax)}`,'Printed minimum / maximum'],['Thread pitch P',fmt(data.p),'Supplied Table 1A'],['Head across flats s, nominal',fmt(data.s),'Supplied Table 1A'],['Head across flats s, range',`${fmt(data.sMin)}\u2013${fmt(data.s)}`,'Printed minimum / maximum'],['Head height k, nominal',fmt(data.k),'Supplied Table 1A; used by preview'],['Head height k, printed range',`${fmt(data.kMin)}\u2013${fmt(data.kMax)}`,data.k<data.kMin?'Source inconsistency: nominal is outside printed range. Retained as supplied.':'Printed minimum / maximum'],['Length L',fmt(length),'Customer input; preferred lengths absent from supplied table']
- ]:[
- ['Nominal diameter d',fmt(data.d),'Selected nominal size; mm'],...(family==='j'&&!rounded?[['Return angle theta',fmt(angle)+' degrees','Illustrative / customer input; numeric angle absent from supplied table']]:[]),['Length L',fmt(length),rounded?'Customer input for round form':length>200?'Preferred length; printed tolerance \u00b14':'Preferred length; printed tolerance \u00b13'],['Inside opening / width w',fmt(width),rounded?'Derived from purchaser radius: 2 \u00d7 R1':family==='j'?'Printed tolerance +2':family==='l'&&width>=95?'Printed tolerance \u00b13':'Printed tolerance \u00b12'],
- ...(rounded?[['Inside radius R1',fmt(r1),'Purchaser-specified pipe-dependent geometry; scan gives +1.5 tolerance'],...(family==='j'?[['Return height C',fmt(returnHeight),'Customer input; no height inferred from Type I']]:[])]:[...(family==='u'?[]:[[family==='j'?'Hook depth D':'Inside dimension D',fmt(depth),family==='j'?'Printed tolerance +2':'Printed tolerance \u00b12']]),...(family==='j'?[['Dimension s',fmt(data.s),'Supplied J-type table; printed tolerance +2']]:[]),['Bend radius R',family==='j'?`\u2265 ${fmt(data.radius)}`:fmt(data.radius),family==='j'?'Printed minimum; schematic bend':'Printed basic value; simplified bend']]),
- ['Thread pitch P',p===null?'Not specified':fmt(p),p===null?'Absent from supplied table. Enter it if known.':'Customer input; not verified against an external standard'],['Thread length b',b===null?`${definition.baseThread} + 2P`:fmt(b),b===null?'Formula from supplied hook-bolt table':'Calculated from printed formula and entered pitch']];
- dimensionsRows(rows);$('dimension-caption').textContent='Dimensions in millimetres unless otherwise indicated.';
-}
-$('controls').addEventListener('submit',event=>event.preventDefault());$('standard').addEventListener('input',selectStandard);$('family').addEventListener('change',selectFamily);$('subtype').addEventListener('change',selectSubtype);$('radius').addEventListener('input',render);$('angle').addEventListener('input',render);$('return-height').addEventListener('input',render);$('size').addEventListener('change',selectSize);$('width').addEventListener('change',selectWidth);$('length').addEventListener('change',render);$('custom-length').addEventListener('input',render);$('pitch').addEventListener('input',render);$('reset-example').addEventListener('click',()=>{$('standard').value='IS 730:1978';$('custom-length').value=75;$('angle').value=25;active=null;selectStandard();});$('print').addEventListener('click',()=>window.print());
-$('download').addEventListener('click',()=>{const svg=$('drawing').querySelector('svg');if(!svg||!active)return;const url=URL.createObjectURL(new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+svg.outerHTML],{type:'image/svg+xml;charset=utf-8'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`fti-is-${active.id}-${$('family').value}${shapeName()?'-'+$('subtype').value:''}-${$('size').value.replace(/[^a-zA-Z0-9]/g,'')}-${customerLength()?$('custom-length').value:$('length').value}mm.svg`;document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});
-selectStandard();
-</script>
+                // Tactile confirmation vibration if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate(25);
+                }
+            }
+
+            const submitBtn = document.getElementById('submitQuotationBtn');
+            const toast = document.getElementById('toastNotification');
+
+            if (submitBtn && toast) {
+                submitBtn.addEventListener('click', () => {
+                    // Show confirmation toast
+                    toast.classList.remove('-translate-y-16', 'opacity-0', 'pointer-events-none');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+
+                    if (navigator.vibrate) {
+                        navigator.vibrate([40, 60, 40]);
+                    }
+
+                    setTimeout(() => {
+                        toast.classList.add('-translate-y-16', 'opacity-0', 'pointer-events-none');
+                        toast.classList.remove('translate-y-0', 'opacity-100');
+                    }, 4000);
+                });
+            }
+        </script>
+    </main>
 </body>
+
 </html>
