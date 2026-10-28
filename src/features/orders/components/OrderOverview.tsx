@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     padding: 0,
     overflow: 'hidden',
     borderRadius: 14,
-    borderColor: c.line,
+    borderColor: c.cardBorder,
     borderWidth: 1,
   },
   header: {

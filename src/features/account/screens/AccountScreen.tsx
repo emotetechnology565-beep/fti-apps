@@ -50,6 +50,11 @@ function AccountDetails() {
   }
   return (
     <View style={{ gap: 20 }}>
+      {section !== 'overview' ? (
+        <Button secondary onPress={() => router.setParams({ section: 'overview' })}>
+          Back to account overview
+        </Button>
+      ) : null}
       {section === 'overview' ? <AccountHub /> : null}
       {section === 'subscription' ? <RateSubscription /> : null}
       {section === 'profile' ? <Card style={{ gap: 12 }}>

@@ -2,7 +2,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
-import { Button, Row, Txt } from '@shared/ui';
+import { Button, Row, Txt, c } from '@shared/ui';
 import { pricingApi } from '../services/pricing-api';
 import { pricingUpdateTime } from '../model/rate-calculation';
 import type { PublishedRate } from '../model/types';
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E7F2FF',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#BACFE8',
+    borderColor: c.cardBorder,
     boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)',
   },
   materialName: {

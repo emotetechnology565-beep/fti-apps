@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useAuth } from '@features/auth/ui';
 import { Badge, Card, Icon, Txt, c } from '@shared/ui';
 
-const accountBlue = '#075299';
+const accountBlue = c.cardBorder;
 
 function AccountLink({
   icon, title, description, onPress,

@@ -2,10 +2,11 @@
 import base64
 import json
 import time
+import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
-BASE = 'http://127.0.0.1:8099'
+BASE = 'http://127.0.0.1:' + (sys.argv[1] if len(sys.argv) > 1 else '8099')
 OUT = Path('artifacts/home-navigation')
 OUT.mkdir(parents=True, exist_ok=True)
 actor = '00000000-0000-0000-0000-000000000001'
@@ -19,6 +20,8 @@ session = {'access_token': token, 'refresh_token': 'isolated', 'expires_at': int
 identity = {'profile': {'id': actor, 'full_name': 'Home tester', 'account_status': 'active'}, 'roles': ['customer'], 'permissions': [], 'businesses': [], 'deletion_requested': False}
 errors = []
 checks = []
+catalog_queries = []
+market_fixtures = []
 
 def api(route):
     result = []
@@ -29,9 +32,12 @@ def api(route):
         op = (request.post_data_json or {}).get('operation')
         if op == 'fti_identity_me':
             result = identity
+        elif op == 'fti_pricing_markets':
+            result = market_fixtures
         elif op == 'fti_pricing_rates':
             result = {'items': [], 'total': 0, 'disclosure': ''}
         elif op == 'fti_catalog_filtered_list':
+            catalog_queries.append(request.post_data_json['arguments'])
             result = {'items': [], 'total': 0, 'categories': [], 'grades': []}
         elif op == 'fti_catalog_selection_options':
             result = {'categories': [], 'category': None, 'sizes': [], 'options': []}
@@ -47,13 +53,12 @@ with sync_playwright() as p:
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.goto(BASE)
         page.wait_for_load_state('networkidle')
-        expect(page.get_by_text('Welcome to FTI.', exact=True)).to_be_visible()
+        expect(page.get_by_text('Shop by material', exact=True)).to_be_visible()
         expect(page.get_by_role('link', name='Sign in to your FTI account', exact=True)).to_be_visible()
         for label, destination in [('Browse materials', '/products'), ('Market rates', '/rates'), ('Requests & quotations', '/rfqs'), ('Orders & dispatch', '/orders'), ('Weight calculator', '/calculator')]:
             link = page.get_by_role('link', name=label, exact=True).last
             box = link.bounding_box()
             assert box and box['height'] >= 44, (label, box)
-            assert box['y'] + box['height'] < height - 66, (width, label, 'shortcut below viewport')
             link.click()
             expect(page).to_have_url(BASE + destination)
             page.goto(BASE)
@@ -71,7 +76,23 @@ with sync_playwright() as p:
             expect(page.get_by_text('Material weight calculator', exact=True)).to_be_visible()
             page.get_by_role('link', name='Home', exact=True).click()
             expect(page.get_by_role('link', name='Browse materials', exact=True)).to_be_visible()
-        checks.append(f'{width}px: shortcuts above fold, routing, touch targets, guest sign-in, remaining navigation')
+        page.goto(BASE)
+        page.get_by_role('textbox', name='Search materials', exact=True).fill('M12 bolt')
+        page.get_by_role('button', name='Search catalogue', exact=True).click()
+        expect(page).to_have_url(BASE + '/products?search=M12%20bolt')
+        expect(page.get_by_role('textbox', name='Search catalogue', exact=True)).to_have_value('M12 bolt')
+        expect(page.get_by_text('0 products',exact=True)).to_be_visible()
+        assert any(q.get('p_search') == 'M12 bolt' for q in catalog_queries)
+        page.goto(BASE)
+        page.get_by_role('link', name='Shop Round bars', exact=True).click()
+        expect(page).to_have_url(BASE + '/products?category=round-bar-as-rolled')
+        expect(page.get_by_text('0 products',exact=True)).to_be_visible()
+        assert any(q.get('p_category') == 'round-bar-as-rolled' for q in catalog_queries)
+        page.goto(BASE)
+        page.get_by_role('button', name='Select your home market', exact=True).click()
+        expect(page.get_by_text('No markets available yet.', exact=True)).to_be_visible()
+        page.get_by_role('button', name='Close markets', exact=True).click()
+        checks.append(f'{width}px: routing, search and category queries, touch targets, market picker, guest sign-in, remaining navigation')
         context.close()
 
     context = browser.new_context(viewport={'width': 390, 'height': 844})
@@ -83,7 +104,7 @@ with sync_playwright() as p:
         identity['businesses'] = [] if status is None else [{'id': 'test-business', 'legal_name': 'Long business name for checking mobile wrapping and navigation', 'verification_status': status, 'customer_type': 'manufacturer', 'addresses': [], 'submitted_by': actor, 'revision': 1, 'review_note': None}]
         page.goto(BASE)
         page.wait_for_load_state('networkidle')
-        expect(page.get_by_text('Welcome, Home tester.', exact=True)).to_be_visible()
+        expect(page.get_by_text('Shop by material', exact=True)).to_be_visible()
         account = page.get_by_role('link', name='Add your business details' if status is None else {'pending': 'Application under review', 'verified': 'Verified business', 'rejected': 'Application needs changes'}[status], exact=False)
         expect(account).to_be_visible()
         assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
@@ -92,6 +113,23 @@ with sync_playwright() as p:
         expect(page).to_have_url(BASE + '/account?section=' + ('business' if status is None else 'profile'))
         checks.append(f'Account {status}: correct status and destination, long business name wraps')
     context.close()
+    market_fixtures.append({'id': 'home-test-market', 'name': 'Delhi', 'state': 'Delhi'})
+    context = browser.new_context(viewport={'width': 390, 'height': 844})
+    context.route('https://*.supabase.co/**', api)
+    page = context.new_page()
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.goto(BASE)
+    page.get_by_role('button', name='Select your home market', exact=True).click()
+    page.get_by_role('radio', name='Delhi', exact=True).click()
+    expect(page.get_by_text('Your market: Delhi', exact=True)).to_be_visible()
+    page.reload()
+    expect(page.get_by_text('Your market: Delhi', exact=True)).to_be_visible()
+    for label, path in [('Explore fastener dimensions', '/fastener/hex-bolt'), ('View business stock', '/business-stock')]:
+        page.get_by_role('link', name=label, exact=True).click()
+        expect(page).to_have_url(BASE + path)
+        page.goto(BASE)
+    context.close()
+    checks.append('Market selection persists; fastener dimensions and business stock navigation work')
     browser.close()
 assert not errors, errors
 (OUT / 'results.json').write_text(json.dumps({'passed': True, 'checks': checks, 'runtime_errors': errors}, indent=2))

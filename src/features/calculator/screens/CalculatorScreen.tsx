@@ -72,7 +72,7 @@ export function Calculator() {
           <Card
             style={{
               backgroundColor: c.dark,
-              borderColor: c.dark,
+              borderColor: c.cardBorder,
               padding: 30,
             }}
           >

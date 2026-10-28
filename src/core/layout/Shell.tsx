@@ -467,14 +467,14 @@ export function Shell({ children }: { children: ReactNode }) {
             ref={contentScroll}
             key={staffWorkspace ? `${path}-${adminSection ?? ''}` : path}
             contentContainerStyle={{
-              padding: phone ? 18 : 32,
+              padding: path === '/' && phone ? 0 : phone ? 18 : 32,
               paddingBottom: phone ? 100 : 32,
             }}
           >
             <View
               style={{ maxWidth: 1250, width: '100%', alignSelf: 'center' }}
             >
-              <View
+              {path !== '/' ? <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -495,7 +495,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 >
                   Business services awaiting connection
                 </Txt>
-              </View>
+              </View> : null}
               <StaffOrderAlert />
               {children}
               <View

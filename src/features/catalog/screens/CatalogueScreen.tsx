@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { TextInput, View } from 'react-native';
 import { StockSourceDropdown } from '@features/business-stock/ui';
 import { useStore } from '@core/state/workspace-store';
@@ -7,11 +8,35 @@ import { ProductCard } from '../components/ProductCard';
 import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
 import type { CatalogQuery } from '../data/catalog-repository';
-import { FastenerDimensions } from '@features/drawings/ui';
+import {
+  FastenerCatalogueCards,
+  FastenerDimensions,
+} from '@features/drawings/ui';
+import { productCardWidth } from '@shared/theme/product-card';
 
 const PRODUCTS_PER_PAGE = 8;
 
 export function Catalogue() {
+  const params = useLocalSearchParams<{ search?: string; category?: string }>();
+  const search = typeof params.search === 'string' ? params.search.trim() : '';
+  const category = typeof params.category === 'string' ? params.category : '';
+  if (search || category)
+    return (
+      <View style={{ gap: 18 }}>
+        <Button secondary onPress={() => router.replace('/products')}>
+          Browse all materials
+        </Button>
+        <Txt accessibilityRole="header" style={s.h2}>
+          {search ? `Search results for “${search}”` : 'Material catalogue'}
+        </Txt>
+        <ProductsCatalogue
+          key={`${category}:${search}`}
+          kind={category ? 'steel' : 'all'}
+          filters={category ? { category } : {}}
+          initialSearch={search}
+        />
+      </View>
+    );
   return (
     <View>
       <StockSourceDropdown source="fti" />
@@ -46,19 +71,18 @@ export function Catalogue() {
 function ProductsCatalogue({
   kind,
   filters = {},
+  initialSearch = '',
 }: {
   kind: 'all' | 'steel' | 'fastener' | 'tractor_part';
   filters?: Pick<CatalogQuery, 'category' | 'ids'>;
+  initialSearch?: string;
 }) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(initialSearch);
   const [savedOnly, setSavedOnly] = useState(false);
   const [page, setPage] = useState(0);
   const [gridWidth, setGridWidth] = useState(0);
   const savedIds = useStore((state) => state.saved);
-  const columns =
-    gridWidth >= 720 ? Math.max(3, Math.floor((gridWidth + 12) / 252)) : 2;
-  const cardWidth =
-    gridWidth > 0 ? (gridWidth - 12 * (columns - 1)) / columns : undefined;
+  const cardWidth = productCardWidth(gridWidth);
   const ids = savedOnly
     ? savedIds.filter((id) => !filters.ids || filters.ids.includes(id))
     : filters.ids;
@@ -126,6 +150,9 @@ function ProductsCatalogue({
           </Chip>
         </Row>
       ) : null}
+      {kind === 'all' && !savedOnly && page === 0 ? (
+        <FastenerCatalogueCards search={search.trim()} />
+      ) : null}
       {query.isPending ? (
         <Card>
           <Txt style={s.muted}>Loading catalogue…</Txt>
@@ -156,7 +183,11 @@ function ProductsCatalogue({
             </View>
           ) : (
             <Empty
-              title="No products available"
+              title={
+                kind === 'all'
+                  ? 'No matching raw materials or tractor parts'
+                  : 'No products available'
+              }
               description={
                 search || savedOnly
                   ? 'Try another search or clear your filters.'

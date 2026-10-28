@@ -6,7 +6,7 @@ export const s = StyleSheet.create({
   card: {
     backgroundColor: c.paper,
     borderWidth: 1,
-    borderColor: c.line,
+    borderColor: c.cardBorder,
     borderRadius: 12,
     padding: 20,
   },

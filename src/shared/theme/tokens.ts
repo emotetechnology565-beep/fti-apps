@@ -4,6 +4,7 @@ export const c = {
   ink: '#17283B',
   muted: '#718095',
   line: '#E5EAF0',
+  cardBorder: '#075299',
   red: '#B51624',
   pink: '#FFF0F0',
   blue: '#EAF0FC',

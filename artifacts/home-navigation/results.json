@@ -1,14 +1,15 @@
 {
   "passed": true,
   "checks": [
-    "320px: shortcuts above fold, routing, touch targets, guest sign-in, remaining navigation",
-    "390px: shortcuts above fold, routing, touch targets, guest sign-in, remaining navigation",
-    "768px: shortcuts above fold, routing, touch targets, guest sign-in, remaining navigation",
-    "1440px: shortcuts above fold, routing, touch targets, guest sign-in, remaining navigation",
+    "320px: routing, search and category queries, touch targets, market picker, guest sign-in, remaining navigation",
+    "390px: routing, search and category queries, touch targets, market picker, guest sign-in, remaining navigation",
+    "768px: routing, search and category queries, touch targets, market picker, guest sign-in, remaining navigation",
+    "1440px: routing, search and category queries, touch targets, market picker, guest sign-in, remaining navigation",
     "Account None: correct status and destination, long business name wraps",
     "Account pending: correct status and destination, long business name wraps",
     "Account verified: correct status and destination, long business name wraps",
-    "Account rejected: correct status and destination, long business name wraps"
+    "Account rejected: correct status and destination, long business name wraps",
+    "Market selection persists; fastener dimensions and business stock navigation work"
   ],
   "runtime_errors": []
 }

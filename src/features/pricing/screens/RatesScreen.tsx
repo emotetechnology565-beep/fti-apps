@@ -61,7 +61,7 @@ function RateCard({
       style={{
         gap: 14,
         padding: 16,
-        borderWidth: 0,
+        borderWidth: 1,
         borderRadius: 12,
         overflow: 'hidden',
         backgroundColor: '#E7F2FF',

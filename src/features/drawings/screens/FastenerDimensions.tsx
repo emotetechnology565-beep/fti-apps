@@ -126,6 +126,7 @@ export function FastenerDimensions({
           placeholder="Search by name, e.g. L type bolt or U type"
         />
         <FastenerPhotoCards
+          drawings={all}
           selected=""
           search={search}
           onSelect={openFastener}
@@ -172,6 +173,7 @@ export function FastenerDimensions({
           />
         ) : null}
         <FastenerPhotoCards
+          drawings={all}
           selected={selectedType}
           onlySelected={!!subcategory}
           search={search}
