@@ -8,14 +8,14 @@ import {
   View,
 } from 'react-native';
 import { Image, type ImageProps } from 'expo-image';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Announcements } from '@features/operations/ui';
 import { useAuth } from '@features/auth/ui';
 import { MaterialPriceBanner } from '@features/pricing/ui';
 import { pricingApi } from '@features/pricing/export';
 import { drawingApi } from '@features/drawings/export';
-import { loadCategoryImages } from '../data/category-images';
+import { loadHomeCatalogue } from '../data/category-images';
 import materialImageFallbacks from '../data/material-image-fallbacks.json';
 import { useStore } from '@core/state/workspace-store';
 import { Button, Card, Txt, Icon, c } from '@shared/ui';
@@ -107,10 +107,96 @@ function ProductPhoto({
   );
 }
 
+type CategoryTile = {
+  id: string;
+  title: string;
+  imageUrl?: string;
+  href: Href;
+  contentFit?: ImageProps['contentFit'];
+};
+
+function CategoryRow({
+  title,
+  href,
+  items,
+  loading,
+  error,
+  retry,
+}: {
+  title: string;
+  href: Href;
+  items: CategoryTile[];
+  loading?: boolean;
+  error?: boolean;
+  retry?: () => void;
+}) {
+  return (
+    <View>
+      <View style={styles.categoryRowHeader}>
+        <Txt accessibilityRole="header" style={styles.categoryRowTitle}>
+          {title}
+        </Txt>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={`View all ${title.toLowerCase()}`}
+          onPress={() => router.push(href)}
+          style={styles.seeAll}
+        >
+          <Txt style={styles.seeAllText}>View all</Txt>
+          <Icon name="arrow-right" size={15} color={c.red} />
+        </Pressable>
+      </View>
+      {items.length ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categories}
+        >
+          {items.map((item) => (
+            <Pressable
+              key={item.id}
+              accessibilityRole="link"
+              accessibilityLabel={`Shop ${item.title}`}
+              onPress={() => router.push(item.href)}
+              style={({ pressed }) => [
+                styles.category,
+                pressed && styles.pressed,
+              ]}
+            >
+              <ProductPhoto
+                uri={item.imageUrl}
+                label={`${item.title} product photo`}
+                contentFit={item.contentFit}
+                style={styles.categoryImage}
+              />
+              <Txt style={styles.categoryTitle}>{item.title}</Txt>
+            </Pressable>
+          ))}
+        </ScrollView>
+      ) : (
+        <View style={styles.categoryStatus}>
+          <Txt style={styles.description}>
+            {loading
+              ? `Loading ${title.toLowerCase()}…`
+              : error
+                ? `Could not load ${title.toLowerCase()}.`
+                : `No ${title.toLowerCase()} available yet.`}
+          </Txt>
+          {error && retry ? (
+            <Button secondary onPress={retry}>
+              Retry {title.toLowerCase()}
+            </Button>
+          ) : null}
+        </View>
+      )}
+    </View>
+  );
+}
+
 export function Home() {
   const photos = useQuery({
-    queryKey: ['catalog', 'home', 'images'],
-    queryFn: () => loadCategoryImages(),
+    queryKey: ['catalog', 'home', 'categories'],
+    queryFn: () => loadHomeCatalogue(),
     staleTime: 30000,
   });
   const fastenerPhotos = useQuery({
@@ -124,8 +210,8 @@ export function Home() {
       (photo) => photo.slug === 'hex-bolt' && photo.image_url,
     )?.image_url ??
     fastenerPhotos.data?.find((photo) => photo.image_url)?.image_url ??
-    photos.data?.fastener;
-  const tractorPartsImage = photos.data?.tractor_part;
+    photos.data?.images.fastener;
+  const tractorPartsImage = photos.data?.images.tractor_part;
   const { identity, session, ready, loading, error } = useAuth();
   const [search, setSearch] = useState('');
   const [marketOpen, setMarketOpen] = useState(false);
@@ -239,68 +325,43 @@ export function Home() {
           <Icon name="arrow-right" size={15} color={c.red} />
         </Pressable>
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categories}
-      >
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Shop fasteners"
-          onPress={() => router.push('/products?kind=fastener')}
-          style={({ pressed }) => [styles.category, pressed && styles.pressed]}
-        >
-          <ProductPhoto
-            uri={fastenerImage ?? undefined}
-            label="Fasteners product photo"
-            contentFit="contain"
-            style={styles.categoryImage}
-          />
-          <Txt style={styles.categoryTitle}>Fasteners</Txt>
-        </Pressable>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel="Shop tractor parts"
-          onPress={() => router.push('/products?kind=tractor_part')}
-          style={({ pressed }) => [styles.category, pressed && styles.pressed]}
-        >
-          <ProductPhoto
-            uri={tractorPartsImage}
-            label="Tractor parts product photo"
-            contentFit="contain"
-            style={styles.categoryImage}
-          />
-          <Txt style={styles.categoryTitle}>Tractor parts</Txt>
-        </Pressable>
-        {categories.map((item) => (
-          <Pressable
-            key={item.category}
-            accessibilityRole="link"
-            accessibilityLabel={'Shop ' + item.title}
-            onPress={() =>
-              router.push({
-                pathname: '/products',
-                params: { category: item.category },
-              })
-            }
-            style={({ pressed }) => [
-              styles.category,
-              pressed && styles.pressed,
-            ]}
-          >
-            <ProductPhoto
-              uri={
-                photos.data?.[item.category] ??
-                materialImageFallbacks[item.category]
-              }
-              label={`${item.title} product photo`}
-              contentFit="cover"
-              style={styles.categoryImage}
-            />
-            <Txt style={styles.categoryTitle}>{item.title}</Txt>
-          </Pressable>
-        ))}
-      </ScrollView>
+      <CategoryRow
+        title="Raw materials"
+        href="/products"
+        items={categories.map((item) => ({
+          id: item.category,
+          title: item.title,
+          imageUrl:
+            photos.data?.images[item.category] ??
+            materialImageFallbacks[item.category],
+          href: { pathname: '/products', params: { category: item.category } },
+          contentFit: 'cover',
+        }))}
+      />
+      <CategoryRow
+        title="Fasteners"
+        href="/products?kind=fastener"
+        loading={fastenerPhotos.isPending}
+        error={fastenerPhotos.isError}
+        retry={() => void fastenerPhotos.refetch()}
+        items={(fastenerPhotos.data ?? []).map((item) => ({
+          id: item.slug,
+          title: item.label,
+          imageUrl: item.image_url ?? undefined,
+          href: { pathname: '/fastener/[slug]', params: { slug: item.slug } },
+        }))}
+      />
+      <CategoryRow
+        title="Tractor parts"
+        href="/products?kind=tractor_part"
+        loading={photos.isPending}
+        error={photos.isError}
+        retry={() => void photos.refetch()}
+        items={(photos.data?.tractorParts ?? []).map((item) => ({
+          ...item,
+          href: { pathname: '/product/[id]', params: { id: item.id } },
+        }))}
+      />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -320,7 +381,7 @@ export function Home() {
         >
           <ProductPhoto
             uri={
-              photos.data?.['round-bar-as-rolled'] ??
+              photos.data?.images['round-bar-as-rolled'] ??
               materialImageFallbacks['round-bar-as-rolled']
             }
             label="Raw materials product photo"
@@ -596,7 +657,16 @@ const styles = StyleSheet.create({
     paddingBottom: 22,
     gap: 16,
   },
-  category: { width: 75, gap: 9, alignItems: 'center' },
+  categoryRowHeader: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  categoryRowTitle: { fontSize: 15, fontWeight: '700', color: c.ink },
+  categoryStatus: { paddingHorizontal: 16, paddingBottom: 18, gap: 8 },
+  category: { width: 92, gap: 9, alignItems: 'center' },
   categoryImage: {
     width: 68,
     height: 68,
@@ -604,7 +674,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: c.cardBorder,
   },
-  categoryTitle: { fontSize: 11, fontWeight: '600', textAlign: 'center' },
+  categoryTitle: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   photoPlaceholder: {
     backgroundColor: '#F1F4F8',
     alignItems: 'center',

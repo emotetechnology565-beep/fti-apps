@@ -47,21 +47,34 @@ export function collectCategoryImages(
 
 // The published catalogue/media API resolves admin-maintained Bunny image URLs.
 // Continue past the first page so tractor parts cannot be hidden by steel stock.
-export async function loadCategoryImages(
+export async function loadHomeCatalogue(
   repository = supabaseCatalogRepository,
 ) {
   const images: HomeCategoryImages = {};
+  const tractorParts = new Map<
+    string,
+    { id: string; title: string; imageUrl?: string }
+  >();
   let offset = 0;
   while (true) {
     const page = await repository.listProducts({ limit: 50, offset });
     collectCategoryImages(images, page.items);
+    for (const product of page.items) {
+      if (
+        product.status === 'published' &&
+        product.product_kind === 'tractor_part'
+      ) {
+        tractorParts.set(product.id, {
+          id: product.id,
+          title: product.name,
+          imageUrl: product.images.find((image) =>
+            /^https:\/\//i.test(image.url),
+          )?.url,
+        });
+      }
+    }
     offset += page.items.length;
-    if (
-      !page.items.length ||
-      offset >= page.total ||
-      Object.keys(images).length === 8
-    )
-      break;
+    if (!page.items.length || offset >= page.total) break;
   }
-  return images;
+  return { images, tractorParts: [...tractorParts.values()] };
 }

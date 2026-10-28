@@ -2,8 +2,12 @@
 
 The home screen reads published products and public media through the catalogue
 repository. It checks subsequent pages when needed and selects the first product
-photo in each category. Fasteners prefer the published photo assignments from
-the existing admin fastener photo library, sharing its query cache.
+photo in each raw-material category. “Shop by category” has separate horizontal
+rows for raw materials, fastener subcategories and tractor parts. Each fastener
+subcategory comes from the published admin photo library and links to its own
+dimensions screen. Every published tractor part has its own tile linking to
+that product. All catalogue pages are read so later tractor parts are included.
+The promotional banners keep using a representative photo for each division.
 
 Admins can replace product photos in Catalogue → Photos, and fastener assignments
 in the fastener photo manager. These actions invalidate the same query keys used
