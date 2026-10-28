@@ -345,11 +345,22 @@ function SelectionForm({
           grade: gradeInput,
           unit,
           minimum: Number(option?.min_order_qty ?? 0.001),
+          ...(price
+            ? {
+                indicativePrice: {
+                  amount: Number(price.amount.replaceAll(',', '')),
+                  unit: price.unit,
+                  tax: price.tax,
+                },
+              }
+            : {}),
           optionId: manualRequest ? undefined : option?.id,
           manualRequest,
         },
       );
-    setCartNotice('Added to cart. Choose another size or proceed from your cart.');
+    setCartNotice(
+      'Added to cart. Choose another size or proceed from your cart.',
+    );
     setDraft({ ...draft, review: false });
   }
 

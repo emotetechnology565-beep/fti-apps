@@ -7,6 +7,7 @@ export type MaterialCartSelection = {
   grade: string;
   unit: string;
   minimum: number;
+  indicativePrice?: { amount: number; unit: string; tax: string };
   fastenerRequest?: {
     definition: string;
     revision: number;
