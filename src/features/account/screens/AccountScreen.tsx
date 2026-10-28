@@ -1,5 +1,6 @@
 import { BusinessForm } from '../components/BusinessForm';
 import { BusinessDetails } from '../components/BusinessDetails';
+import { AccountHub, RateSubscription } from '../components/AccountHub';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -49,6 +50,8 @@ function AccountDetails() {
   }
   return (
     <View style={{ gap: 20 }}>
+      {section === 'overview' ? <AccountHub /> : null}
+      {section === 'subscription' ? <RateSubscription /> : null}
       {section === 'profile' ? <Card style={{ gap: 12 }}>
         <Txt style={s.h2}>Personal profile</Txt>
         <Txt>Verified phone: {identity.profile.phone}</Txt>
@@ -103,7 +106,7 @@ function AccountDetails() {
         )}
       />
       </View>
-      {section === 'settings' ? <><Notifications/><Card style={{ gap: 12 }}>
+      {section === 'settings' ? <><AccountHub settings /><Notifications/><Card style={{ gap: 12 }}>
         <Txt style={s.h2}>Account settings</Txt>
         <Button secondary disabled={busy} onPress={() => void auth.signOut().catch((e) => setMessage(e.message))}>Sign out on this device</Button>
         <Txt>Account deletion</Txt>
@@ -146,7 +149,7 @@ export function Account() {
       <Heading
         eyebrow="YOUR FTI ACCOUNT"
         title="Your account"
-        description="Choose an account section from the navigation menu. Complete your profile, business details and addresses, then review your application."
+        description="Your profile, orders, business details and rate subscription in one place."
       />
       <AccessGate>
         <AccountDetails />
