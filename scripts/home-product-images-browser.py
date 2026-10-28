@@ -88,9 +88,10 @@ with sync_playwright() as p:
         if '--live' in sys.argv:
             assert links.count() > 12, 'Expected multiple actual product tiles in each division'
             for tile in links.all():
+                tile.scroll_into_view_if_needed()
                 image = tile.get_by_role('img')
                 expect(image).to_have_attribute('src', re.compile(r'^https://'))
-                expect(image).to_have_js_property('complete', True)
+                expect(image).to_have_js_property('complete', True, timeout=15000)
                 assert image.evaluate('(img) => img.naturalWidth > 0')
         else:
             expect(links).to_have_count(12)
@@ -108,7 +109,7 @@ with sync_playwright() as p:
         if '--live' not in sys.argv:
             page.get_by_role('link', name='Shop Stub Axle', exact=True).click()
             expect(page).to_have_url(BASE + '/product/' + products[-1]['id'])
-            expect(page.get_by_text('Stub Axle', exact=True)).to_be_visible()
+            expect(page.get_by_role('heading', name='Stub Axle', exact=True)).to_be_visible()
             for slug, label in fasteners:
                 page.goto(BASE, wait_until='networkidle')
                 page.get_by_role('link', name='Shop ' + label, exact=True).click()
