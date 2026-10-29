@@ -25,3 +25,11 @@ export async function saveGradeRate(row: GradeRate, bolt: number, nut: number) {
   });
   if (error) throw new Error(error.message);
 }
+
+
+export async function loadPublicGrades(): Promise<{ grade: string }[]> {
+  if (!supabase) throw new Error('Grades are unavailable.');
+  const { data, error } = await supabase.rpc('fti_fastener_grades');
+  if (error) throw new Error('Grades are unavailable. Please try again later.');
+  return ((data ?? []) as string[]).map(grade => ({ grade }));
+}

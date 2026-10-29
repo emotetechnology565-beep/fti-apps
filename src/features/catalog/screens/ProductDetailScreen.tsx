@@ -1,3 +1,5 @@
+import { redactPublicPrices } from '@shared/lib/price-access';
+import { isTmtCategory } from '../model/tmt';
 import { useProduct } from '../hooks/use-products';
 import {
   Badge,
@@ -58,9 +60,21 @@ export function ProductDetail({ id }: { id: string }) {
           borderRadius: 0,
         }}
       >
-        <MaterialSpecificationHeader product={p} />
+        <MaterialSpecificationHeader
+          product={
+            isTmtCategory(p.category)
+              ? {
+                  ...p,
+                  name: 'TMT Bar',
+                  description:
+                    'Choose size and brand. Add a grade if required.',
+                }
+              : p
+          }
+        />
         <MaterialSelection
           productId={p.id}
+          tmtCategory={isTmtCategory(p.category) ? p.category : undefined}
           initialSize={typeof params.size === 'string' ? params.size : ''}
           initialGrade={typeof params.grade === 'string' ? params.grade : ''}
         />
@@ -143,7 +157,7 @@ export function ProductDetail({ id }: { id: string }) {
               ...(variant.length_mm
                 ? [['Length', `${variant.length_mm} mm`]]
                 : []),
-              ...Object.entries(variant.attributes)
+              ...Object.entries(redactPublicPrices(variant.attributes))
                 .filter(
                   ([key]) =>
                     !key.startsWith('grade_list_') &&

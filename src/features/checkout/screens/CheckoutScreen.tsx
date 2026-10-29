@@ -166,7 +166,10 @@ export function Checkout() {
             id,
             item.optionId,
             String(line.quantity),
-            details,
+            {
+              ...details,
+              ...(item.brand ? { requested_grade: item.grade } : {}),
+            },
           );
         else
           throw new Error(

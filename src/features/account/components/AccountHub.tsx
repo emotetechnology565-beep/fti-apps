@@ -1,8 +1,9 @@
+import { SubscriptionCard } from '@features/subscriptions/SubscriptionCard';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@features/auth/ui';
-import { Badge, Card, Icon, Txt, c } from '@shared/ui';
+import { Card, Icon, Txt, c } from '@shared/ui';
 
 const accountBlue = c.cardBorder;
 
@@ -32,32 +33,7 @@ function AccountLink({
   );
 }
 
-export function RateSubscription() {
-  return (
-    <Card style={styles.subscription}>
-      <View style={styles.subscriptionHeader}>
-        <View style={styles.subscriptionIcon}><Icon name="bar-chart-2" size={24} color={c.red} /></View>
-        <Badge tone="red">COMING SOON</Badge>
-      </View>
-      <Txt accessibilityRole="header" style={styles.subscriptionTitle}>Rate subscription</Txt>
-      <Txt style={styles.description}>
-        Subscription plans for checking market rates are coming to FTI.
-      </Txt>
-      <View style={styles.subscriptionNote}>
-        <Txt style={styles.noteTitle}>Plans and pricing will be announced here.</Txt>
-        <Txt style={styles.description}>
-          Subscriptions are not available to purchase yet. You can continue using the current market rates page.
-        </Txt>
-      </View>
-      <AccountLink
-        icon="trending-up"
-        title="View current market rates"
-        description="Browse published rates and price history"
-        onPress={() => router.push('/rates')}
-      />
-    </Card>
-  );
-}
+export function RateSubscription() { return <SubscriptionCard />; }
 
 export function AccountHub({ settings = false }: { settings?: boolean }) {
   const { identity } = useAuth();

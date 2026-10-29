@@ -43,6 +43,15 @@ function readDraft(
         return null;
       draft[key] = value.draft[key];
     }
+    if (value.draft.requestedGrade !== undefined) {
+      if (
+        typeof value.draft.requestedGrade !== 'string' ||
+        value.draft.requestedGrade.length > 80 ||
+        /[\r\n\x00-\x1f]/.test(value.draft.requestedGrade)
+      )
+        return null;
+      draft.requestedGrade = value.draft.requestedGrade;
+    }
     draft.review = value.draft.review === true;
     if (value.draft.manual !== undefined) {
       const manual = value.draft.manual;
@@ -87,6 +96,7 @@ export function createSelectionDraftStorage(
         category: draft.category,
         sizeId: draft.sizeId,
         grade: draft.grade,
+        requestedGrade: draft.requestedGrade,
         optionId: draft.optionId,
         quantity: draft.quantity,
         review: draft.review,
@@ -98,7 +108,9 @@ export function createSelectionDraftStorage(
                 size: draft.manual.size,
                 grade: draft.manual.grade,
                 uom: draft.manual.uom,
-                ...(draft.manual.gradeEntry === true ? { gradeEntry: true } : {}),
+                ...(draft.manual.gradeEntry === true
+                  ? { gradeEntry: true }
+                  : {}),
               },
             }
           : {}),

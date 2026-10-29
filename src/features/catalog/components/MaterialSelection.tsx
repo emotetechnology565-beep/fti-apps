@@ -1,3 +1,5 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { isTmtCategory, tmtCartKey } from '../model/tmt';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { Link, router } from 'expo-router';
@@ -44,6 +46,7 @@ const newId = () =>
   });
 type Props = {
   productId?: string;
+  tmtCategory?: string;
   initialSize?: string;
   initialGrade?: string;
   renderAdapter?: (kind: 'fastener' | 'tractor_part') => ReactNode;
@@ -66,11 +69,13 @@ export function MaterialSelection(props: Props) {
 
 function SelectionForm({
   productId,
+  tmtCategory,
   initialSize = '',
   initialGrade = '',
   renderAdapter,
   renderMaterials,
 }: Props) {
+  const priceAccess = usePriceAccess();
   const SpecificationFilter = productId ? MaterialSpecFilter : CatalogFilter;
   const auth = useAuth();
   const owner = auth.session?.user.id ?? null;
@@ -96,18 +101,20 @@ function SelectionForm({
     draft?.category === 'fastener' || draft?.category === 'tractor_part'
       ? draft.category
       : null;
+  const tmt = !!tmtCategory || isTmtCategory(draft?.category ?? '');
+  const selectionProductId = tmt ? undefined : productId;
   const query = useMaterialSelectionOptions(
     adapter || draft?.category === '__manual__' ? undefined : draft?.category,
     adapter || draft?.sizeId === '__manual__' ? undefined : draft?.sizeId,
-    productId,
+    selectionProductId,
   );
   const data = query.data;
   const listedOption =
     draft && data ? selectedOption(draft, data.options) : undefined;
   const size = data?.sizes.find((item) => item.id === draft?.sizeId);
-  const manualSize = draft?.sizeId === '__manual__';
+  const manualSize = !tmt && draft?.sizeId === '__manual__';
   const manualMaterial = draft?.category === '__manual__';
-  const manualGrade = draft?.manual?.gradeEntry === true;
+  const manualGrade = !tmt && draft?.manual?.gradeEntry === true;
   const manualActive = manualSize || manualGrade || manualMaterial;
   const materialInput = manualMaterial
     ? (draft?.manual?.material ?? '')
@@ -207,6 +214,12 @@ function SelectionForm({
             productId,
           };
         }
+        if (tmtCategory)
+          restored = {
+            ...restored,
+            manual: undefined,
+            sizeId: restored.sizeId === '__manual__' ? '' : restored.sizeId,
+          };
         if (active)
           setDraft(productId ? { ...restored, review: false } : restored);
       })
@@ -221,7 +234,7 @@ function SelectionForm({
     return () => {
       active = false;
     };
-  }, [owner, productId, initialSize, initialGrade]);
+  }, [owner, productId, initialSize, initialGrade, tmtCategory]);
 
   useEffect(() => {
     if (draft && !reference)
@@ -287,8 +300,11 @@ function SelectionForm({
       manual: { ...manualFields, gradeEntry: value === '__manual__' },
     });
   };
-  const price = option ? selectionPrice(option) : null;
-  const estimate = manualActive ? manualEstimate(match, draft.quantity) : null;
+  const price = priceAccess && option ? selectionPrice(option) : null;
+  const estimate =
+    priceAccess && manualActive
+      ? manualEstimate(match, draft.quantity)
+      : null;
   const errorQuantity = manualActive
     ? manualQuantityError(draft.quantity, match)
     : quantityError(draft.quantity, option);
@@ -307,7 +323,13 @@ function SelectionForm({
       sizeInput.length <= 80 &&
       (manualGrade || gradeOptions.includes(gradeInput)) &&
       !errorQuantity
-    : !!option && !!size && !errorQuantity && !query.isFetching;
+    : !!option &&
+      !!size &&
+      !errorQuantity &&
+      !query.isFetching &&
+      (!tmt ||
+        ((draft.requestedGrade?.length ?? 0) <= 80 &&
+          !/[\x00-\x1f\x7f]/.test(draft.requestedGrade ?? '')));
 
   function addToCart() {
     if (!valid || !draft) return;
@@ -332,17 +354,20 @@ function SelectionForm({
           unit,
           manualGrade,
         ])
-      : option!.id;
+      : tmt
+        ? tmtCartKey(option!.id, draft.requestedGrade ?? '')
+        : option!.id;
     useStore
       .getState()
       .addMaterial(
-        productId ?? option?.product_id ?? '',
+        option?.product_id ?? productId ?? '',
         Number(draft.quantity),
         {
           key,
           name: option?.product_name ?? materialInput,
           size: sizeInput,
-          grade: gradeInput,
+          grade: tmt ? (draft.requestedGrade ?? '').trim() : gradeInput,
+          ...(tmt ? { brand: gradeInput } : {}),
           unit,
           minimum: Number(option?.min_order_qty ?? 0.001),
           ...(price
@@ -367,7 +392,12 @@ function SelectionForm({
   async function review() {
     if (!draft) return;
     if (!valid) {
-      setMessage(errorQuantity ?? 'Choose or enter size and grade.');
+      setMessage(
+        errorQuantity ??
+          (tmt
+            ? 'Choose a size and brand.'
+            : 'Choose or enter size and grade.'),
+      );
       return;
     }
     if (manualActive && match) setReviewedMatch(match);
@@ -376,7 +406,7 @@ function SelectionForm({
       : {
           ...draft,
           optionId: option!.id,
-          productId: option!.product_id,
+          productId: productId ?? option!.product_id,
           review: true,
         };
     setDraft(next);
@@ -411,7 +441,7 @@ function SelectionForm({
         (!manualActive && !option)
       ) {
         setMessage(
-          'This selection is no longer available. Choose a size and grade again.',
+          `This selection is no longer available. Choose a size and ${tmt ? 'brand' : 'grade'} again.`,
         );
         return;
       }
@@ -453,6 +483,9 @@ function SelectionForm({
           business: business.trim(),
           location: location.trim(),
           whatsapp_consent: consent,
+          ...(tmt
+            ? { requested_grade: (draft.requestedGrade ?? '').trim() }
+            : {}),
         },
       };
       setAttempt(request);
@@ -556,7 +589,9 @@ function SelectionForm({
       ) : (
         <>
           {query.isPending ? (
-            <Txt style={s.muted}>Loading available sizes and grades…</Txt>
+            <Txt style={s.muted}>
+              Loading available sizes and {tmt ? 'brands' : 'grades'}…
+            </Txt>
           ) : null}
           {query.error ? (
             <Card style={{ gap: 10 }}>
@@ -625,7 +660,11 @@ function SelectionForm({
                 {productId ? (
                   <MaterialSectionTitle
                     number={1}
-                    title="Grade & Mill Specifications"
+                    title={
+                      tmt
+                        ? 'Brand & Mill Specifications'
+                        : 'Grade & Mill Specifications'
+                    }
                   />
                 ) : null}
                 {manualMaterial ? (
@@ -639,8 +678,9 @@ function SelectionForm({
                 ) : null}
                 {!data?.sizes.length && !manualMaterial ? (
                   <Txt style={s.muted}>
-                    No sizes currently available in this category. Enter a size
-                    to request a quote.
+                    {tmt
+                      ? 'No sizes currently available for TMT bars.'
+                      : 'No sizes currently available in this category. Enter a size to request a quote.'}
                   </Txt>
                 ) : null}
                 <Row
@@ -656,7 +696,14 @@ function SelectionForm({
                       value={draft.sizeId}
                       options={[
                         { value: '', label: 'Choose size' },
-                        { value: '__manual__', label: 'Enter size manually' },
+                        ...(!tmt
+                          ? [
+                              {
+                                value: '__manual__',
+                                label: 'Enter size manually',
+                              },
+                            ]
+                          : []),
                         ...(data?.sizes ?? []).map((item) => ({
                           value: item.id,
                           label: item.label,
@@ -677,11 +724,21 @@ function SelectionForm({
                   </View>
                   <View style={{ flex: 1, minWidth: 180, gap: 16 }}>
                     <SpecificationFilter
-                      label="Grade"
+                      label={tmt ? 'Brand' : 'Grade'}
                       value={manualGrade ? '__manual__' : draft.grade}
                       options={[
-                        { value: '', label: 'Choose grade' },
-                        { value: '__manual__', label: 'Enter grade manually' },
+                        {
+                          value: '',
+                          label: tmt ? 'Choose brand' : 'Choose grade',
+                        },
+                        ...(!tmt
+                          ? [
+                              {
+                                value: '__manual__',
+                                label: 'Enter grade manually',
+                              },
+                            ]
+                          : []),
                         ...gradeOptions.map((value) => ({
                           value,
                           label: value,
@@ -703,6 +760,25 @@ function SelectionForm({
                     ) : null}
                   </View>
                 </Row>
+                {tmt ? (
+                  <Field
+                    label="Grade (optional)"
+                    value={draft.requestedGrade ?? ''}
+                    editable={!locked}
+                    placeholder="Enter required grade, e.g. Fe 500D"
+                    onChangeText={(value) => {
+                      setMessage('');
+                      setCartNotice('');
+                      setDraft({
+                        ...draft,
+                        requestedGrade: value
+                          .replace(/[\x00-\x1f\x7f]/g, '')
+                          .slice(0, 80),
+                        review: false,
+                      });
+                    }}
+                  />
+                ) : null}
                 {manualActive && (!currentInput || manualPreview.isFetching) ? (
                   <Txt style={s.muted}>Calculating price...</Txt>
                 ) : null}
@@ -870,7 +946,7 @@ function SelectionForm({
                           fontWeight: '600',
                         }}
                       >
-                        Commercial Price Matrix
+                        Quotation
                       </Txt>
                     ) : null}
                     <Txt style={{ fontWeight: '700' }}>
@@ -879,7 +955,7 @@ function SelectionForm({
                     <Txt style={s.h2}>
                       {price
                         ? `INR ${price.amount} / ${price.unit}`
-                        : 'Request quote'}
+                        : 'Request quotation'}
                     </Txt>
                     {estimate?.total ? (
                       <Txt style={{ fontWeight: '700' }}>
@@ -889,7 +965,7 @@ function SelectionForm({
                     <Txt style={s.muted}>
                       {price
                         ? price.tax
-                        : 'FTI will confirm the price for your selected size and grade.'}
+                        : `FTI will confirm the price for your selected size and ${tmt ? 'brand' : 'grade'}.`}
                     </Txt>
                   </View>
                 ) : null}
@@ -925,7 +1001,7 @@ function SelectionForm({
                             minHeight: 48,
                           }}
                         >
-                          Get RFQ
+                          Request quotation
                         </Button>
                         <Button
                           icon="shopping-cart"
@@ -972,7 +1048,9 @@ function SelectionForm({
                       ) : null}
                       <Txt>
                         {materialInput} · {sizeInput || 'Unavailable size'} ·{' '}
-                        {draft.grade}
+                        {tmt
+                          ? `Brand: ${draft.grade}${draft.requestedGrade?.trim() ? ` / Grade: ${draft.requestedGrade.trim()}` : ''}`
+                          : draft.grade}
                       </Txt>
                       <Txt>
                         {draft.quantity} {unit}

@@ -14,6 +14,7 @@ export function CatalogFilter({
   options,
   onChange,
   disabled = false,
+  compact = false,
   emptyHint,
   onOpen,
 }: {
@@ -22,6 +23,7 @@ export function CatalogFilter({
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
   disabled?: boolean;
+  compact?: boolean;
   emptyHint?: string;
   onOpen?: () => void;
 }) {
@@ -31,7 +33,7 @@ export function CatalogFilter({
     options[0]?.label ??
     'Choose';
   return (
-    <View style={{ flex: 1, minWidth: 180, gap: 8 }}>
+    <View style={{ flex: 1, minWidth: compact ? 0 : 180, gap: 8 }}>
       <Txt style={s.label}>{label}</Txt>
       <Pressable
         disabled={disabled}
@@ -53,7 +55,9 @@ export function CatalogFilter({
         }}
       >
         <Row style={{ justifyContent: 'space-between' }}>
-          <Txt style={{ flex: 1 }}>{selected}</Txt>
+          <Txt numberOfLines={compact ? 1 : undefined} style={{ flex: 1 }}>
+            {selected}
+          </Txt>
           <Icon name="chevron-down" size={18} />
         </Row>
       </Pressable>

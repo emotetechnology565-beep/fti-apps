@@ -1,3 +1,4 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
@@ -27,6 +28,7 @@ function Lot({
   error?: string;
 }) {
   const quantity = useStore((state) => state.quantity);
+  const priceAccess = usePriceAccess();
   const variant = line.variantId
     ? product?.variants.find((item) => item.id === line.variantId)
     : product?.variants[0];
@@ -37,7 +39,7 @@ function Lot({
     (loading ? 'Loading product...' : 'Product unavailable');
   const unit = material?.unit ?? variant?.uom ?? '';
   const minimum = material?.minimum ?? variant?.min_order_qty ?? 1;
-  const price = cartLinePrice(line, product);
+  const price = priceAccess ? cartLinePrice(line, product) : null;
   const valid = !!material || !!variant;
   const change = (next: number) =>
     quantity(line.productId, next, line.variantId);
@@ -53,6 +55,9 @@ function Lot({
                   ? 'RAW MATERIAL'
                   : 'TRACTOR SPARE'}
             </Txt>
+            {material?.brand ? (
+              <Txt style={styles.chip}>Brand: {material.brand}</Txt>
+            ) : null}
             {material?.grade ? (
               <Txt style={styles.chip}>{material.grade}</Txt>
             ) : null}
@@ -152,6 +157,7 @@ function Lot({
   );
 }
 export function Cart() {
+  const priceAccess = usePriceAccess();
   const cart = useStore((state) => state.cart);
   const updateQuantity = useStore((state) => state.quantity);
   const setProducts = useStore((state) => state.setCatalogProducts);
@@ -175,10 +181,12 @@ export function Cart() {
     if (products.length) setProducts(products);
   }, [productsKey, setProducts]); // eslint-disable-line react-hooks/exhaustive-deps
   const prices = cart.map((line) =>
-    cartLinePrice(
-      line,
-      products.find((p) => p.id === line.productId),
-    ),
+    !priceAccess
+      ? null
+      : cartLinePrice(
+          line,
+          products.find((p) => p.id === line.productId),
+        ),
   );
   const subtotal = prices.reduce((sum, price) => sum + (price?.total ?? 0), 0);
   const unpriced = prices.filter((price) => !price).length;

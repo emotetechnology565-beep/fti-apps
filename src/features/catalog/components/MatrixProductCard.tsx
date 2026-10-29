@@ -1,3 +1,5 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { isTmtCategory } from '../model/tmt';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -11,11 +13,14 @@ import { AddToCart } from './AddToCart';
 import { formatTractorPrice, tractorPricing } from '../model/tractor-pricing';
 
 export function MatrixProductCard({ product: p }: { product: Product }) {
+  const priceAccess = usePriceAccess();
   const saved = useStore((state) => state.saved.includes(p.id));
   const toggle = useStore((state) => state.toggleSaved);
+  const tmt = isTmtCategory(p.category);
   const first = p.variants[0];
   const tractor = p.product_kind === 'tractor_part';
-  const tractorPrice = first ? tractorPricing(first) : null;
+  const tractorPrice =
+    priceAccess && first ? tractorPricing(first) : null;
   const profile = rawMaterialDetails(p);
   const image =
     getCategoryImage(p.category) ??
@@ -25,18 +30,19 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
       p.variants.map((v) => String(v.attributes.grade ?? '')).filter(Boolean),
     ),
   ];
-  const price = first
-    ? selectionPrice({
-        id: first.id,
-        product_id: p.id,
-        product_name: p.name,
-        grade: p.grade,
-        variant_id: first.id,
-        uom: first.uom,
-        min_order_qty: first.min_order_qty,
-        attributes: first.attributes,
-      })
-    : null;
+  const price =
+    priceAccess && !tmt && first
+      ? selectionPrice({
+          id: first.id,
+          product_id: p.id,
+          product_name: p.name,
+          grade: p.grade,
+          variant_id: first.id,
+          uom: first.uom,
+          min_order_qty: first.min_order_qty,
+          attributes: first.attributes,
+        })
+      : null;
   const open = () =>
     router.push({ pathname: '/product/[id]', params: { id: p.id } });
   return (
@@ -71,7 +77,11 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Txt numberOfLines={1} style={styles.badge}>
-              {grades[0] ? `GRADE ${grades[0]}` : p.category.toUpperCase()}
+              {tmt
+                ? 'TMT BAR'
+                : grades[0]
+                  ? `GRADE ${grades[0]}`
+                  : p.category.toUpperCase()}
             </Txt>
             <Pressable
               accessibilityRole="button"
@@ -103,14 +113,16 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         {[
           [
             tractor ? 'PART / SIZE' : 'SIZE RANGE',
-            profile?.size ?? first?.size_label ?? 'On enquiry',
+            tmt
+              ? 'Choose size'
+              : (profile?.size ?? first?.size_label ?? 'On enquiry'),
           ],
           [
             'MIN ORDER',
             first ? `${first.min_order_qty} ${first.uom}` : 'On enquiry',
           ],
           [
-            tractor ? 'VARIANTS' : 'GRADES',
+            tractor ? 'VARIANTS' : tmt ? 'BRANDS' : 'GRADES',
             tractor
               ? String(p.variants.length)
               : grades.length
@@ -150,13 +162,20 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         ) : (
           <>
             <Txt style={styles.amount}>
-              {price ? `From ₹${price.amount}` : 'Quotation on request'}
+              {tmt
+                ? 'Request quotation'
+                : price
+                  ? `From ₹${price.amount}`
+                  : 'Quotation on request'}
               <Txt style={styles.caption}>
                 {price ? ` / ${price.unit}` : ''}
               </Txt>
             </Txt>
             <Txt style={styles.caption}>
-              {price?.tax ?? 'Select size and grade for current pricing.'}
+              {tmt
+                ? 'Select size and brand to request a quotation.'
+                : (price?.tax ??
+                  'Select size and grade to request a quotation.')}
             </Txt>
           </>
         )}
@@ -187,7 +206,11 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                 borderRadius: 4,
               }}
             >
-              {tractor ? 'View part details' : 'Select size & grade'}
+              {tractor
+                ? 'View part details'
+                : tmt
+                  ? 'Select size & brand'
+                  : 'Select size & grade'}
             </Button>
           )}
         </View>

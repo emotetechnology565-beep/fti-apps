@@ -72,6 +72,40 @@ test('TMT import publishes 70 exact source rates without GST or freight and pres
     await db.exec('reset role');
     const audit = await db.query<{ count: number }>("select count(*)::integer as count from platform.audit_logs where action='catalog.tmt_rates.import'");
     assert.equal(audit.rows[0].count, 2);
+    const optionalGradeSql = readFileSync('supabase/migrations/202610290001_tmt_optional_grade.sql', 'utf8');
+    await db.exec(optionalGradeSql);
+    await db.exec(optionalGradeSql);
+    const actor = '00000000-0000-0000-0000-000000000001';
+    await db.query('insert into auth.users values($1,$2,now())', [actor, '919000000001']);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [actor]);
+    await db.exec('set role authenticated; select public.fti_identity_me()');
+    const option = (await page(sizes.find(size => size.dimensions.diameter_mm === 8)!.id)).options.find(option => option.grade === 'ZARA TMT')!;
+    const buyer = { name: 'TMT buyer', business: 'Test Works', location: 'Pune 411001', whatsapp_consent: true };
+    const submit = async (id: string, requestedGrade?: string) => (await db.query<{ data: { replayed: boolean } }>(
+      'select public.fti_catalog_selection_request_submit($1,$2,$3,$4) as data',
+      [id, option.id, '1', { ...buyer, ...(requestedGrade === undefined ? {} : { requested_grade: requestedGrade }) }],
+    )).rows[0].data;
+    const request = '00000000-0000-0000-0000-000000000010';
+    const withoutGrade = '00000000-0000-0000-0000-000000000011';
+    assert.equal((await submit(request, 'Fe 500D')).replayed, false);
+    assert.equal((await submit(request, 'Fe 500D')).replayed, true);
+    await assert.rejects(submit(request, 'Fe 550D'), /different details/);
+    await assert.rejects(submit(request), /different details/);
+    await assert.rejects(submit(withoutGrade, 'x'.repeat(81)), /80 characters/);
+    await assert.rejects(submit(withoutGrade, 'Fe\n500'), /single-line/);
+    assert.equal((await submit(withoutGrade)).replayed, false);
+    assert.equal((await submit(withoutGrade, '  ')).replayed, true);
+    await db.exec('reset role');
+    const records = (await db.query<{ id: string; details: Record<string, unknown> }>('select id,details from sales.raw_material_requests where id=any($1::uuid[])', [[request, withoutGrade]])).rows;
+    for (const record of records) {
+      assert.equal(record.details.brand, 'ZARA TMT');
+      assert.equal(record.details.grade, record.id === request ? 'Fe 500D' : '');
+      assert.equal(Number(record.details.published_price), 51975, 'Optional grade must not change the selected size/brand price');
+    }
+    const jobs = (await db.query<{ parameters: string[] }>('select parameters from sales.raw_material_jobs where request_id=$1', [request])).rows;
+    assert.ok(jobs.length);
+    assert.ok(jobs.every(job => job.parameters.includes('Brand: ZARA TMT / Grade: Fe 500D')));
+
   } finally {
     await db.close();
   }

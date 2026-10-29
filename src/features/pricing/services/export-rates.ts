@@ -1,3 +1,4 @@
+import { canViewPublicPrices, priceSubscriptionMessage } from '@shared/lib/price-access';
 import { Platform } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -15,6 +16,7 @@ export async function exportRates(
   market: string,
   products: readonly Product[],
 ) {
+  if (!canViewPublicPrices()) throw new Error(priceSubscriptionMessage);
   if (!products.length || products.some((product) => product.rate === undefined))
     throw new Error('No published rates to export.');
   const rows = products

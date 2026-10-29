@@ -1,9 +1,12 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { Row, Txt, s } from '@shared/ui';
 import type { Variant } from '../model/types';
 import { priceUnitLabel } from '../model/shared-material-options';
 import { hasOrderConfirmationCharges, orderConfirmationChargesNote } from '../model/price-disclosure';
 
 export function GradeListPrice({ variant }: { variant: Variant }) {
+  const priceAccess = usePriceAccess();
+  if (!priceAccess) return <Txt style={s.h2}>Request quotation</Txt>;
   const value = variant.attributes.grade_list_price;
   const base = variant.attributes.grade_list_base_price;
   if (typeof value !== 'string' || !/^\d+(\.\d+)?$/.test(value)) {

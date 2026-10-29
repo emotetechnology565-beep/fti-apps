@@ -1,3 +1,4 @@
+import { setPriceAccess } from '@shared/lib/price-access';
 import {
   createContext,
   useContext,
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, next) => {
       receivedEvent = true;
-      if(lastUser.current !== (next?.user.id ?? null)) { setWorkspaceOwner(null);lastUser.current=next?.user.id ?? null; }
+      if(lastUser.current !== (next?.user.id ?? null)) { setPriceAccess(null); setWorkspaceOwner(null);lastUser.current=next?.user.id ?? null; }
 
       setSession(next);
       setInitialized(true);
@@ -105,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refetchInterval: 60000,
   });
   const signOut = async () => {
+    setPriceAccess(null);
     if (!supabase) return;
     const { error } = await supabase.auth.signOut({ scope: 'local' });
     if (error) throw error;

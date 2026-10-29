@@ -1,3 +1,5 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscriptionNotice } from '../components/SubscriptionNotice';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'expo-image';
@@ -361,6 +363,11 @@ function MarketRates({ market, search }: { market: Market; search: string }) {
 }
 
 export function Rates() {
+  const priceAccess = usePriceAccess();
+  return priceAccess ? <RatesContent /> : <SubscriptionNotice />;
+}
+
+function RatesContent() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const client = useQueryClient();

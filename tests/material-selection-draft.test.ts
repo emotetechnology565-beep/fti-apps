@@ -97,3 +97,12 @@ test('inline manual size and grade modes survive handoff independently', async (
   await store.save('buyer-a', manualGrade);
   assert.deepEqual(await store.load('buyer-a'), manualGrade);
 });
+
+
+test('optional TMT grade survives login handoff without replacing the brand', async () => {
+  const { store } = setup();
+  await store.prepareLogin({ ...draft, category: 'tmt', grade: 'ZARA TMT', requestedGrade: 'Fe 500D' });
+  const restored = await store.load('buyer');
+  assert.equal(restored.grade, 'ZARA TMT');
+  assert.equal(restored.requestedGrade, 'Fe 500D');
+});

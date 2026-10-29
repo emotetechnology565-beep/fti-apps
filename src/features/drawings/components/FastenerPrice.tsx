@@ -1,3 +1,5 @@
+import { priceSubscriptionMessage } from '@shared/lib/price-access';
+import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CatalogFilter, Txt, s } from '@shared/ui';
@@ -12,14 +14,17 @@ export function FastenerPrice({
   boltKg: number;
   nutKg: number;
 }) {
+  const priceAccess = usePriceAccess();
   const [localGrade, setGrade] = useState('');
   const grade = selectedGrade ?? localGrade;
   const query = useQuery({
+    enabled: priceAccess,
     queryKey: gradeKey,
     queryFn: loadGradeRates,
     staleTime: 0,
     refetchInterval: 60000,
   });
+  if (!priceAccess) return <Txt>{priceSubscriptionMessage}</Txt>;
   const rate = query.data?.find((r) => r.grade === grade);
   const price = rate
     ? fastenerPrice(

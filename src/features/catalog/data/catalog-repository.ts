@@ -1,3 +1,5 @@
+import { canViewPublicPrices, redactPublicPrices } from '@shared/lib/price-access';
+import { groupTmtProducts } from '../model/tmt';
 import { supabase } from '@core/api/supabase-client';
 import type { CatalogImage, CatalogPage, Category, Product, Variant } from '../model/types';
 import type { GradeSheet } from '../model/grade-sheet';
@@ -12,6 +14,7 @@ export type CatalogQuery = {
   limit?: number;
   offset?: number;
   ids?: string[];
+  groupTmt?: boolean;
   productKind?: Product['product_kind'];
 };
 export interface CatalogRepository {
@@ -77,7 +80,7 @@ async function catalogRpc<T>(operation: string, args: Record<string, unknown> = 
             message = result.error.code === 'PGRST202'
               ? 'Raw-material ordering needs the latest database migration. Contact the FTI administrator.'
               : result.error.message;
-          } else return result.data as T;
+          } else return (['fti_catalog_selection_options', 'fti_catalog_manual_preview'].includes(operation) ? (canViewPublicPrices() ? result.data : redactPublicPrices(result.data)) : result.data) as T;
         } else if (body.code === 'PGRST202') message = 'Material selection needs the latest database migration. Contact the FTI administrator.';
         else if (typeof body.message === 'string') message = body.message;
       } catch {
@@ -86,7 +89,7 @@ async function catalogRpc<T>(operation: string, args: Record<string, unknown> = 
     }
     throw new CatalogRequestError(message, code);
   }
-  return data.data as T;
+  return (['fti_catalog_list', 'fti_catalog_filtered_list', 'fti_catalog_product_get', 'fti_catalog_selection_options', 'fti_catalog_manual_preview'].includes(operation) ? (canViewPublicPrices() ? data.data : redactPublicPrices(data.data)) : data.data) as T;
 }
 
 const rawMaterialOperations = new Set([
@@ -178,7 +181,8 @@ export const supabaseCatalogRepository: CatalogRepository = {
         all.push(...next.items);
         offset += next.items.length;
       }
-      const matching = all.filter(item => item.product_kind === query.productKind);
+      const filtered = all.filter(item => item.product_kind === query.productKind);
+      const matching = query.groupTmt ? groupTmtProducts(filtered) : filtered;
       const offset = query.offset ?? 0;
       raw = { ...raw, items: matching.slice(offset, offset + (query.limit ?? 24)), total: matching.length };
     }

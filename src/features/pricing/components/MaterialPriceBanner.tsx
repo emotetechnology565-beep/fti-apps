@@ -1,3 +1,5 @@
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscriptionNotice } from './SubscriptionNotice';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -37,6 +39,15 @@ function PriceChange({ rate }: { rate: PublishedRate }) {
 }
 
 export function MaterialPriceBanner() {
+  const priceAccess = usePriceAccess();
+  return priceAccess ? (
+    <MaterialPriceBannerContent />
+  ) : (
+    <SubscriptionNotice />
+  );
+}
+
+function MaterialPriceBannerContent() {
   const market = useStore((state) => state.market);
   const setMarket = useStore((state) => state.setMarket);
   const markets = useQuery({

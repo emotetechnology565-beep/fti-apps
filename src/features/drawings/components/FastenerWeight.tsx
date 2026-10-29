@@ -4,7 +4,7 @@ import {
   MaterialSpecFilter,
 } from '@features/catalog/ui';
 import { FastenerOrder } from './FastenerOrder';
-import { gradeKey, loadGradeRates } from '../services/grade-api';
+import { loadPublicGrades } from '../services/grade-api';
 import { FastenerPrice } from './FastenerPrice';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -119,7 +119,7 @@ export function DrawingWeight({
 }) {
   const length = input.length;
   const [grade, setGrade] = useState('');
-  const grades = useQuery({ queryKey: gradeKey, queryFn: loadGradeRates });
+  const grades = useQuery({ queryKey: ['fastener-public-grades'], queryFn: loadPublicGrades });
   const [assembly, setAssembly] = useState('without');
   const [quantity, setQuantity] = useState('1');
   const target = drawingWeightTarget(definition, length, assembly === 'with');
@@ -155,7 +155,7 @@ export function DrawingWeight({
         ]}
       />
       {grades.isError ? (
-        <Txt>Grade rates unavailable. Please retry later.</Txt>
+        <Txt>Grades unavailable. Please retry later.</Txt>
       ) : null}
       <MaterialQuantity
         value={quantity}

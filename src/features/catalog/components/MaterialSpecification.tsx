@@ -1,10 +1,5 @@
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { isTmtCategory } from '../model/tmt';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Card, Icon, Txt } from '@shared/ui';
@@ -52,7 +47,7 @@ export function MaterialSpecificationHeader({
         <View style={styles.toolbar}>
           <View style={{ flex: 1, gap: 6 }}>
             <Txt style={styles.eyebrow}>
-              {'FTI Catalogue ? ' + product.category}
+              {'FTI Catalogue / ' + product.category}
             </Txt>
             <Txt accessibilityRole="header" style={styles.name}>
               {product.name}
@@ -82,7 +77,11 @@ export function MaterialSpecificationHeader({
         <View style={styles.toolbar}>
           <View style={styles.info}>
             <Icon name="grid" color="#485f83" />
-            <Txt style={styles.infoText}>Size & grade selection</Txt>
+            <Txt style={styles.infoText}>
+              {isTmtCategory(product.category)
+                ? 'Size & brand selection'
+                : 'Size & grade selection'}
+            </Txt>
           </View>
           <View style={styles.info}>
             <Icon name="file-text" color="#af101a" />
@@ -101,59 +100,11 @@ export function MaterialSpecificationHeader({
 export function MaterialSpecFilter(
   props: ComponentProps<typeof CatalogFilter>,
 ) {
-  const grade = props.label === 'Grade';
   return (
-    <View style={{ gap: 8 }}>
-      <Txt style={styles.eyebrow}>
-        {grade ? 'STEEL GRADE' : props.label.toUpperCase()}
-      </Txt>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 4 }}
-      >
-        {props.options
-          .filter((option) => option.value)
-          .map((option) => {
-            const selected = props.value === option.value;
-            return (
-              <Pressable
-                key={option.value}
-                disabled={props.disabled}
-                accessibilityRole="radio"
-                accessibilityLabel={option.label}
-                accessibilityState={{
-                  checked: selected,
-                  disabled: props.disabled,
-                }}
-                onPress={() => props.onChange(option.value)}
-                style={[
-                  styles.pill,
-                  selected && {
-                    backgroundColor: grade ? '#253142' : '#d32f2f',
-                  },
-                  props.disabled && { opacity: 0.5 },
-                ]}
-              >
-                <Txt style={[styles.pillText, selected && { color: '#fff' }]}>
-                  {option.label.replace(/ mm$/, '')}
-                </Txt>
-                {!grade && option.value !== '__manual__' ? (
-                  <Txt
-                    style={{
-                      fontSize: 11,
-                      textAlign: 'center',
-                      color: selected ? '#fff2f0' : '#4f5961',
-                    }}
-                  >
-                    mm
-                  </Txt>
-                ) : null}
-              </Pressable>
-            );
-          })}
-      </ScrollView>
-    </View>
+    <CatalogFilter
+      {...props}
+      label={props.label === 'Grade' ? 'Steel Grade' : props.label}
+    />
   );
 }
 
@@ -239,18 +190,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#30476a',
   },
-  pill: {
-    minHeight: 44,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    alignItems: 'center',
-    minWidth: 48,
-    borderRadius: 6,
-    backgroundColor: '#eff4ff',
-    justifyContent: 'center',
-  },
-  selected: { backgroundColor: '#af101a' },
-  pillText: { fontSize: 12, fontWeight: '600', color: '#101c2c' },
   number: {
     width: 30,
     height: 30,
@@ -311,89 +250,74 @@ export function MaterialQuantity({
           alignItems: 'center',
           backgroundColor: '#eff4ff',
           borderRadius: 8,
-          padding: 8,
+          padding: 12,
+          justifyContent: 'center',
+          gap: 12,
         }}
       >
-        {[-1, 1].map((direction, index) => (
+        <Pressable
+          disabled={disabled}
+          accessibilityRole="button"
+          accessibilityLabel="Decrease quantity"
+          style={quantityButton}
+          onPress={() =>
+            onChange(
+              String(Math.max(minimum ?? step, (Number(value) || 0) - step)),
+            )
+          }
+        >
+          <Icon name="minus" color="#101c2c" />
+        </Pressable>
+        <View
+          style={{ width: 160, flexShrink: 1, alignItems: 'center', gap: 2 }}
+        >
           <View
-            key={direction}
-            style={
-              index
-                ? {}
-                : { flexDirection: 'row', alignItems: 'center', flex: 1 }
-            }
+            style={{
+              flexDirection: 'row',
+              alignItems: 'baseline',
+              gap: 4,
+            }}
           >
-            {index === 1 ? null : (
-              <Pressable
-                disabled={disabled}
-                accessibilityRole="button"
-                accessibilityLabel="Decrease quantity"
-                style={quantityButton}
-                onPress={() =>
-                  onChange(
-                    String(
-                      Math.max(minimum ?? step, (Number(value) || 0) - step),
-                    ),
-                  )
-                }
-              >
-                <Icon name="minus" color="#101c2c" />
-              </Pressable>
-            )}
-            {index === 0 ? (
-              <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'baseline',
-                    gap: 4,
-                  }}
-                >
-                  <TextInput
-                    accessibilityLabel={`Quantity in ${unit}`}
-                    editable={!disabled}
-                    keyboardType="decimal-pad"
-                    value={value}
-                    onChangeText={onChange}
-                    placeholder="0.00"
-                    style={{
-                      fontSize: 26,
-                      fontWeight: '700',
-                      color: '#101c2c',
-                      textAlign: 'center',
-                      minWidth: 80,
-                      maxWidth: 140,
-                      padding: 0,
-                    }}
-                  />
-                  <Txt style={{ color: '#485f83', fontWeight: '600' }}>
-                    {unit}
-                  </Txt>
-                </View>
-                <Txt style={{ fontSize: 12, color: '#4f5961' }}>
-                  {minimum
-                    ? `FTI Batch MOQ: ${minimum} ${unit}`
-                    : 'Enter required quantity'}
-                </Txt>
-              </View>
-            ) : (
-              <Pressable
-                disabled={disabled}
-                accessibilityRole="button"
-                accessibilityLabel="Increase quantity"
-                style={quantityButton}
-                onPress={() => onChange(String((Number(value) || 0) + step))}
-              >
-                <Icon name="plus" color="#101c2c" />
-              </Pressable>
-            )}
+            <TextInput
+              accessibilityLabel={`Quantity in ${unit}`}
+              editable={!disabled}
+              keyboardType="decimal-pad"
+              value={value}
+              onChangeText={onChange}
+              placeholder="0.00"
+              style={{
+                fontSize: 26,
+                fontWeight: '700',
+                color: '#101c2c',
+                textAlign: 'center',
+                minWidth: 80,
+                maxWidth: 140,
+                padding: 0,
+              }}
+            />
+            <Txt style={{ color: '#485f83', fontWeight: '600' }}>{unit}</Txt>
           </View>
-        ))}
+          <Txt style={{ fontSize: 12, color: '#4f5961' }}>
+            {minimum
+              ? `FTI Batch MOQ: ${minimum} ${unit}`
+              : 'Enter required quantity'}
+          </Txt>
+        </View>
+        <Pressable
+          disabled={disabled}
+          accessibilityRole="button"
+          accessibilityLabel="Increase quantity"
+          style={quantityButton}
+          onPress={() => onChange(String((Number(value) || 0) + step))}
+        >
+          <Icon name="plus" color="#101c2c" />
+        </Pressable>
       </View>
     </View>
   );
 }
 const quantityButton = {
+  flexShrink: 0,
   width: 48,
   height: 48,
   borderRadius: 4,

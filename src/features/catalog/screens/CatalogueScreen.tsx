@@ -1,3 +1,5 @@
+import { CatalogFilter } from '../components/CatalogFilter';
+import { isTmtCategory } from '../model/tmt';
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
@@ -78,6 +80,7 @@ function CatalogueMatrix({
   const saved = useStore((state) => state.saved);
   const query = useProducts({
     productKind: kind,
+    groupTmt: true,
     search: search.trim(),
     category: category || undefined,
     grade: grade || undefined,
@@ -270,80 +273,63 @@ function CatalogueMatrix({
           ))}
         </View>
         {kind === 'steel' ? (
-          <>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 6 }}
-            >
-              {[
+          <View
+            style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}
+          >
+            <CatalogFilter
+              compact
+              label="Category"
+              value={category}
+              options={[
                 { value: '', label: 'All categories' },
                 ...(query.data?.categories ?? []).map((item) => ({
                   value: item.slug,
                   label: catalogueCategoryLabel(item.name),
                 })),
-              ].map((item) => (
-                <Pressable
-                  key={item.value}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: category === item.value }}
-                  onPress={() => {
-                    setSelectionIds(undefined);
-                    if (
-                      isFastenerCategory(item.value) ||
-                      item.label === 'Fastener'
-                    ) {
-                      setKind('fastener');
-                      setCategory('');
-                      setGrade('');
-                    } else {
-                      setCategory(item.value);
-                    }
-                    setPage(0);
-                  }}
-                  style={[
-                    styles.pill,
-                    category === item.value && styles.activePill,
-                  ]}
-                >
-                  <Txt
-                    style={[
-                      styles.pillText,
-                      category === item.value && styles.white,
-                    ]}
-                  >
-                    {item.label}
-                  </Txt>
-                </Pressable>
-              ))}
-            </ScrollView>
-            {query.data?.grades?.length ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 6 }}
-              >
-                {['', ...query.data.grades].map((value) => (
-                  <Pressable
-                    key={value}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: grade === value }}
-                    onPress={() => {
-                      setGrade(value);
-                      setPage(0);
-                    }}
-                    style={[styles.pill, grade === value && styles.activePill]}
-                  >
-                    <Txt
-                      style={[styles.pillText, grade === value && styles.white]}
-                    >
-                      {value || 'All grades'}
-                    </Txt>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            ) : null}
-          </>
+              ]}
+              onChange={(value) => {
+                setSelectionIds(undefined);
+                setGrade('');
+                if (isFastenerCategory(value)) {
+                  setKind('fastener');
+                  setCategory('');
+                } else {
+                  setCategory(value);
+                }
+                setPage(0);
+              }}
+            />
+            <CatalogFilter
+              compact
+              label={
+                isTmtCategory(category)
+                  ? 'Brand'
+                  : category
+                    ? 'Grade'
+                    : 'Grade / Brand'
+              }
+              value={grade}
+              options={[
+                {
+                  value: '',
+                  label: isTmtCategory(category)
+                    ? 'All brands'
+                    : category
+                      ? 'All grades'
+                      : 'All grades / brands',
+                },
+                ...(query.data?.grades ?? []).map((value) => ({
+                  value,
+                  label: value,
+                })),
+              ]}
+              disabled={query.isFetching}
+              onChange={(value) => {
+                setGrade(value);
+                setPage(0);
+              }}
+            />
+          </View>
         ) : null}
       </View>
       <View style={{ padding: 16, gap: 12 }}>

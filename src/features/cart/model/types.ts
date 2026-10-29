@@ -5,6 +5,7 @@ export type MaterialCartSelection = {
   name: string;
   size: string;
   grade: string;
+  brand?: string;
   unit: string;
   minimum: number;
   indicativePrice?: { amount: number; unit: string; tax: string };

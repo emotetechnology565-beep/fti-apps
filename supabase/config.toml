@@ -1,4 +1,7 @@
 project_id = "fti-app"
+[functions.subscriptions]
+# Authenticated checkout validates the user; Razorpay webhooks validate raw-body HMAC.
+verify_jwt = false
 [functions.fastener-weight]
 # Public, read-only reference weights; the handler uses the anon database role.
 verify_jwt = false

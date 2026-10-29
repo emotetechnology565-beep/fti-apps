@@ -1,4 +1,5 @@
 import { MaterialOrdersWorkspace } from '../components/MaterialOrdersWorkspace';
+import { SubscriptionManagement } from '@features/subscriptions/SubscriptionManagement';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
@@ -158,6 +159,8 @@ function StaffWorkspace() {
     );
   const content = (() => {
     switch (selected.id) {
+      case 'subscriptions':
+        return <SubscriptionManagement />;
       case 'businesses':
         return <ReviewQueue />;
       case 'catalogue':

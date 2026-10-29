@@ -46,6 +46,7 @@ test('material options isolate category dimensions and preserve prices, manual o
     const migration = readFileSync('supabase/migrations/202610240002_material_selection.sql', 'utf8');
     await db.exec(migration);
     await db.exec(migration);
+    await db.exec(readFileSync('supabase/migrations/202610290001_tmt_optional_grade.sql', 'utf8'));
     await db.exec('set role anon');
     await assert.rejects(db.exec('select * from catalog.availability_options'));
     await assert.rejects(db.query('select public.fti_catalog_selection_admin($1)', [sheet]));
