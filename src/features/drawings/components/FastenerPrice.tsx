@@ -1,4 +1,4 @@
-import { priceSubscriptionMessage } from '@shared/lib/price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ export function FastenerPrice({
     staleTime: 0,
     refetchInterval: 60000,
   });
-  if (!priceAccess) return <Txt>{priceSubscriptionMessage}</Txt>;
+  if (!priceAccess) return <SubscribeForPrices />;
   const rate = query.data?.find((r) => r.grade === grade);
   const price = rate
     ? fastenerPrice(

@@ -1,4 +1,5 @@
 import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { isTmtCategory } from '../model/tmt';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -140,7 +141,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         ))}
       </View>
       <View style={styles.price}>
-        {tractor && first ? (
+        {!priceAccess ? <SubscribeForPrices /> : tractor && first ? (
           <>
             <Txt style={styles.amount}>
               {tractorPrice

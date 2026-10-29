@@ -1,4 +1,5 @@
 import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { isTmtCategory, tmtCartKey } from '../model/tmt';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
@@ -952,11 +953,11 @@ function SelectionForm({
                     <Txt style={{ fontWeight: '700' }}>
                       {option?.product_name ?? materialInput}
                     </Txt>
-                    <Txt style={s.h2}>
+                    {!priceAccess ? <SubscribeForPrices /> : <Txt style={s.h2}>
                       {price
                         ? `INR ${price.amount} / ${price.unit}`
                         : 'Request quotation'}
-                    </Txt>
+                    </Txt>}
                     {estimate?.total ? (
                       <Txt style={{ fontWeight: '700' }}>
                         Estimated total: INR {estimate.total}

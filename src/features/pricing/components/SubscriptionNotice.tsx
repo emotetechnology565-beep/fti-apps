@@ -1,16 +1,14 @@
-import { router } from 'expo-router';
-import { Badge, Button, Card, Txt, s } from '@shared/ui';
+import { Badge, Card, Txt, s } from '@shared/ui';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { priceSubscriptionMessage } from '@shared/lib/price-access';
 
 export function SubscriptionNotice() {
   return (
     <Card style={{ gap: 12 }}>
       <Badge>ANNUAL ACCESS</Badge>
-      <Txt style={s.h2}>Price subscription</Txt>
+      <Txt style={s.h2}>Live prices for subscribers</Txt>
       <Txt>{priceSubscriptionMessage}</Txt>
-      <Button onPress={() => router.push('/account?section=subscription')}>
-        View subscription
-      </Button>
+      <SubscribeForPrices />
     </Card>
   );
 }

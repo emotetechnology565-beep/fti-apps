@@ -1,11 +1,12 @@
 import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import type { Variant } from '../model/types';
 import { formatTractorPrice, tractorPricing } from '../model/tractor-pricing';
 import { Row, Txt, c } from '@shared/ui';
 
 export function TractorPrice({ variant }: { variant: Variant }) {
   const priceAccess = usePriceAccess();
-  if (!priceAccess) return <Txt>Request quotation</Txt>;
+  if (!priceAccess) return <SubscribeForPrices />;
   const price = tractorPricing(variant);
   if (!price) return <Txt style={{ fontSize: 13, color: c.muted }}>Request price</Txt>;
   return (

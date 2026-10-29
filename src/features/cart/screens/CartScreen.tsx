@@ -1,4 +1,5 @@
 import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
@@ -95,11 +96,11 @@ function Lot({
         </View>
         <View style={{ flex: 1, gap: 4 }}>
           <Txt style={styles.label}>INDICATIVE UNIT RATE</Txt>
-          <Txt style={styles.value}>
+          {!priceAccess ? <SubscribeForPrices /> : <Txt style={styles.value}>
             {price
               ? `${money(price.amount)} / ${price.unit}`
               : 'Quotation required'}
-          </Txt>
+          </Txt>}
         </View>
       </View>
       <View style={styles.row}>
