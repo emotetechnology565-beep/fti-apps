@@ -23,7 +23,7 @@ function AccountLink({
       onPress={onPress}
       style={({ pressed }) => [styles.link, pressed && styles.pressed]}
     >
-      <View style={styles.icon}><Icon name={icon} color={c.red} size={22} /></View>
+      <View style={styles.icon}><Icon name={icon} color={c.brandBlue} size={22} /></View>
       <View style={styles.linkText}>
         <Txt style={styles.linkTitle}>{title}</Txt>
         <Txt style={styles.description}>{description}</Txt>
@@ -79,7 +79,7 @@ export function AccountHub({ settings = false }: { settings?: boolean }) {
 const styles = StyleSheet.create({
   hub: { gap: 26 },
   group: { gap: 12 },
-  groupTitle: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: '#58697C' },
+  groupTitle: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: c.muted },
   profile: { padding: 0, borderRadius: 18, overflow: 'hidden', borderColor: accountBlue, borderTopWidth: 4, borderTopColor: accountBlue, gap: 18 },
   profileHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingHorizontal: 20, paddingTop: 24 },
   avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: c.dark, alignItems: 'center', justifyContent: 'center' },
@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
   name: { fontSize: 22, lineHeight: 29, fontWeight: '700', color: c.ink },
   link: { minHeight: 88, flexDirection: 'row', alignItems: 'center', gap: 14, padding: 18, backgroundColor: c.paper, borderWidth: 1, borderColor: accountBlue, borderRadius: 16 },
   pressed: { backgroundColor: c.bg },
-  icon: { width: 44, height: 44, borderRadius: 22, backgroundColor: c.pink, alignItems: 'center', justifyContent: 'center' },
+  icon: { width: 44, height: 44, borderRadius: 22, backgroundColor: c.goldLight, alignItems: 'center', justifyContent: 'center' },
   linkText: { flex: 1, minWidth: 0, gap: 5 },
   linkTitle: { fontSize: 16, lineHeight: 22, fontWeight: '700', color: c.ink },
-  description: { fontSize: 13, lineHeight: 21, color: '#58697C', flexShrink: 1 },
+  description: { fontSize: 13, lineHeight: 21, color: c.muted, flexShrink: 1 },
   subscription: { padding: 20, borderRadius: 18, borderWidth: 2, borderColor: accountBlue, gap: 14 },
   subscriptionHeader: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  subscriptionIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: c.pink, alignItems: 'center', justifyContent: 'center' },
+  subscriptionIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: c.goldLight, alignItems: 'center', justifyContent: 'center' },
   subscriptionTitle: { fontSize: 22, lineHeight: 29, fontWeight: '700', color: c.ink },
   subscriptionNote: { gap: 6, paddingTop: 14, borderTopWidth: 1, borderTopColor: c.line },
   noteTitle: { fontSize: 13, lineHeight: 21, fontWeight: '600', color: c.ink },

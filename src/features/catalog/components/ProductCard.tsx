@@ -43,13 +43,10 @@ export function ProductCard({
         flex: 1,
         minWidth: 0,
         minHeight: productCard.minHeight,
-        borderRadius: productCard.radius,
+        borderRadius: 14,
       }}
     >
-      <View pointerEvents="none" style={{ height: 4, flexDirection: 'row' }}>
-        <View style={{ flex: 1, backgroundColor: c.red }} />
-        <View style={{ flex: 2, backgroundColor: c.cardBorder }} />
-      </View>
+      <View pointerEvents="none" style={{ height: 3, backgroundColor: c.brandBlue }} />
       <Pressable
         accessibilityRole="link"
         accessibilityLabel={`View ${p.name}`}
@@ -82,8 +79,8 @@ export function ProductCard({
             fontSize: 14,
             lineHeight: 20,
             fontWeight: '700',
-            color: '#075299',
-            backgroundColor: '#e6f2ff',
+            color: '#111827',
+            backgroundColor: '#F8FAFC',
           }}
         >
           {p.name}

@@ -84,7 +84,7 @@ export function MaterialSpecificationHeader({
             </Txt>
           </View>
           <View style={styles.info}>
-            <Icon name="file-text" color="#af101a" />
+            <Icon name="file-text" color="#A70101" />
             <Txt style={styles.infoText}>Quotation on request</Txt>
           </View>
           <View style={styles.info}>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 25,
     fontWeight: '600',
-    color: '#101c2c',
+    color: '#111827',
   },
   strip: {
     flexDirection: 'row',
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '700',
-    color: '#485f83',
+    color: '#64748B',
     letterSpacing: 0.5,
   },
-  name: { fontSize: 18, lineHeight: 24, fontWeight: '700', color: '#101c2c' },
+  name: { fontSize: 18, lineHeight: 24, fontWeight: '700', color: '#111827' },
   description: { fontSize: 12, lineHeight: 19, color: '#4f5961' },
   logo: {
     width: 44,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#101c2c',
     borderRadius: 8,
     borderBottomWidth: 3,
-    borderBottomColor: '#af101a',
+    borderBottomColor: '#00409A',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -288,14 +288,14 @@ export function MaterialQuantity({
               style={{
                 fontSize: 26,
                 fontWeight: '700',
-                color: '#101c2c',
+                color: '#111827',
                 textAlign: 'center',
                 minWidth: 80,
                 maxWidth: 140,
                 padding: 0,
               }}
             />
-            <Txt style={{ color: '#485f83', fontWeight: '600' }}>{unit}</Txt>
+            <Txt style={{ color: '#64748B', fontWeight: '600' }}>{unit}</Txt>
           </View>
           <Txt style={{ fontSize: 12, color: '#4f5961' }}>
             {minimum

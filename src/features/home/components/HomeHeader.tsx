@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { Icon, Txt } from '@shared/ui';
+import { Icon, Txt, c } from '@shared/ui';
 
 export function HomeHeader({
   market,
@@ -37,11 +37,11 @@ export function HomeHeader({
         onPress={onMarket}
         style={styles.market}
       >
-        <Icon name="map-pin" size={14} color="#b6171e" />
+        <Icon name="map-pin" size={13} color={c.brandRed} />
         <Txt numberOfLines={1} style={styles.marketText}>
           {market || 'Select market'}
         </Txt>
-        <Icon name="chevron-down" size={13} color="#44474e" />
+        <Icon name="chevron-down" size={12} color={c.muted} />
       </Pressable>
       <View style={styles.actions}>
         <Pressable
@@ -50,7 +50,7 @@ export function HomeHeader({
           onPress={onNotifications}
           style={styles.action}
         >
-          <Icon name="bell" size={22} color="#101c2c" />
+          <Icon name="bell" size={20} color={c.ink} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -68,6 +68,7 @@ export function HomeHeader({
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   header: {
     height: 64,
@@ -76,52 +77,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
-    backgroundColor: '#f8f9ff',
-    boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
+    backgroundColor: c.paper,
+    borderBottomWidth: 1,
+    borderColor: c.line,
+    boxShadow: '0 1px 4px rgba(16, 24, 40, 0.04)',
     zIndex: 1,
   },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 44 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
   logo: {
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: '#142d4e',
+    backgroundColor: c.brandBlue,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 64, 154, 0.3)',
   },
   logoText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#ebf1ff',
-    letterSpacing: -1,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   fieldfast: {
     fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.6,
-    color: '#b6171e',
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    color: c.brandRed,
   },
-  company: { fontSize: 12, fontWeight: '700', color: '#001835' },
+  company: { fontSize: 13, fontWeight: '700', color: c.brandBlue, letterSpacing: -0.2 },
   market: {
     flexDirection: 'row',
-    gap: 3,
-    paddingHorizontal: 8,
+    gap: 5,
+    paddingHorizontal: 11,
     minHeight: 32,
     borderRadius: 20,
-    backgroundColor: '#e6eeff',
+    backgroundColor: c.paper,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    boxShadow: '0 1px 3px rgba(16, 24, 40, 0.04)',
     flexShrink: 1,
     alignItems: 'center',
   },
   marketText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#001835',
+    fontSize: 11,
+    fontWeight: '700',
+    color: c.ink,
     flexShrink: 1,
   },
-  actions: { flexDirection: 'row' },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   action: {
-    width: 40,
-    height: 44,
+    width: 38,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -129,11 +137,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#d7e3f9',
-    borderColor: '#c4c6cf',
-    borderWidth: 2,
+    backgroundColor: c.brandBlue,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  initial: { fontSize: 11, fontWeight: '700', color: '#142d4e' },
+  initial: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
 });

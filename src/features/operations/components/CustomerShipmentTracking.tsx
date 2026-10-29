@@ -94,7 +94,7 @@ export function CustomerShipmentTracking({
             </Txt>
           </View>
           <View style={styles.iconTile}>
-            <Icon name="truck" size={24} color="#001835" />
+            <Icon name="truck" size={24} color="#111827" />
           </View>
         </View>
         <View style={styles.status}>
@@ -109,7 +109,7 @@ export function CustomerShipmentTracking({
               flex: 1,
               fontSize: 13,
               fontWeight: '600',
-              color: '#001835',
+              color: '#111827',
             }}
           >
             {delivered
@@ -200,8 +200,8 @@ export function CustomerShipmentTracking({
                 <View
                   style={[
                     styles.stepCircle,
-                    step.done && { backgroundColor: '#001835' },
-                    index === current && { backgroundColor: '#b6171e' },
+                    step.done && { backgroundColor: '#0B1B36' },
+                    index === current && { backgroundColor: '#A70101' },
                   ]}
                 >
                   <Icon
@@ -304,7 +304,7 @@ function SectionTitle({
 }) {
   return (
     <View style={styles.row}>
-      <Icon name={icon} size={19} color="#001835" />
+      <Icon name={icon} size={19} color="#111827" />
       <Txt accessibilityRole="header" style={styles.sectionTitle}>
         {title}
       </Txt>
@@ -324,7 +324,7 @@ function Metric({ title, value }: { title: string; value: string }) {
 const styles = StyleSheet.create({
   page: { gap: 12, backgroundColor: '#f8f9ff', padding: 12, borderRadius: 12 },
   context: {
-    backgroundColor: '#001835',
+    backgroundColor: '#0B1B36',
     padding: 12,
     borderRadius: 8,
     flexDirection: 'row',
@@ -354,16 +354,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   identity: {
-    color: '#001835',
+    color: '#111827',
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 27,
   },
   secondary: { color: '#44474e', fontSize: 12, lineHeight: 19 },
-  value: { color: '#001835', fontSize: 14, fontWeight: '600', lineHeight: 21 },
+  value: { color: '#111827', fontSize: 14, fontWeight: '600', lineHeight: 21 },
   sectionTitle: {
     flex: 1,
-    color: '#001835',
+    color: '#111827',
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '700',
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eff4ff',
   },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  eta: { gap: 6, padding: 16, backgroundColor: '#001835', borderRadius: 12 },
+  eta: { gap: 6, padding: 16, backgroundColor: '#0B1B36', borderRadius: 12 },
   lightLabel: {
     fontSize: 10,
     color: '#b0c8f1',
@@ -421,8 +421,8 @@ const styles = StyleSheet.create({
   },
   support: {
     minHeight: 48,
-    backgroundColor: '#b6171e',
-    borderColor: '#b6171e',
+    backgroundColor: '#A70101',
+    borderColor: '#A70101',
     borderRadius: 8,
   },
 });

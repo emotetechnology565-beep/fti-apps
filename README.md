@@ -4,6 +4,8 @@ Expo 57 / React Native / TypeScript app built from the FTI implementation docume
 
 ## Run locally
 
+Frontend contributors: read the [frontend developer instructions](docs/frontend-development.md) for code organization, UI conventions, data handling, and the delivery workflow.
+
 ```powershell
 cd D:\fti\fti-app
 npm ci

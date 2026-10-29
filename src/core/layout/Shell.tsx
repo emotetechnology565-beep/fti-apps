@@ -232,31 +232,35 @@ export function Shell({ children }: { children: ReactNode }) {
                     paddingHorizontal: 13,
                     minHeight: 43,
                     marginBottom: 3,
-                    borderRadius: 6,
+                    borderRadius: 8,
                     backgroundColor: active(n.path)
-                      ? c.pink
+                      ? c.brandBlueLight
                       : hovered
-                        ? c.bg
+                        ? c.bgSubtle
                         : 'transparent',
+                    borderWidth: 1,
+                    borderColor: active(n.path)
+                      ? c.brandBlueBorder
+                      : 'transparent',
                   })}
                 >
                   <Icon
                     name={n.icon}
                     size={16}
-                    color={path === '/' ? (active(n.path) ? '#142d4e' : '#44474e') : active(n.path) ? c.red : c.muted}
+                    color={active(n.path) ? c.brandBlue : c.muted}
                   />
                   <Txt
                     style={{
                       fontSize: 11,
                       fontWeight: active(n.path) ? '700' : '500',
-                      color: active(n.path) ? c.red : '#59687A',
+                      color: active(n.path) ? c.brandBlue : c.ink,
                       flex: 1,
                     }}
                   >
                     {n.label}
                   </Txt>
                   {n.path === '/cart' && cart.length ? (
-                    <Badge tone="red">{cart.length}</Badge>
+                    <Badge tone="blue">{cart.length}</Badge>
                   ) : null}
                 </Pressable>
               ))}
@@ -373,8 +377,8 @@ export function Shell({ children }: { children: ReactNode }) {
                     style={{
                       fontSize: 18,
                       fontWeight: '900',
-                      color: c.red,
-                      letterSpacing: -1,
+                      color: c.dark,
+                      letterSpacing: -0.5,
                     }}
                   >
                     FTI
@@ -393,30 +397,28 @@ export function Shell({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 accessibilityLabel="Choose market"
                 onPress={() => setMarketOpen(true)}
+                style={{
+                  backgroundColor: c.paper,
+                  borderWidth: 1,
+                  borderColor: c.cardBorder,
+                  borderRadius: 20,
+                  paddingHorizontal: 11,
+                  paddingVertical: 5,
+                  boxShadow: '0 1px 4px rgba(31, 27, 22, 0.04)',
+                }}
               >
-                <Row style={{ gap: 7 }}>
-                  <Icon name="map-pin" size={15} color={c.red} />
-                  <View>
-                    <Txt
-                      style={{
-                        fontSize: 8,
-                        color: c.muted,
-                        letterSpacing: 0.8,
-                      }}
-                    >
-                      YOUR MARKET
-                    </Txt>
-                    <Txt
-                      style={{
-                        fontSize: phone ? 10 : 11,
-                        fontWeight: '600',
-                        marginTop: 3,
-                      }}
-                    >
-                      {markets.data?.find(item => item.id === market)?.name || 'Select market'}
-                    </Txt>
-                  </View>
-                  <Icon name="chevron-down" size={12} />
+                <Row style={{ gap: 6 }}>
+                  <Icon name="map-pin" size={13} color={c.brandRed} />
+                  <Txt
+                    style={{
+                      fontSize: phone ? 11 : 12,
+                      fontWeight: '700',
+                      color: c.ink,
+                    }}
+                  >
+                    {markets.data?.find(item => item.id === market)?.name || 'Select market'}
+                  </Txt>
+                  <Icon name="chevron-down" size={12} color={c.muted} />
                 </Row>
               </Pressable>
               {!phone ? (
@@ -442,13 +444,15 @@ export function Shell({ children }: { children: ReactNode }) {
                       width: 33,
                       height: 33,
                       borderRadius: 17,
-                      backgroundColor: c.pink,
+                      backgroundColor: c.brandBlue,
+                      borderWidth: 1.5,
+                      borderColor: c.brandBlueLight,
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
                     <Txt
-                      style={{ fontSize: 10, fontWeight: '700', color: c.red }}
+                      style={{ fontSize: 10, fontWeight: '700', color: c.paper }}
                     >
                       {business.name
                         ? business.name
@@ -524,12 +528,13 @@ export function Shell({ children }: { children: ReactNode }) {
             <View
               style={{
                 flexDirection: 'row',
-                backgroundColor: 'white',
+                backgroundColor: c.paper,
                 borderTopWidth: 1,
-                borderColor: c.line,
-                minHeight: 66,
-                paddingTop: 7,
-                paddingBottom: 5,
+                borderColor: c.cardBorder,
+                minHeight: 64,
+                paddingTop: 6,
+                paddingBottom: 6,
+                boxShadow: '0 -2px 10px rgba(31, 27, 22, 0.03)',
               }}
             >
               {[
@@ -548,20 +553,20 @@ export function Shell({ children }: { children: ReactNode }) {
                     flex: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 5,
-                    minHeight: 48,
+                    gap: 4,
+                    minHeight: 46,
                   }}
                 >
                   <Icon
                     name={n.icon as IconName}
                     size={18}
-                    color={path === '/' ? (active(n.path) ? '#142d4e' : '#44474e') : active(n.path) ? c.red : c.muted}
+                    color={active(n.path) ? c.brandRed : c.subtle}
                   />
                   <Txt
                     style={{
-                      fontSize: path === '/' ? 11 : 9,
-                      color: path === '/' ? '#142d4e' : active(n.path) ? c.red : c.muted,
-                      fontWeight: active(n.path) ? '700' : '400',
+                      fontSize: 10,
+                      color: active(n.path) ? c.brandRed : c.muted,
+                      fontWeight: active(n.path) ? '700' : '500',
                     }}
                   >
                     {n.label}

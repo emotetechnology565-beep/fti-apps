@@ -16,7 +16,7 @@ export function TractorPrice({ variant }: { variant: Variant }) {
           {formatTractorPrice(price.base)}
         </Txt>
       ) : null}
-      <Txt accessibilityLabel={`${price.discounted !== null ? 'Discounted' : 'Base'} price ${formatTractorPrice(price.discounted ?? price.base)} per ${variant.uom}`} style={{ color: '#075299', fontWeight: '700', fontSize: 17 }}>
+      <Txt accessibilityLabel={`${price.discounted !== null ? 'Discounted' : 'Base'} price ${formatTractorPrice(price.discounted ?? price.base)} per ${variant.uom}`} style={{ color: '#00409A', fontWeight: '700', fontSize: 17 }}>
         {formatTractorPrice(price.discounted ?? price.base)}
       </Txt>
       <Txt style={{ fontSize: 12, color: c.muted }}>/{variant.uom}</Txt>

@@ -13,6 +13,7 @@ import {
   Row,
   Txt,
   Badge,
+  c,
 } from '@shared/ui';
 import { pricingApi } from '../services/pricing-api';
 import type { Market, PublishedRate } from '../model/types';
@@ -62,26 +63,24 @@ function RateCard({
     <Card
       style={{
         gap: 14,
-        padding: 16,
+        padding: 18,
         borderWidth: 1,
-        borderRadius: 12,
+        borderColor: c.cardBorder,
+        borderRadius: 14,
         overflow: 'hidden',
-        backgroundColor: '#E7F2FF',
-        boxShadow: '0px 2px 8px rgba(7, 82, 153, 0.08)',
+        backgroundColor: c.paper,
+        boxShadow: '0px 2px 10px rgba(31, 27, 22, 0.04)',
       }}
     >
       <View
         pointerEvents="none"
         style={{
-          height: 4,
-          flexDirection: 'row',
-          marginHorizontal: -16,
-          marginTop: -16,
+          height: 3,
+          backgroundColor: c.brandBlue,
+          marginHorizontal: -18,
+          marginTop: -18,
         }}
-      >
-        <View style={{ flex: 2, backgroundColor: '#B51624' }} />
-        <View style={{ flex: 3, backgroundColor: '#075299' }} />
-      </View>
+      />
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
         {image ? (
           <Image
@@ -161,7 +160,7 @@ function RateCard({
       >
         <Txt
           style={{
-            color: '#B51624',
+            color: c.brandRed,
             fontSize: 11,
             fontWeight: '700',
             letterSpacing: 0.8,
@@ -175,7 +174,7 @@ function RateCard({
             fontSize: 28,
             lineHeight: 36,
             fontWeight: '700',
-            color: '#B51624',
+            color: c.brandRed,
           }}
         >
           {money(rate.amount)}

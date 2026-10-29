@@ -53,7 +53,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
       style={styles.card}
       testID={tractor ? 'matrix-tractor-card' : 'matrix-product-card'}
     >
-      <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 12 }}>
         <Pressable
           accessibilityRole="link"
           accessibilityLabel={`View ${p.name}`}
@@ -73,7 +73,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                 { alignItems: 'center', justifyContent: 'center' },
               ]}
             >
-              <Icon name="box" size={28} />
+              <Icon name="box" size={28} color="#64748B" />
             </View>
           )}
         </Pressable>
@@ -91,12 +91,12 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               accessibilityLabel={`${saved ? 'Unsave' : 'Save'} ${p.name}`}
               accessibilityState={{ selected: saved }}
               onPress={() => toggle(p.id)}
-              style={{ marginLeft: 'auto', padding: 8 }}
+              style={{ marginLeft: 'auto', padding: 6 }}
             >
               <Icon
                 name="bookmark"
-                size={16}
-                color={saved ? '#af101a' : '#485f83'}
+                size={18}
+                color={saved ? '#00409A' : '#00409A'}
               />
             </Pressable>
           </View>
@@ -135,7 +135,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         ].map(([label, value]) => (
           <View
             key={label}
-            style={{ flex: 1, minWidth: 0, alignItems: 'center', gap: 4 }}
+            style={{ flex: 1, minWidth: 0, alignItems: 'center', gap: 3 }}
           >
             <Txt style={styles.label}>{label}</Txt>
             <Txt style={styles.spec}>{value}</Txt>
@@ -143,7 +143,9 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         ))}
       </View>
       <View style={styles.price}>
-        {!priceAccess ? <SubscribeForPrices /> : tractor && first ? (
+        {!priceAccess ? (
+          <SubscribeForPrices />
+        ) : tractor && first ? (
           <>
             <Txt style={styles.amount}>
               {tractorPrice
@@ -159,29 +161,25 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               {tractorPrice?.discounted
                 ? `Base price ${formatTractorPrice(tractorPrice.base)}. `
                 : ''}
-              GST and delivery confirmed at checkout.
+              Indicative catalogue price
             </Txt>
           </>
-        ) : (
+        ) : price ? (
           <>
             <Txt style={styles.amount}>
-              {price
-                ? `From ₹${price.amount}`
-                : 'Quotation on request'}
+              {price.amount}
               <Txt style={styles.caption}>
-                {price ? ` / ${price.unit}` : ''}
+                {tmt ? ` / piece (${price.tax})` : ` / ${first?.uom ?? 'unit'}`}
               </Txt>
             </Txt>
             <Txt style={styles.caption}>
               {tmt
-                ? 'Price varies by brand and size.'
-                : (price?.tax ??
-                  'Select size and grade to request a quotation.')}
+                ? 'Indicative single-piece TMT retail benchmark'
+                : 'Indicative base rate excl. loading, logistics & taxes'}
             </Txt>
-            {tmt && price ? (
-              <Txt style={styles.caption}>{price.tax}</Txt>
-            ) : null}
           </>
+        ) : (
+          <Txt style={styles.amount}>Rate on enquiry</Txt>
         )}
       </View>
       <View
@@ -205,9 +203,9 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               onPress={open}
               style={{
                 minHeight: 44,
-                backgroundColor: '#af101a',
-                borderColor: '#af101a',
-                borderRadius: 4,
+                backgroundColor: '#00409A',
+                borderColor: '#00409A',
+                borderRadius: 8,
               }}
             >
               {tractor
@@ -224,69 +222,95 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
           onPress={open}
           style={styles.details}
         >
-          <Icon name="file-text" color="#485f83" size={20} />
+          <Icon name="file-text" color="#00409A" size={20} />
         </Pressable>
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   card: {
     flex: 1,
     minWidth: 0,
-    padding: 12,
-    gap: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    boxShadow: '0 2px 8px rgba(20,45,78,0.08)',
+    padding: 16,
+    gap: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    boxShadow: '0 2px 8px rgba(16, 24, 40, 0.04)',
   },
-  image: { width: 96, height: 96, borderRadius: 4, backgroundColor: '#dde9ff' },
+  image: {
+    width: 96,
+    height: 96,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+  },
   badge: {
     flexShrink: 1,
-    fontSize: 10,
-    lineHeight: 14,
+    fontSize: 10.5,
+    lineHeight: 15,
     fontWeight: '700',
-    color: '#30476a',
-    backgroundColor: '#dde9ff',
-    paddingHorizontal: 6,
+    color: '#00409A',
+    backgroundColor: '#EEF4FC',
+    paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 2,
+    borderRadius: 4,
+    letterSpacing: 0.4,
   },
-  title: { fontSize: 14, lineHeight: 20, fontWeight: '700', color: '#101c2c' },
+  title: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: '#111827',
+  },
   caption: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: '#485f83',
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: '#64748B',
     fontWeight: '400',
   },
   manifest: {
     flexDirection: 'row',
     gap: 8,
-    padding: 8,
-    backgroundColor: '#eff4ff',
-    borderRadius: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: '#F5EFEB',
+    borderRadius: 8,
   },
   label: {
     fontSize: 10,
     lineHeight: 14,
-    fontWeight: '600',
-    color: '#485f83',
+    fontWeight: '700',
+    color: '#64748B',
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
   spec: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: '700',
-    color: '#101c2c',
+    color: '#111827',
     textAlign: 'center',
   },
-  price: { gap: 4, backgroundColor: '#e6eeff', padding: 8, borderRadius: 4 },
-  amount: { fontSize: 18, lineHeight: 24, fontWeight: '700', color: '#af101a' },
+  price: {
+    gap: 6,
+    backgroundColor: '#EEF4FC',
+    padding: 10,
+    borderRadius: 8,
+  },
+  amount: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#00409A',
+  },
   details: {
     width: 44,
     height: 44,
-    borderRadius: 4,
-    backgroundColor: '#dde9ff',
+    borderRadius: 8,
+    backgroundColor: '#EEF4FC',
     alignItems: 'center',
     justifyContent: 'center',
   },

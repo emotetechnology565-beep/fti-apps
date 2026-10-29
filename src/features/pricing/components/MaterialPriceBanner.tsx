@@ -131,14 +131,7 @@ function MaterialPriceBannerContent() {
                           { opacity: pressed ? 0.75 : 1 },
                         ]}
                       >
-                        <View pointerEvents="none" style={styles.brandStripe}>
-                          <View
-                            style={{ flex: 2, backgroundColor: '#B51624' }}
-                          />
-                          <View
-                            style={{ flex: 3, backgroundColor: '#075299' }}
-                          />
-                        </View>
+                        <View pointerEvents="none" style={styles.brandStripe} />
                         <Txt numberOfLines={1} style={styles.materialName}>
                           {rate.name}, {selected.name}, {selected.state}
                         </Txt>
@@ -196,9 +189,9 @@ const styles = StyleSheet.create({
   banner: { marginBottom: 24, gap: 10 },
   header: { justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 },
   titleText: { gap: 5, flexShrink: 1 },
-  heading: { color: '#075299', fontSize: 14, fontWeight: '700' },
+  heading: { color: '#00409A', fontSize: 14, fontWeight: '700' },
   link: { minHeight: 44, justifyContent: 'center' },
-  linkText: { color: '#075299', fontSize: 12, fontWeight: '600' },
+  linkText: { color: '#00409A', fontSize: 12, fontWeight: '600' },
   track: {
     backgroundColor: '#EAF2FC',
     borderRadius: 12,
@@ -224,14 +217,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: '#E7F2FF',
+    backgroundColor: '#FFFFFF',
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: c.cardBorder,
-    boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)',
+    boxShadow: '0 2px 8px rgba(16, 24, 40, 0.04)',
   },
   materialName: {
-    color: '#075299',
+    color: '#00409A',
     fontSize: 15,
     lineHeight: 22,
     fontWeight: '700',
@@ -242,9 +235,9 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
     flexWrap: 'wrap',
-    backgroundColor: '#FFF0F0',
+    backgroundColor: '#F8FAFC',
     borderTopWidth: 1,
-    borderTopColor: '#F0CCD0',
+    borderTopColor: '#E2E8F0',
     marginHorizontal: -20,
     marginBottom: -14,
     paddingHorizontal: 20,
@@ -255,10 +248,10 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 4,
-    flexDirection: 'row',
+    height: 3,
+    backgroundColor: '#00409A',
   },
-  amount: { color: '#B51624', fontSize: 15, fontWeight: '700' },
+  amount: { color: '#00409A', fontSize: 15, fontWeight: '700' },
   unit: { fontSize: 11 },
   change: { fontSize: 13, fontWeight: '700' },
   disclosure: { color: '#777777', fontSize: 11, lineHeight: 16 },

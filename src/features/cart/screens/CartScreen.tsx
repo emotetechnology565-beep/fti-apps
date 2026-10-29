@@ -127,7 +127,7 @@ function Lot({
               (!valid || line.quantity <= minimum) && { opacity: 0.35 },
             ]}
           >
-            <Icon name="minus" size={16} color="#001835" />
+            <Icon name="minus" size={16} color="#111827" />
           </Pressable>
           <Txt style={styles.quantity}>
             {line.quantity} <Txt style={styles.secondary}>{unit}</Txt>
@@ -139,7 +139,7 @@ function Lot({
             onPress={() => change(line.quantity + minimum)}
             style={styles.stepButton}
           >
-            <Icon name="plus" size={16} color="#001835" />
+            <Icon name="plus" size={16} color="#111827" />
           </Pressable>
         </View>
         <View style={{ alignItems: 'flex-end', gap: 4 }}>
@@ -314,7 +314,7 @@ export function Cart() {
             </Button>
             <Card style={styles.card}>
               <View style={styles.row}>
-                <Icon name="truck" size={20} color="#001835" />
+                <Icon name="truck" size={20} color="#111827" />
                 <Txt accessibilityRole="header" style={styles.sectionTitle}>
                   Consignee & Delivery Route
                 </Txt>
@@ -336,7 +336,7 @@ export function Cart() {
             </Card>
             <Card style={styles.card}>
               <View style={styles.row}>
-                <Icon name="paperclip" size={20} color="#001835" />
+                <Icon name="paperclip" size={20} color="#111827" />
                 <Txt accessibilityRole="header" style={styles.sectionTitle}>
                   Purchase Order & Engineering Files
                 </Txt>
@@ -406,7 +406,7 @@ export function Cart() {
                 onPress={() => router.push('/checkout')}
                 style={{
                   minHeight: 48,
-                  backgroundColor: blocked ? '#485f83' : '#b6171e',
+                  backgroundColor: blocked ? '#64748B' : '#A70101',
                   borderWidth: 0,
                   borderRadius: 8,
                 }}
@@ -422,14 +422,14 @@ export function Cart() {
 }
 const styles = StyleSheet.create({
   page: { backgroundColor: '#f8f9ff', borderRadius: 12, overflow: 'hidden' },
-  hero: { padding: 16, gap: 16, backgroundColor: '#001835' },
+  hero: { padding: 16, gap: 16, backgroundColor: '#0B1B36' },
   heading: { fontSize: 24, lineHeight: 31, fontWeight: '700', color: '#fff' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   mode: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.7,
-    backgroundColor: '#142d4e',
+    backgroundColor: '#00409A',
     color: '#b0c8f1',
     padding: 6,
     borderRadius: 10,
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   policy: {
     flexDirection: 'row',
     gap: 8,
-    backgroundColor: '#142d4e',
+    backgroundColor: '#00409A',
     borderRadius: 8,
     padding: 12,
   },
@@ -464,12 +464,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     lineHeight: 25,
-    color: '#001835',
+    color: '#111827',
     fontWeight: '700',
     flexShrink: 1,
   },
   chip: {
-    color: '#001835',
+    color: '#111827',
     backgroundColor: '#dde9ff',
     fontSize: 10,
     lineHeight: 15,
@@ -519,15 +519,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 14,
     fontWeight: '700',
-    color: '#001835',
+    color: '#111827',
   },
   lotTotal: {
     fontSize: 18,
     lineHeight: 25,
     fontWeight: '700',
-    color: '#001835',
+    color: '#111827',
   },
-  clear: { color: '#b6171e', fontSize: 12, fontWeight: '600' },
+  clear: { color: '#A70101', fontSize: 12, fontWeight: '600' },
   error: { color: '#ba1a1a', fontSize: 12, lineHeight: 19 },
   totalBox: {
     padding: 12,
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   tray: {
-    backgroundColor: '#001835',
+    backgroundColor: '#0B1B36',
     padding: 16,
     borderRadius: 12,
     flexDirection: 'row',

@@ -68,7 +68,7 @@ function LedgerCard({
         </View>
         {d.business || d.location ? (
           <View style={styles.inset}>
-            <Icon name="map-pin" color="#b6171e" size={18} />
+            <Icon name="map-pin" color="#A70101" size={18} />
             <View style={styles.grow}>
               {d.business ? (
                 <Txt style={styles.strong}>{d.business}</Txt>
@@ -80,7 +80,7 @@ function LedgerCard({
         <View style={styles.row}>
           <Icon
             name={order.kind === 'fastener' ? 'tool' : 'package'}
-            color="#142d4e"
+            color="#00409A"
           />
           <Txt style={[styles.strong, styles.grow]}>
             {d.material || 'Order request'}
@@ -96,7 +96,7 @@ function LedgerCard({
         </View>
         {f.carrier ? (
           <View style={styles.inset}>
-            <Icon name="truck" color="#b6171e" />
+            <Icon name="truck" color="#A70101" />
             <View style={styles.grow}>
               <Txt style={styles.strong}>{f.carrier}</Txt>
               <Txt style={styles.small}>
@@ -221,7 +221,7 @@ export function OrderLedger({
           onPress={() => void refresh()}
           style={styles.refresh}
         >
-          <Icon name="refresh-cw" color="#142d4e" size={18} />
+          <Icon name="refresh-cw" color="#00409A" size={18} />
         </Pressable>
       </View>
       {selected ? (
@@ -367,14 +367,14 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   grow: { flex: 1, minWidth: 100 },
   eyebrow: {
-    color: '#b6171e',
+    color: '#A70101',
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 1.1,
     marginBottom: 5,
   },
   title: {
-    color: '#001835',
+    color: '#111827',
     fontSize: 24,
     lineHeight: 30,
     fontWeight: '700',
@@ -405,11 +405,11 @@ const styles = StyleSheet.create({
     minHeight: 44,
     justifyContent: 'center',
   },
-  selected: { backgroundColor: '#142d4e' },
+  selected: { backgroundColor: '#00409A' },
   filterText: { color: '#142d4e', fontSize: 12, fontWeight: '700' },
   selectedText: { color: '#fff' },
   reset: { minHeight: 44, justifyContent: 'center' },
-  resetText: { fontSize: 11, fontWeight: '700', color: '#b6171e' },
+  resetText: { fontSize: 11, fontWeight: '700', color: '#A70101' },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -418,9 +418,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   track: { height: 4, backgroundColor: '#e6eeff' },
-  progress: { height: 4, backgroundColor: '#b6171e' },
+  progress: { height: 4, backgroundColor: '#A70101' },
   body: { padding: 16, gap: 12 },
-  reference: { color: '#001835', fontSize: 17, fontWeight: '700' },
+  reference: { color: '#111827', fontSize: 17, fontWeight: '700' },
   small: { color: '#44474e', fontSize: 12, lineHeight: 18 },
   strong: { color: '#142d4e', fontSize: 13, lineHeight: 19, fontWeight: '700' },
   badge: {
@@ -460,9 +460,9 @@ const styles = StyleSheet.create({
     gap: 8,
     flexWrap: 'wrap',
   },
-  value: { color: '#001835', fontSize: 17, lineHeight: 25, fontWeight: '700' },
+  value: { color: '#111827', fontSize: 17, lineHeight: 25, fontWeight: '700' },
   action: {
-    backgroundColor: '#b6171e',
+    backgroundColor: '#A70101',
     borderWidth: 0,
     borderRadius: 10,
     minHeight: 44,

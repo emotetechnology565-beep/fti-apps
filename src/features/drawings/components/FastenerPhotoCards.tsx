@@ -151,8 +151,8 @@ export function FastenerPhotoCards({
                 <Txt
                   style={{
                     padding: 16,
-                    backgroundColor: '#e6f2ff',
-                    color: '#075299',
+                    backgroundColor: '#F8FAFC',
+                    color: '#111827',
                     fontWeight: '700',
                     fontSize: 17,
                   }}
@@ -203,15 +203,12 @@ export function FastenerPhotoCards({
                 minHeight: productCard.minHeight,
                 borderWidth: 1,
                 borderColor: selected === card.slug ? c.red : c.line,
-                borderRadius: productCard.radius,
+                borderRadius: 14,
                 overflow: 'hidden',
                 backgroundColor: 'white',
               }}
             >
-              <View style={{ height: 4, flexDirection: 'row' }}>
-                <View style={{ flex: 1, backgroundColor: c.red }} />
-                <View style={{ flex: 2, backgroundColor: '#075299' }} />
-              </View>
+              <View style={{ height: 3, backgroundColor: c.brandBlue }} />
               <Image
                 source={{ uri: card.image_url! }}
                 style={{ width: '100%', height: productCard.imageHeight }}
@@ -225,8 +222,8 @@ export function FastenerPhotoCards({
                 style={{
                   padding: 12,
                   minHeight: sectionHeights.title ?? productCard.titleHeight,
-                  color: '#075299',
-                  backgroundColor: '#e6f2ff',
+                  color: '#111827',
+                  backgroundColor: '#F8FAFC',
                   fontWeight: '700',
                   fontSize: 14,
                   lineHeight: 20,

@@ -18,9 +18,9 @@ export function AddToCart({
   const actionStyle = compact
     ? {
         minHeight: 44,
-        backgroundColor: '#af101a',
-        borderColor: '#af101a',
-        borderRadius: 4,
+        backgroundColor: '#00409A',
+        borderColor: '#00409A',
+        borderRadius: 8,
       }
     : undefined;
   const add = useStore((state) => state.add);

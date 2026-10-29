@@ -4,7 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { orderHistory } from '@features/orders/services/order-history';
-import { Button, Icon, Txt } from '@shared/ui';
+import { Button, Icon, Txt, c } from '@shared/ui';
 
 export function HomeActivity() {
   const { session, ready } = useAuth();
@@ -29,7 +29,7 @@ export function HomeActivity() {
       {session && (history.isPending || history.error || latest) ? (
         <View style={styles.order}>
           <View style={styles.row}>
-            <Icon name="truck" color="#142d4e" size={20} />
+            <Icon name="truck" color={c.brandBlue} size={18} />
             <Txt style={[styles.eyebrow, { flex: 1 }]}>YOUR LATEST ORDER</Txt>
             {latest ? (
               <View style={styles.badge}>
@@ -64,7 +64,7 @@ export function HomeActivity() {
                 {new Date(latest.created_at).toLocaleDateString('en-IN')}
               </Txt>
               <View style={styles.update}>
-                <Icon name="activity" size={14} color="#b6171e" />
+                <Icon name="activity" size={14} color={c.brandRed} />
                 <Txt style={[styles.description, styles.text]}>
                   {latest.fulfillment.tracking_number
                     ? `Tracking: ${latest.fulfillment.tracking_number}`
@@ -76,12 +76,7 @@ export function HomeActivity() {
                 </Txt>
               </View>
               <Button
-                secondary
-                style={{
-                  backgroundColor: '#dde9ff',
-                  borderWidth: 0,
-                  borderRadius: 8,
-                }}
+                style={styles.actionBtn}
                 icon="arrow-right"
                 onPress={() => router.push('/orders')}
               >
@@ -94,44 +89,51 @@ export function HomeActivity() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   stack: { paddingHorizontal: 16 },
-  cart: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderColor: '#e6eeff',
+  order: {
+    padding: 18,
+    backgroundColor: c.paper,
+    borderRadius: 14,
     borderWidth: 1,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderColor: c.cardBorder,
+    boxShadow: '0 2px 10px rgba(31, 27, 22, 0.04)',
     gap: 12,
-    flexWrap: 'wrap',
   },
-  order: { padding: 16, backgroundColor: '#fff', borderRadius: 12, gap: 10 },
   row: { flexDirection: 'row', gap: 8, alignItems: 'center', flexWrap: 'wrap' },
   text: { flex: 1, minWidth: 120 },
-  title: { fontSize: 20, fontWeight: '700', color: '#142d4e' },
-  description: { fontSize: 12, lineHeight: 19, color: '#58697c' },
+  title: { fontSize: 18, fontWeight: '700', color: c.ink, letterSpacing: -0.3 },
+  description: { fontSize: 12, lineHeight: 19, color: c.muted },
   eyebrow: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '700',
-    letterSpacing: 1,
-    color: '#142d4e',
+    letterSpacing: 1.5,
+    color: c.brandBlue,
+    textTransform: 'uppercase',
   },
   update: {
     flexDirection: 'row',
     gap: 8,
     alignItems: 'center',
     padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#eff4ff',
+    borderRadius: 10,
+    backgroundColor: c.brandBlueLight,
+    borderWidth: 1,
+    borderColor: c.brandBlueBorder,
   },
   badge: {
     borderRadius: 20,
     paddingHorizontal: 10,
-    paddingVertical: 3,
-    backgroundColor: '#dde9ff',
+    paddingVertical: 4,
+    backgroundColor: c.greenBg,
+    borderWidth: 1,
+    borderColor: 'rgba(76, 107, 79, 0.22)',
   },
-  status: { fontSize: 11, color: '#142d4e', textTransform: 'capitalize' },
-  button: { backgroundColor: '#b6171e', borderWidth: 0, borderRadius: 8 },
+  status: { fontSize: 11, fontWeight: '700', color: c.green, textTransform: 'capitalize' },
+  actionBtn: {
+    backgroundColor: c.brandBlue,
+    borderRadius: 10,
+    minHeight: 42,
+  },
 });

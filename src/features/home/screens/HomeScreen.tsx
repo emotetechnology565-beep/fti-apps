@@ -23,30 +23,44 @@ const services = [
     short: 'Rates',
     icon: 'trending-up',
     path: '/rates',
-    bg: '#E9F3FF',
+    bg: c.brandRedLight,
+    iconColor: c.brandRed,
   },
   {
     title: 'Requests & quotations',
     short: 'Get a quote',
     icon: 'file-text',
     path: '/rfqs',
-    bg: '#FFF0F0',
+    bg: c.brandBlueLight,
+    iconColor: c.brandBlue,
   },
   {
     title: 'Orders & dispatch',
     short: 'My orders',
     icon: 'truck',
     path: '/orders',
-    bg: '#EDF5EF',
+    bg: c.greenBg,
+    iconColor: c.green,
   },
   {
     title: 'Weight calculator',
     short: 'Calculator',
     icon: 'cpu',
     path: '/calculator',
-    bg: '#FFF5E4',
+    bg: c.bgSubtle,
+    iconColor: c.brandBlue,
   },
 ] as const;
+const quickFilters = [
+  { label: 'Round Bars', search: 'Round Bar' },
+  { label: 'Hex Bolts', search: 'Hex Bolt' },
+  { label: 'SS 304', search: 'SS 304' },
+  { label: 'Grade 8.8', search: '8.8' },
+  { label: 'Steel Sheets', search: 'Sheet' },
+  { label: 'TMT Bars', search: 'TMT' },
+  { label: 'Tractor Spares', search: 'Tractor' },
+];
+
 const categories = [
   {
     title: 'Round bars',
@@ -144,7 +158,7 @@ function CategoryRow({
           style={styles.seeAll}
         >
           <Txt style={styles.seeAllText}>View all</Txt>
-          <Icon name="arrow-right" size={15} color={c.red} />
+          <Icon name="arrow-right" size={15} color={c.brandBlue} />
         </Pressable>
       </View>
       {items.length ? (
@@ -265,9 +279,30 @@ export function Home() {
             onPress={submitSearch}
             style={styles.searchSubmit}
           >
-            <Icon name="arrow-right" size={21} color="#142d4e" />
+            <Icon name="arrow-right" size={20} color="#FFFFFF" />
           </Pressable>
         </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.quickFilters}
+        >
+          {quickFilters.map((qf) => (
+            <Pressable
+              key={qf.label}
+              accessibilityRole="button"
+              accessibilityLabel={`Filter by ${qf.label}`}
+              onPress={() => router.push({ pathname: '/products', params: { search: qf.search } })}
+              style={({ pressed }) => [
+                styles.filterChip,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Icon name="tag" size={11} color={c.brandBlue} />
+              <Txt style={styles.filterChipText}>{qf.label}</Txt>
+            </Pressable>
+          ))}
+        </ScrollView>
         <View style={styles.services}>
           {services.map((item) => (
             <Pressable
@@ -280,11 +315,11 @@ export function Home() {
                 pressed && styles.pressed,
               ]}
             >
-              <View style={styles.serviceIcon}>
+              <View style={[styles.serviceIcon, { backgroundColor: item.bg }]}>
                 <Icon
                   name={item.icon}
-                  size={22}
-                  color={item.path === '/rates' ? '#b6171e' : '#142d4e'}
+                  size={20}
+                  color={item.iconColor}
                 />
               </View>
               <Txt style={styles.serviceTitle}>{item.short}</Txt>
@@ -349,7 +384,7 @@ export function Home() {
             </Txt>
             <View style={styles.promotionCta}>
               <Txt style={styles.ctaText}>Browse materials</Txt>
-              <Icon name="arrow-right" size={18} color="white" />
+              <Icon name="arrow-right" size={16} color="#FFFFFF" />
             </View>
           </View>
           <ProductPhoto
@@ -369,14 +404,14 @@ export function Home() {
             accessibilityRole="link"
             accessibilityLabel="Explore fastener dimensions"
             onPress={() => router.push('/fastener/hex-bolt')}
-            style={[styles.tool, { backgroundColor: '#ffdad6' }]}
+            style={[styles.tool, { backgroundColor: c.goldLight, borderColor: 'rgba(198, 165, 103, 0.35)', borderWidth: 1 }]}
           >
-            <View style={styles.toolIcon}>
-              <Icon name="tool" size={20} color={c.red} />
+            <View style={[styles.toolIcon, { backgroundColor: 'rgba(198, 165, 103, 0.2)' }]}>
+              <Icon name="tool" size={18} color={c.brandBlue} />
             </View>
             <Txt style={styles.toolTitle}>Fastener dimensions</Txt>
             <Txt style={styles.description}>Check dimensions & weights</Txt>
-            <Icon name="arrow-up-right" size={20} color={c.red} />
+            <Icon name="arrow-up-right" size={18} color={c.brandBlue} />
           </Pressable>
           <Pressable
             accessibilityRole="link"
@@ -385,11 +420,11 @@ export function Home() {
             style={styles.tool}
           >
             <View style={styles.toolIcon}>
-              <Icon name="package" size={20} color="#142d4e" />
+              <Icon name="package" size={18} color={c.ink} />
             </View>
             <Txt style={styles.toolTitle}>Business stock</Txt>
             <Txt style={styles.description}>Explore business listings</Txt>
-            <Icon name="arrow-up-right" size={20} color={c.cardBorder} />
+            <Icon name="arrow-up-right" size={18} color={c.muted} />
           </Pressable>
         </View>
         {accountResolved || (!session && ready) ? (
@@ -414,8 +449,8 @@ export function Home() {
           >
             <Icon
               name={accountResolved ? 'briefcase' : 'user'}
-              size={24}
-              color={c.red}
+              size={22}
+              color={c.brandBlue}
             />
             <View style={styles.accountText}>
               <Txt style={styles.accountTitle}>
@@ -427,7 +462,7 @@ export function Home() {
                   : 'Sign in to manage your business and orders.'}
               </Txt>
             </View>
-            <Icon name="chevron-right" size={20} />
+            <Icon name="chevron-right" size={18} color={c.muted} />
           </Pressable>
         ) : null}
         <Pressable
@@ -436,14 +471,14 @@ export function Home() {
           onPress={() => router.push('/support')}
           style={styles.account}
         >
-          <Icon name="help-circle" color="#b6171e" size={24} />
+          <Icon name="help-circle" color={c.brandBlue} size={22} />
           <View style={styles.accountText}>
             <Txt style={styles.accountTitle}>Need help with your order?</Txt>
             <Txt style={styles.description}>
               Get support for orders, claims and certificates.
             </Txt>
           </View>
-          <Icon name="chevron-right" size={20} />
+          <Icon name="chevron-right" size={18} color={c.muted} />
         </Pressable>
         <Announcements />
       </View>
@@ -452,54 +487,121 @@ export function Home() {
 }
 
 const styles = StyleSheet.create({
-  home: { minWidth: 0, backgroundColor: '#f8f9ff', gap: 16 },
-  header: { backgroundColor: '#f8f9ff', paddingTop: 8, gap: 8 },
+  home: { minWidth: 0, backgroundColor: c.bg, gap: 16 },
+  quickFilters: {
+    paddingHorizontal: 16,
+    gap: 8,
+    paddingTop: 2,
+    paddingBottom: 4,
+  },
+  filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: c.paper,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    boxShadow: '0 1px 4px rgba(16, 24, 40, 0.03)',
+  },
+  filterChipText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: c.ink,
+  },
+  trustStripContainer: {
+    paddingHorizontal: 16,
+  },
+  trustStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: c.paper,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    boxShadow: '0 2px 8px rgba(16, 24, 40, 0.03)',
+    gap: 8,
+  },
+  trustItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  trustIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trustTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: c.ink,
+  },
+  trustDesc: {
+    fontSize: 9.5,
+    color: c.muted,
+  },
+  trustDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: c.line,
+  },
+
+  header: { backgroundColor: c.bg, paddingTop: 8, gap: 10 },
   serviceIcon: {
     width: 44,
     height: 44,
-    borderRadius: 8,
-    backgroundColor: '#dde9ff',
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  services: { paddingHorizontal: 16, gap: 4, flexDirection: 'row' },
+  services: { paddingHorizontal: 16, gap: 8, flexDirection: 'row' },
   service: {
     flex: 1,
     minWidth: 0,
-    minHeight: 81,
-    borderRadius: 12,
-    backgroundColor: '#fff',
+    minHeight: 84,
+    borderRadius: 14,
+    backgroundColor: c.paper,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: c.cardBorder,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
+    boxShadow: '0 2px 8px rgba(31, 27, 22, 0.04)',
   },
   serviceTitle: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'center',
-    color: '#142d4e',
+    color: c.ink,
   },
   search: {
     marginHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: 'white',
-    borderWidth: 0,
-    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
+    backgroundColor: c.paper,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    boxShadow: '0 2px 10px rgba(31, 27, 22, 0.04)',
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 14,
     paddingRight: 6,
     gap: 8,
   },
-  searchInput: { flex: 1, minWidth: 0, height: 52, fontSize: 15, color: c.ink },
+  searchInput: { flex: 1, minWidth: 0, height: 50, fontSize: 14, color: c.ink },
   searchSubmit: {
-    width: 40,
-    height: 40,
+    width: 38,
+    height: 38,
     borderRadius: 8,
-    backgroundColor: '#dde9ff',
+    backgroundColor: c.brandBlue,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -512,18 +614,19 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '700',
+    letterSpacing: -0.4,
     lineHeight: 26,
-    color: '#142d4e',
+    color: c.ink,
   },
   seeAll: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  seeAllText: { fontSize: 14, fontWeight: '700', color: c.red },
+  seeAllText: { fontSize: 13, fontWeight: '700', color: c.brandBlue },
   categories: {
     paddingHorizontal: 16,
     paddingTop: 4,
     paddingBottom: 2,
-    gap: 8,
+    gap: 10,
   },
   categoryRowHeader: {
     paddingHorizontal: 16,
@@ -532,92 +635,108 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  categoryRowTitle: { fontSize: 20, fontWeight: '700', color: '#001835' },
+  categoryRowTitle: { fontSize: 19, fontWeight: '700', letterSpacing: -0.4, color: c.ink },
   productGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 4,
+    gap: 8,
     paddingHorizontal: 16,
   },
   gridTile: { flex: 1, minWidth: 0, padding: 10, gap: 8 },
   gridImage: {
     width: '100%',
     height: 96,
-    backgroundColor: '#eff4ff',
+    backgroundColor: c.bgSubtle,
+    borderRadius: 10,
     borderWidth: 0,
   },
   categoryStatus: { paddingHorizontal: 16, paddingBottom: 18, gap: 8 },
   category: {
     width: 144,
     gap: 8,
-    backgroundColor: '#fff',
+    backgroundColor: c.paper,
     padding: 10,
-    borderRadius: 12,
-    boxShadow: '0 1px 3px rgba(20,45,78,0.06)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    boxShadow: '0 2px 8px rgba(31, 27, 22, 0.03)',
   },
   categoryImage: {
     width: 124,
     height: 112,
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 0,
+    backgroundColor: c.bgSubtle,
   },
   categoryTitle: {
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'left',
-    color: '#001835',
+    color: c.ink,
   },
-  categorySubtitle: { fontSize: 11, color: '#74777f' },
+  categorySubtitle: { fontSize: 11, color: c.muted },
   photoPlaceholder: {
-    backgroundColor: '#F1F4F8',
+    backgroundColor: c.bgSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
   promotion: {
-    backgroundColor: '#142d4e',
-    borderRadius: 12,
+    backgroundColor: c.brandBlue,
+    borderRadius: 16,
     overflow: 'hidden',
     flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 165, 103, 0.35)',
+    boxShadow: '0 4px 16px rgba(22, 19, 16, 0.12)',
   },
-  promotionBody: { flex: 1, padding: 16, gap: 8 },
+  promotionBody: { flex: 1, padding: 18, gap: 8 },
   promotionImage: { width: '33%', minHeight: 180 },
   promotionTitle: {
-    color: '#fff',
+    color: '#FAF8F5',
     fontSize: 20,
-    lineHeight: 25,
+    lineHeight: 26,
     fontWeight: '700',
+    letterSpacing: -0.3,
   },
   promotionCta: {
     flexDirection: 'row',
     gap: 8,
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: 38,
+    backgroundColor: c.brandRed,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 6,
   },
   featureEyebrow: {
     fontSize: 11,
     fontWeight: '700',
-    letterSpacing: 1,
-    color: '#D2E5FA',
+    letterSpacing: 1.5,
+    color: '#FCA5A5',
+    textTransform: 'uppercase',
   },
-  featureDescription: { fontSize: 13, lineHeight: 20, color: '#a6b7d0' },
-  ctaText: { color: 'white', fontWeight: '700', fontSize: 14 },
-  content: { paddingHorizontal: 16, paddingBottom: 0, gap: 8 },
-  tools: { flexDirection: 'row', gap: 4 },
+  featureDescription: { fontSize: 13, lineHeight: 20, color: '#D9D1C5' },
+  ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 13 },
+  content: { paddingHorizontal: 16, paddingBottom: 0, gap: 10 },
+  tools: { flexDirection: 'row', gap: 8 },
   tool: {
     flex: 1,
     minWidth: 0,
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
     gap: 6,
     minHeight: 144,
-    backgroundColor: '#dde9ff',
-    borderWidth: 0,
+    backgroundColor: c.paper,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    boxShadow: '0 2px 8px rgba(31, 27, 22, 0.03)',
   },
   toolIcon: {
     width: 36,
     height: 36,
-    backgroundColor: '#fff',
+    backgroundColor: c.bgSubtle,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -625,20 +744,23 @@ const styles = StyleSheet.create({
   toolTitle: {
     fontSize: 15,
     lineHeight: 20,
-    letterSpacing: -0.4,
+    letterSpacing: -0.3,
     fontWeight: '700',
+    color: c.ink,
   },
-  description: { fontSize: 12, lineHeight: 19, color: '#58697C' },
+  description: { fontSize: 12, lineHeight: 19, color: c.muted },
   account: {
-    borderWidth: 0,
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
+    backgroundColor: c.paper,
+    borderRadius: 14,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
+    boxShadow: '0 2px 8px rgba(31, 27, 22, 0.03)',
   },
   accountText: { flex: 1, minWidth: 0, gap: 5 },
-  accountTitle: { fontSize: 14, fontWeight: '700', lineHeight: 22 },
+  accountTitle: { fontSize: 14, fontWeight: '700', lineHeight: 22, color: c.ink },
   pressed: { opacity: 0.8 },
 });

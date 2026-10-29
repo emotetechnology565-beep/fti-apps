@@ -193,7 +193,7 @@ function CatalogueMatrix({
             onPress={() => setSpecs(true)}
             style={styles.specs}
           >
-            <Icon name="sliders" size={18} color="#af101a" />
+            <Icon name="sliders" size={18} color="#00409A" />
             <Txt style={styles.pillText}>
               Specs{activeFilters ? ` (${activeFilters})` : ''}
             </Txt>
@@ -227,7 +227,7 @@ function CatalogueMatrix({
             onPress={() => router.push('/calculator')}
             style={styles.pill}
           >
-            <Icon name="cpu" size={14} color="#af101a" />
+            <Icon name="cpu" size={14} color="#00409A" />
             <Txt style={styles.pillText}>Weight calculator</Txt>
           </Pressable>
           <Pressable
@@ -255,18 +255,18 @@ function CatalogueMatrix({
               }}
               style={[
                 styles.tab,
-                kind === tab.value && { backgroundColor: '#fff' },
+                kind === tab.value && { backgroundColor: '#FFFFFF', boxShadow: '0 1px 4px rgba(16, 24, 40, 0.06)' },
               ]}
             >
               <Icon
                 name={tab.icon}
                 size={18}
-                color={kind === tab.value ? '#af101a' : '#485f83'}
+                color={kind === tab.value ? '#00409A' : '#64748B'}
               />
               <Txt
                 style={[
                   styles.tabText,
-                  kind === tab.value && { color: '#af101a' },
+                  kind === tab.value && { color: '#00409A' },
                 ]}
               >
                 {tab.label}
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   hero: { backgroundColor: '#eff4ff', padding: 16, gap: 10 },
   badge: {
     backgroundColor: '#d7e3f9',
-    color: '#485f83',
+    color: '#334E68',
     paddingHorizontal: 6,
     paddingVertical: 3,
     fontSize: 10,
@@ -499,15 +499,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#101c2c',
   },
-  caption: { fontSize: 12, lineHeight: 18, color: '#485f83' },
+  caption: { fontSize: 12, lineHeight: 18, color: '#334E68' },
   label: {
     fontSize: 10,
     lineHeight: 14,
     fontWeight: '700',
-    color: '#485f83',
+    color: '#334E68',
     letterSpacing: 0.4,
   },
-  total: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#af101a' },
+  total: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#A70101' },
   controls: { padding: 16, paddingBottom: 8, gap: 8 },
   search: {
     flex: 1,
@@ -515,9 +515,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
     paddingLeft: 12,
+    boxShadow: '0 1px 4px rgba(16, 24, 40, 0.04)',
   },
   specs: {
     flexDirection: 'row',
@@ -525,52 +528,59 @@ const styles = StyleSheet.create({
     gap: 4,
     height: 44,
     paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: '#dde9ff',
+    borderRadius: 10,
+    backgroundColor: '#EEF4FC',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
   },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    minHeight: 36,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: '#e6eeff',
-    borderRadius: 12,
+    minHeight: 34,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    boxShadow: '0 1px 3px rgba(16, 24, 40, 0.03)',
   },
-  activePill: { backgroundColor: '#253142' },
+  activePill: { backgroundColor: '#00409A', borderColor: '#00409A' },
   pillText: {
-    fontSize: 11,
+    fontSize: 11.5,
     lineHeight: 16,
     fontWeight: '600',
-    color: '#101c2c',
+    color: '#111827',
   },
-  white: { color: '#ebf1ff' },
+  white: { color: '#FFFFFF' },
   tabs: {
     flexDirection: 'row',
-    backgroundColor: '#e6eeff',
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     padding: 4,
     gap: 6,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   tab: {
     flex: 1,
     minWidth: 0,
-    minHeight: 64,
-    borderRadius: 4,
+    minHeight: 52,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    padding: 4,
+    padding: 6,
   },
   tabText: {
-    fontSize: 11,
+    fontSize: 11.5,
     lineHeight: 16,
     fontWeight: '700',
     textAlign: 'center',
-    color: '#485f83',
+    color: '#64748B',
   },
-  clear: { fontSize: 12, color: '#af101a', fontWeight: '600' },
+  clear: { fontSize: 12, color: '#A70101', fontWeight: '600' },
   overlay: {
     flex: 1,
     backgroundColor: '#101c2c66',
