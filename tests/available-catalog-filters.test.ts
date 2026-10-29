@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { availableCatalogFilters, matchesCatalogSize } from '../src/features/catalog/model/available-filters';
 import type { Variant } from '../src/features/catalog/model/types';
 import { loadFilterVariants } from '../src/features/catalog/data/available-filter-options';
-import type { CatalogPage } from '../src/features/catalog/model/types';
+import type { Product } from '../src/features/catalog/model/types';
 
 const variant = (grade: string, label: string, diameter: number | null = null): Variant => ({
   id: grade + label, sku: grade + label, size_label: label, diameter_mm: diameter,
@@ -34,15 +34,15 @@ test('size matching respects exact diameters, all sizes, and unknown labels', ()
 
 test('category grades come from every results page and exclude other product kinds and shared grades', async () => {
   const calls: { p_category: string | null; p_limit: number; p_offset: number }[] = [];
-  const steel = { product_kind: 'steel', variants: [variant('EN-8D', '20 mm')] };
-  const fastener = { product_kind: 'fastener', variants: [variant('8.8', 'M12')] };
-  const later = { product_kind: 'steel', variants: [variant('EN-19', '30 mm')] };
+  const steel: Pick<Product, 'product_kind' | 'variants'> = { product_kind: 'steel', variants: [variant('EN-8D', '20 mm')] };
+  const fastener: Pick<Product, 'product_kind' | 'variants'> = { product_kind: 'fastener', variants: [variant('8.8', 'M12')] };
+  const later: Pick<Product, 'product_kind' | 'variants'> = { product_kind: 'steel', variants: [variant('EN-19', '30 mm')] };
   const fetchPage = async (args: (typeof calls)[number]) => {
     calls.push(args);
     return {
       items: args.p_offset === 0 ? [steel, fastener] : [later],
       total: 3, categories: [], grades: ['UNRELATED', '8.8', 'EN-8D', 'EN-19'],
-    } as CatalogPage;
+    };
   };
   const variants = await loadFilterVariants(fetchPage, 'round-bar-as-rolled', 'steel');
   assert.deepEqual(availableCatalogFilters(variants).grades, ['EN-19', 'EN-8D']);

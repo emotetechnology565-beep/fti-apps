@@ -1,11 +1,14 @@
-import type { CatalogPage, Product, Variant } from '../model/types';
+import type { Product, Variant } from '../model/types';
 
 export async function loadFilterVariants(
   fetchPage: (args: {
     p_category: string | null;
     p_limit: number;
     p_offset: number;
-  }) => Promise<CatalogPage>,
+  }) => Promise<{
+    items: Pick<Product, 'product_kind' | 'variants'>[];
+    total: number;
+  }>,
   category: string,
   productKind: Product['product_kind'],
 ): Promise<Variant[]> {
