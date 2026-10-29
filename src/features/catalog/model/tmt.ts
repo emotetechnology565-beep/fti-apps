@@ -1,3 +1,31 @@
+import { selectionPrice } from './material-selection';
+import type { Variant } from './types';
+
+export function lowestTmtPrice(variants: Variant[]) {
+  let lowest: ReturnType<typeof selectionPrice> = null;
+  let lowestAmount = Infinity;
+  for (const variant of variants) {
+    const price = selectionPrice({
+      id: variant.id,
+      product_id: '',
+      product_name: 'TMT Bar',
+      grade: '',
+      variant_id: variant.id,
+      uom: variant.uom,
+      min_order_qty: variant.min_order_qty,
+      attributes: variant.attributes,
+    });
+    const amount = Number(
+      variant.attributes.sheet_flat_net_prate ?? variant.attributes.grade_list_price,
+    );
+    if (price && amount > 0 && amount < lowestAmount) {
+      lowest = price;
+      lowestAmount = amount;
+    }
+  }
+  return lowest;
+}
+
 export function isTmtCategory(category: string): boolean {
   return ['tmt', 'tmt-bar', 'tmt-bars'].includes(
     category

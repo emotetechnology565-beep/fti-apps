@@ -1,6 +1,6 @@
 import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
-import { isTmtCategory } from '../model/tmt';
+import { isTmtCategory, lowestTmtPrice } from '../model/tmt';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -32,18 +32,20 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
     ),
   ];
   const price =
-    priceAccess && !tmt && first
-      ? selectionPrice({
-          id: first.id,
-          product_id: p.id,
-          product_name: p.name,
-          grade: p.grade,
-          variant_id: first.id,
-          uom: first.uom,
-          min_order_qty: first.min_order_qty,
-          attributes: first.attributes,
-        })
-      : null;
+    priceAccess && tmt
+      ? lowestTmtPrice(p.variants)
+      : priceAccess && first
+        ? selectionPrice({
+            id: first.id,
+            product_id: p.id,
+            product_name: p.name,
+            grade: p.grade,
+            variant_id: first.id,
+            uom: first.uom,
+            min_order_qty: first.min_order_qty,
+            attributes: first.attributes,
+          })
+        : null;
   const open = () =>
     router.push({ pathname: '/product/[id]', params: { id: p.id } });
   return (
@@ -163,21 +165,22 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         ) : (
           <>
             <Txt style={styles.amount}>
-              {tmt
-                ? 'Request quotation'
-                : price
-                  ? `From ₹${price.amount}`
-                  : 'Quotation on request'}
+              {price
+                ? `From ₹${price.amount}`
+                : 'Quotation on request'}
               <Txt style={styles.caption}>
                 {price ? ` / ${price.unit}` : ''}
               </Txt>
             </Txt>
             <Txt style={styles.caption}>
               {tmt
-                ? 'Select size and brand to request a quotation.'
+                ? 'Price varies by brand and size.'
                 : (price?.tax ??
                   'Select size and grade to request a quotation.')}
             </Txt>
+            {tmt && price ? (
+              <Txt style={styles.caption}>{price.tax}</Txt>
+            ) : null}
           </>
         )}
       </View>

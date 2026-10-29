@@ -3,8 +3,32 @@ import assert from 'node:assert/strict';
 import {
   groupTmtProducts,
   isTmtCategory,
+  lowestTmtPrice,
   tmtCartKey,
 } from '../src/features/catalog/model/tmt';
+import type { Variant } from '../src/features/catalog/model/types';
+
+test('TMT starting price finds the lowest numeric rate across brands and sizes', () => {
+  const variant = (id: string, price: unknown, quoteOnly = false): Variant => ({
+    id, sku: id, size_label: '12 mm', diameter_mm: 12, length_mm: null,
+    uom: 'MT', min_order_qty: 1, pack_qty: null,
+    attributes: { grade_list_price: price, quote_only: quoteOnly },
+  });
+  const variants = [
+    variant('first-brand-8mm', '51675'),
+    variant('second-brand-12mm', '49675'),
+    variant('third-brand', '100000'),
+    variant('quote-only', '100', true),
+    variant('missing', undefined),
+    variant('invalid', 'unknown'),
+    variant('zero', '0'),
+    variant('negative', '-1'),
+  ];
+  assert.equal(lowestTmtPrice(variants)?.amount, '49,675');
+  assert.equal(lowestTmtPrice(variants)?.unit, 'PMT');
+  assert.equal(lowestTmtPrice([]), null);
+  assert.equal(lowestTmtPrice(variants.slice(3)), null);
+});
 
 test('TMT brands form one listing before pagination, retaining variant IDs without mutating source products', () => {
   const products = Array.from({ length: 10 }, (_, index) => ({
