@@ -3,6 +3,8 @@ import { Image } from 'expo-image';
 import { Button, Icon, Txt } from '@shared/ui';
 import type { DrawingDefinition } from '../model/types';
 import { subcategoryLabel } from '../model/subcategories';
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 
 export function MatrixFastenerCard({
   slug,
@@ -16,6 +18,7 @@ export function MatrixFastenerCard({
   onSelect: () => void;
 }) {
   const name = subcategoryLabel(slug);
+  const priceAccess = usePriceAccess();
   const diameters = drawings
     .map((row) => row.dimensions.diameter)
     .filter((value) => Number.isFinite(value) && value > 0);
@@ -86,7 +89,9 @@ export function MatrixFastenerCard({
         ))}
       </View>
       <View style={styles.price}>
-        <Txt style={styles.amount}>Quotation on request</Txt>
+        {priceAccess ? (
+          <Txt style={styles.amount}>Select size and grade for live prices</Txt>
+        ) : <SubscribeForPrices />}
         <Txt style={styles.caption}>
           Select size and grade for weight and pricing.
         </Txt>

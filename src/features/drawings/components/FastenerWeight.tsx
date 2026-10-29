@@ -6,6 +6,8 @@ import {
 import { FastenerOrder } from './FastenerOrder';
 import { loadPublicGrades } from '../services/grade-api';
 import { FastenerPrice } from './FastenerPrice';
+import { usePriceAccess } from '@shared/hooks/use-price-access';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, CatalogFilter, Field, Txt, s } from '@shared/ui';
@@ -45,6 +47,7 @@ function WeightResult({
   setQuantity: (value: string) => void;
 }) {
   const amount = weightQuantity(quantity);
+  const priceAccess = usePriceAccess();
   const result = calculateWeight(matches, amount);
   const bolt = calculateWeight(boltMatches ?? [], amount);
   if (!matches.length)
@@ -78,7 +81,7 @@ function WeightResult({
           <Txt style={s.h2}>
             Approximate total weight: {formatKg(result.total)} kg
           </Txt>
-          {priceKind && result ? (
+          {priceAccess && priceKind && result ? (
             priceKind === 'assembly' ? (
               bolt && result.total > bolt.total ? (
                 <FastenerPrice
@@ -118,6 +121,7 @@ export function DrawingWeight({
   input: DrawingInput;
 }) {
   const length = input.length;
+  const priceAccess = usePriceAccess();
   const [grade, setGrade] = useState('');
   const grades = useQuery({ queryKey: ['fastener-public-grades'], queryFn: loadPublicGrades });
   const [assembly, setAssembly] = useState('without');
@@ -142,6 +146,7 @@ export function DrawingWeight({
   return (
     <Card style={{ gap: 12, padding: 12, borderWidth: 0, borderRadius: 8 }}>
       <MaterialSectionTitle number={2} title="Consignment Quantity" />
+      {!priceAccess ? <SubscribeForPrices /> : null}
       <MaterialSpecFilter
         label="Grade"
         value={grade}
@@ -222,6 +227,7 @@ export function DrawingWeight({
 }
 
 export function CategoryWeight({ category }: { category: string }) {
+  const priceAccess = usePriceAccess();
   const chart = categoryWeightChart(category);
   const [column, setColumn] = useState('');
   const [size, setSize] = useState('');
@@ -252,6 +258,7 @@ export function CategoryWeight({ category }: { category: string }) {
   return (
     <Card style={{ gap: 12 }}>
       <Txt style={s.h2}>Approximate weight</Txt>
+      {!priceAccess ? <SubscribeForPrices /> : null}
       {!chart ? (
         <Txt style={s.muted}>
           Weight available on request for this fastener.
