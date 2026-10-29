@@ -1,3 +1,4 @@
+import { IsoCertificateCard } from './IsoCertificateCard';
 import { SubscriptionCard } from '@features/subscriptions/SubscriptionCard';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -58,6 +59,11 @@ export function AccountHub({ settings = false }: { settings?: boolean }) {
       <View style={styles.group}>
         <Txt accessibilityRole="header" style={styles.groupTitle}>RATES & SUBSCRIPTION</Txt>
         <RateSubscription />
+      </View>
+
+      <View style={styles.group}>
+        <Txt accessibilityRole="header" style={styles.groupTitle}>VERIFIED QUALITY & CERTIFICATION</Txt>
+        <IsoCertificateCard />
       </View>
 
       <View style={styles.group}>

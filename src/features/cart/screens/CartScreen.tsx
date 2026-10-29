@@ -391,6 +391,18 @@ export function Cart() {
                 </Txt>
               </View>
             </Card>
+
+            {/* ISO 9001 Quality Assurance Banner */}
+            <View style={styles.isoTrustStrip}>
+              <View style={styles.isoBadgeRow}>
+                <Icon name="award" size={15} color="#A70101" />
+                <Txt style={styles.isoBadgeTitle}>ISO 9001:2015 CERTIFIED SUPPLY</Txt>
+              </View>
+              <Txt style={styles.isoBadgeDesc}>
+                Fieldfast Tech International • Ludhiana Industrial Area-C Works • MTC & Batch Traceability Assured
+              </Txt>
+            </View>
+
             <View style={styles.tray}>
               <View style={{ flex: 1, minWidth: 130, gap: 4 }}>
                 <Txt style={styles.lightLabel}>
@@ -446,6 +458,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#00409A',
     borderRadius: 8,
     padding: 12,
+  },
+  isoTrustStrip: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    boxShadow: '0 2px 8px rgba(16, 24, 40, 0.04)',
+  },
+  isoBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  isoBadgeTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#A70101',
+    letterSpacing: 0.6,
+  },
+  isoBadgeDesc: {
+    fontSize: 11.5,
+    lineHeight: 17,
+    color: '#475569',
   },
   card: {
     gap: 12,

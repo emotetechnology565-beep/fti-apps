@@ -326,6 +326,45 @@ export function Home() {
             </Pressable>
           ))}
         </View>
+
+        {/* ISO 9001:2015 & Ludhiana Manufacturing Trust Strip */}
+        <View style={styles.trustStripContainer}>
+          <View style={styles.trustStrip}>
+            <View style={styles.trustItem}>
+              <View style={[styles.trustIcon, { backgroundColor: '#FEE2E2' }]}>
+                <Icon name="award" size={14} color="#A70101" />
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Txt style={styles.trustTitle}>ISO 9001:2015</Txt>
+                <Txt numberOfLines={1} style={styles.trustDesc}>QMS Certified</Txt>
+              </View>
+            </View>
+
+            <View style={styles.trustDivider} />
+
+            <View style={styles.trustItem}>
+              <View style={[styles.trustIcon, { backgroundColor: '#EEF4FC' }]}>
+                <Icon name="map-pin" size={14} color="#00409A" />
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Txt style={styles.trustTitle}>Ludhiana Hub</Txt>
+                <Txt numberOfLines={1} style={styles.trustDesc}>Area-C Dispatch</Txt>
+              </View>
+            </View>
+
+            <View style={styles.trustDivider} />
+
+            <View style={styles.trustItem}>
+              <View style={[styles.trustIcon, { backgroundColor: '#F0FDF4' }]}>
+                <Icon name="shield" size={14} color="#15803D" />
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Txt style={styles.trustTitle}>100% Mill MTC</Txt>
+                <Txt numberOfLines={1} style={styles.trustDesc}>Tested Lots</Txt>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
       <HomeActivity />
       <CategoryRow
