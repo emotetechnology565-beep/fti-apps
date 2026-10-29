@@ -408,28 +408,16 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
           </View>
         </View>
 
-        {/* BOTTOM ACTION ROW: Direct Add to Cart Button + Spec Sheet Button */}
-        <View style={styles.actionRow}>
-          <View style={{ flex: 1 }}>
-            <Button
-              icon={added ? 'check' : 'shopping-cart'}
-              onPress={handleAddToCart}
-              style={added ? styles.addedButton : styles.actionButton}
-            >
-              {added
-                ? `Added ${tonnage} MT to cart`
-                : `Add ${tonnage} MT to cart`}
-            </Button>
-          </View>
-          <Pressable
-            accessibilityRole="link"
-            accessibilityLabel={`Technical details for ${p.name}`}
-            onPress={open}
-            style={styles.detailsBtn}
-          >
-            <Icon name="file-text" color="#00409A" size={20} />
-          </Pressable>
-        </View>
+        {/* BOTTOM ACTION: Full-Width Direct Add to Cart Button */}
+        <Button
+          icon={added ? 'check' : 'shopping-cart'}
+          onPress={handleAddToCart}
+          style={added ? styles.addedButton : styles.actionButton}
+        >
+          {added
+            ? `Added ${tonnage} MT to cart`
+            : `Add ${tonnage} MT to cart`}
+        </Button>
 
         {/* Modal 1: Choose Size (Presets or Manual Custom Entry) */}
         {sizePickerOpen ? (
@@ -996,16 +984,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#15803D',
     borderColor: '#15803D',
-  },
-  detailsBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
-    backgroundColor: '#EEF4FC',
-    borderWidth: 1,
-    borderColor: '#DBEAFE',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   modalOverlay: {
     flex: 1,

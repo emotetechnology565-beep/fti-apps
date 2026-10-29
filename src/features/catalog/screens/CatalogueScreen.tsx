@@ -187,17 +187,6 @@ function CatalogueMatrix({
               </Pressable>
             ) : null}
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Filter specifications"
-            onPress={() => setSpecs(true)}
-            style={styles.specs}
-          >
-            <Icon name="sliders" size={18} color="#00409A" />
-            <Txt style={styles.pillText}>
-              Specs{activeFilters ? ` (${activeFilters})` : ''}
-            </Txt>
-          </Pressable>
         </View>
         <ScrollView
           horizontal
