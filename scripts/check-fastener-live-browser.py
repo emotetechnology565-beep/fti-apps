@@ -15,6 +15,7 @@ with sync_playwright() as p:
             print(page.locator('body').inner_text()[:2000])
             raise
         expect(page.get_by_text('Wire and round bars', exact=True)).to_be_visible()
+        expect(page.get_by_role('button', name='Configure requirement', exact=True)).to_be_enabled(timeout=60000)
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         page.screenshot(path=f'artifacts/fastener-live-details-{width}.png', full_page=True)
         page.get_by_role('button', name='Configure requirement', exact=True).click()

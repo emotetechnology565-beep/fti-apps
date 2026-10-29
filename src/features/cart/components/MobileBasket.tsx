@@ -54,7 +54,7 @@ export function MobileBasket({ cart, products, prices, tonnes, subtotal, priceAc
         <Txt style={{ color: '#123657', fontSize: 12, fontWeight: '700' }}>Additional notes (optional)</Txt><TextInput accessibilityLabel="Additional requirement notes" placeholder="e.g. project details, delivery timeline, special requirements..." multiline value={notes} onChangeText={setNotes} maxLength={1000} style={[m.input, { minHeight: 90, textAlignVertical: 'top', paddingTop: 12 }]} />
         {error ? <Txt accessibilityRole="alert" style={{ color: '#BD1723', fontSize: 12 }}>{error}</Txt> : null}
       </View> : null}
-      {cart.length ? <Pressable accessibilityRole="button" disabled={blocked} onPress={request} style={[m.action, blocked && { opacity: 0.5 }]}><Icon name="file-text" color="#FFFFFF" size={20} /><Txt style={m.actionText}>Request quotation</Txt></Pressable> : null}
+      {cart.length ? <Pressable accessibilityRole="button" accessibilityLabel="Request quotation" disabled={blocked} onPress={request} style={[m.action, blocked && { opacity: 0.5 }]}><Icon name="file-text" color="#FFFFFF" size={20} /><Txt style={m.actionText}>Request quotation</Txt></Pressable> : null}
     </View>
   </View>;
 }

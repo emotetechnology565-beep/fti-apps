@@ -45,7 +45,8 @@ export function Checkout() {
   const catalogProducts = useStore((state) => state.catalogProducts);
   const quantity = useStore((state) => state.quantity);
   const hasMaterials = cart.some((line) => line.material);
-  const hasFastenerRequirements = cart.some(line => line.material?.fastenerRequirement);
+  const [fastenerCheckout, setFastenerCheckout] = useState(false);
+  const hasFastenerRequirements = fastenerCheckout || cart.some(line => line.material?.fastenerRequirement);
 
   const [buyer, setBuyer] = useState(auth.identity?.profile.full_name ?? '');
   const [business, setBusiness] = useState(
@@ -53,7 +54,7 @@ export function Checkout() {
   );
   const [consent, setConsent] = useState(true);
   const [attempted, setAttempted] = useState(false);
-  const materialRequests = useRef(new Map<string, string>());
+  const materialRequests = useRef(new Map<string, { id: string; fingerprint: string }>());
   const [addressChoice, setAddress] = useState('');
   const [addAddressOpen, setShowAddAddress] = useState(false);
 
@@ -185,6 +186,7 @@ export function Checkout() {
 
     setBusy(true);
     setAttempted(true);
+    if (hasFastenerRequirements) setFastenerCheckout(true);
     setMessage('');
 
     try {
@@ -207,17 +209,25 @@ export function Checkout() {
       const submittedReferences = [...guidedSubmissions.values()].filter(entry => entry.acknowledged && entry.reference).map(entry => entry.reference!);
       for (const line of cart.filter((line) => line.material)) {
         const item = line.material!;
-        let id = materialRequests.current.get(item.key);
-        if (!id) {
-          id = newRequest();
-          materialRequests.current.set(item.key, id);
-        }
         const details = {
           name: buyer.trim(),
           business: business.trim(),
           location,
           whatsapp_consent: consent,
         };
+        let id = '';
+        if (!item.fastenerRequirement) {
+          const fingerprint = JSON.stringify({ item, quantity: line.quantity, buyer: details });
+          let attempt = materialRequests.current.get(item.key);
+          if (attempt && attempt.fingerprint !== fingerprint) {
+            throw new Error(`${item.name}: restore the original quantity and buyer details before retrying an earlier submission. Contact FTI before changing an unconfirmed request.`);
+          }
+          if (!attempt) {
+            attempt = { id: newRequest(), fingerprint };
+            materialRequests.current.set(item.key, attempt);
+          }
+          id = attempt.id;
+        }
 
         if (item.fastenerRequirement) {
           if (!supabase) throw new Error('Ordering service is not configured.');
@@ -241,9 +251,18 @@ export function Checkout() {
             'fti_catalog_fastener_requirement_submit',
             { p_id: submission.id, p_requirement: item.fastenerRequirement, p_quantity: line.quantity, p_buyer: details },
           );
-          if (error) throw new Error(error.code === 'PGRST202'
-            ? 'Fastener quotation requests need the latest database update. Contact FTI to complete this request.'
-            : error.message);
+          if (error) {
+            // These are explicit server rejections, so the transaction did not
+            // commit and the buyer may correct the requirement before retrying.
+            // Transport errors keep the saved ID and immutable fingerprint.
+            if (['22023', '42501', 'P0001', 'P0002', 'PGRST202'].includes(error.code ?? '')) {
+              guidedSubmissions.delete(item.key);
+              await persistSubmissions();
+            }
+            throw new Error(error.code === 'PGRST202'
+              ? 'Fastener quotation requests need the latest database update. Contact FTI to complete this request.'
+              : error.message);
+          }
           submission.acknowledged = true;
           if (typeof data?.reference === 'string') {
             submission.reference = data.reference;
@@ -408,10 +427,9 @@ export function Checkout() {
           <Txt style={styles.stepCounterText}>STEP 2 OF 3</Txt>
         </View>
 
-        <Txt style={styles.title}>Review & Dispatch Requisition</Txt>
+        <Txt style={styles.title}>{hasFastenerRequirements ? 'Review quotation request' : 'Review & Dispatch Requisition'}</Txt>
         <Txt style={styles.subtitle}>
-          Admin confirms live mill rates, GST, and freight charges. No upfront
-          payment is required until final batch confirmation.
+          {hasFastenerRequirements ? 'Confirm your fastener requirements, buyer details and delivery address. FTI will review specifications, availability, pricing, GST and freight before confirming your quotation.' : 'Admin confirms live mill rates, GST, and freight charges. No upfront payment is required until final batch confirmation.'}
         </Txt>
 
         {/* 3-Step Stepper Bar */}
@@ -426,7 +444,7 @@ export function Checkout() {
           </View>
           <View style={styles.stepItem}>
             <View style={styles.stepBar} />
-            <Txt style={styles.stepPendingLabel}>3. Dispatch Confirmation</Txt>
+            <Txt style={styles.stepPendingLabel}>{hasFastenerRequirements ? '3. Quotation confirmation' : '3. Dispatch Confirmation'}</Txt>
           </View>
         </View>
       </View>
