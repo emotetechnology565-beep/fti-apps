@@ -1,9 +1,0 @@
-{
-  "passed": true,
-  "checks": [
-    "390px: independent inline size/grade choices, hidden pricing lookup, calculated total;  manual entry, size match, guest persistence/handoff, review, consent, ambiguous retry, validation recovery, out-of-range contact, unknown material/grade enquiry",
-    "1366px: independent inline size/grade choices, hidden pricing lookup, calculated total;  manual entry, size match, guest persistence/handoff, review, consent, ambiguous retry, validation recovery, out-of-range contact, unknown material/grade enquiry",
-    "Staff view renders nested manual-match data without exposing raw request internals"
-  ],
-  "runtime_errors": []
-}
