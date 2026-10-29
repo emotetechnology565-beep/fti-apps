@@ -212,31 +212,51 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         style={styles.card}
         testID={tractor ? 'matrix-tractor-card' : 'matrix-product-card'}
       >
-        {/* Top Header: Image + Badge + Title + Subtitle + Bookmark */}
+        {/* Top Header: Image with Angled ISO Ribbon + Badge + Title + Subtitle + Bookmark */}
         <View style={styles.topRow}>
-          <Pressable
-            accessibilityRole="link"
-            accessibilityLabel={`View ${p.name}`}
-            onPress={open}
-          >
-            {image ? (
+          <View style={styles.imageWrapper}>
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel={`View ${p.name}`}
+              onPress={open}
+            >
+              {image ? (
+                <Image
+                  source={image}
+                  contentFit={tractor ? 'contain' : 'cover'}
+                  accessibilityLabel={p.name}
+                  style={styles.image}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.image,
+                    { alignItems: 'center', justifyContent: 'center' },
+                  ]}
+                >
+                  <Icon name="box" size={28} color="#64748B" />
+                </View>
+              )}
+            </Pressable>
+
+            {/* Angled ISO 9001 Ribbon Emblem above Image */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="View ISO 9001:2015 Registration Certificate"
+              onPress={() => setCertModalOpen(true)}
+              style={({ pressed }) => [
+                styles.angledRibbonPressable,
+                pressed && { opacity: 0.8 },
+              ]}
+            >
               <Image
-                source={image}
-                contentFit={tractor ? 'contain' : 'cover'}
-                accessibilityLabel={p.name}
-                style={styles.image}
+                source={{ uri: companyCertificate.badge_cdn_url || 'https://ftis.b-cdn.net/icons/iso-9001-certified-badge.png' }}
+                style={styles.angledRibbonImg}
+                contentFit="contain"
+                accessibilityLabel="ISO 9001 Certified Ribbon"
               />
-            ) : (
-              <View
-                style={[
-                  styles.image,
-                  { alignItems: 'center', justifyContent: 'center' },
-                ]}
-              >
-                <Icon name="box" size={28} color="#64748B" />
-              </View>
-            )}
-          </Pressable>
+            </Pressable>
+          </View>
 
           <View style={styles.headerContent}>
             <View style={styles.badgeRow}>
@@ -247,6 +267,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                     ? selectedBrandOrGrade.toUpperCase()
                     : p.category.toUpperCase()}
               </Txt>
+
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={`${saved ? 'Unsave' : 'Save'} ${p.name}`}
@@ -421,7 +442,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
             : `Add ${tonnage} MT to cart`}
         </Button>
 
-        {/* Company ISO 9001:2015 Verified Strip (Exact Match to Reference Mockup) */}
+        {/* Company ISO 9001:2015 Strip with View Certificate Option */}
         <View style={styles.isoCardStrip}>
           <View style={styles.isoCardLeft}>
             <Icon name="shield" size={18} color="#16A34A" />
@@ -448,6 +469,8 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
             <Txt style={styles.viewCertText}>View certificate</Txt>
           </Pressable>
         </View>
+
+
 
         {/* Modal 1: Choose Size (Presets or Manual Custom Entry) */}
         {sizePickerOpen ? (
@@ -927,6 +950,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
   },
+  imageWrapper: {
+    position: 'relative',
+    width: 92,
+    height: 92,
+  },
+  angledRibbonPressable: {
+    position: 'absolute',
+    top: -9,
+    left: -9,
+    zIndex: 10,
+  },
+  angledRibbonImg: {
+    width: 96,
+    height: 38,
+    transform: [{ rotate: '-14deg' }],
+  },
   image: {
     width: 92,
     height: 92,
@@ -937,6 +976,20 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     gap: 4,
+  },
+  badgeRowActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginLeft: 'auto',
+  },
+  ribbonPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ribbonBadgeImg: {
+    width: 86,
+    height: 34,
   },
   badgeRow: {
     flexDirection: 'row',
