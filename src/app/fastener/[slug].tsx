@@ -1,10 +1,10 @@
 import { withShell } from '@core/layout/withShell';
-import { FastenerDimensions } from '@features/drawings/ui';
+import { FastenerDetail } from '@features/drawings/ui';
 import { useLocalSearchParams } from 'expo-router';
 
 function FastenerPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  return <FastenerDimensions key={slug} subcategory={slug} />;
+  return <FastenerDetail key={slug} subcategory={slug} />;
 }
 
 export default withShell(FastenerPage);

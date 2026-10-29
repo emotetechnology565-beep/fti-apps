@@ -9,6 +9,7 @@ import { Icon, Txt } from '@shared/ui';
 import { mobileCommerce as m, MobileCommerceHeader } from '@shared/ui/MobileCommerce';
 import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import type { CartLine } from '../model/types';
+import { FastenerRequirementSummary } from './FastenerRequirementSummary';
 
 type LinePrice = { amount: number; unit: string; total: number; tax: string } | null;
 export function MobileBasket({ cart, products, prices, tonnes, subtotal, priceAccess, blocked, loading }: { cart: CartLine[]; products: Product[]; prices: LinePrice[]; tonnes: number; subtotal: number; priceAccess: boolean; blocked: boolean; loading: boolean }) {
@@ -29,16 +30,17 @@ export function MobileBasket({ cart, products, prices, tonnes, subtotal, priceAc
         const product = products.find((entry) => entry.id === line.productId);
         const variant = product?.variants.find((entry) => entry.id === line.variantId);
         const name = material?.name ?? product?.name ?? 'Loading material...';
-        const image = product?.images[0]?.url ? { uri: product.images[0].url } : product ? getCategoryImage(product.category) : undefined;
+        const image = material?.imageUrl ? { uri: material.imageUrl } : product?.images[0]?.url ? { uri: product.images[0].url } : product ? getCategoryImage(product.category) : undefined;
         const minimum = material?.minimum ?? variant?.min_order_qty ?? 1;
         const unit = material?.unit ?? variant?.uom ?? '';
         const quantityButton = (increase: boolean) => <Pressable accessibilityRole="button" accessibilityLabel={`${increase ? 'Increase' : 'Decrease'} quantity for ${name}`} onPress={() => updateQuantity(line.productId, Math.max(minimum, line.quantity + (increase ? 1 : -1)), line.variantId)} style={[m.input, { minHeight: 40, width: 36, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 0 }]}><Icon name={increase ? 'plus' : 'minus'} color="#123657" size={17} /></Pressable>;
         return <View key={`${line.productId}-${line.variantId ?? material?.key}`} style={m.card}>
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            {image ? <Image source={image} contentFit="cover" style={{ width: 82, height: 96, borderRadius: 5 }} /> : <View style={{ width: 70, height: 82, backgroundColor: '#EDF2F7', borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}><Icon name={material?.fastenerRequest ? 'tool' : 'layers'} color="#123657" size={26} /></View>}
+            {image ? <Image source={image} contentFit={material?.fastenerRequirement ? 'contain' : 'cover'} style={{ width: 82, height: 96, borderRadius: 5 }} /> : <View style={{ width: 70, height: 82, backgroundColor: '#EDF2F7', borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}><Icon name={material?.fastenerRequest || material?.fastenerRequirement ? 'tool' : 'layers'} color="#123657" size={26} /></View>}
             <View style={{ flex: 1, gap: 7, minWidth: 0 }}><Txt style={m.heading}>{name}</Txt><Txt style={[m.muted, { fontSize: 11 }]}>{material?.size ?? variant?.size_label ?? ''}{material?.brand || material?.grade ? `  |  ${material.brand || material.grade}` : ''}</Txt><Txt style={{ color: '#123657', fontSize: 11 }}>Quantity</Txt><View style={[m.row, { gap: 5 }]}>{quantityButton(false)}<Txt style={[m.input, { minHeight: 40, paddingTop: 9, textAlign: 'center', minWidth: 75, paddingHorizontal: 5, fontWeight: '700' }]}>{line.quantity} {unit}</Txt>{quantityButton(true)}</View></View>
             <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${name}`} onPress={() => updateQuantity(line.productId, 0, line.variantId)} style={{ width: 32, height: 40, alignItems: 'center', justifyContent: 'center' }}><Icon name="trash-2" size={19} color="#ED222B" /></Pressable>
           </View>
+          {material?.fastenerRequirement ? <FastenerRequirementSummary material={material} editable /> : null}
           {priceAccess ? <Txt style={{ color: '#ED222B', fontSize: 16, fontWeight: '800', marginLeft: 94 }}>{prices[index] ? money(prices[index]!.total) : loading ? 'Loading price...' : 'Rate on request'}</Txt> : null}
         </View>;
       })}

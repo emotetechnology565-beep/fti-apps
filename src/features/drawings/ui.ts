@@ -1,4 +1,5 @@
 export { FastenerDimensions } from './screens/FastenerDimensions';
+export { FastenerDetail } from './screens/FastenerDetailScreen';
 export { FastenerCatalogueCards } from './components/FastenerCatalogueCards';
 export { DimensionAdmin } from './screens/DimensionAdmin';
 export { FastenerOrdersAdmin } from './screens/FastenerOrdersAdmin';

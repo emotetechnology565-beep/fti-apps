@@ -1,0 +1,83 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { PGlite } from '@electric-sql/pglite';
+
+const db = new PGlite();
+try {
+  await db.exec(`
+    create role anon; create role authenticated;
+    create schema catalog; create schema sales; create schema identity; create schema internal; create schema auth; create schema platform;
+    create table catalog.fastener_photo_cards(slug text primary key,label text not null,published boolean not null default false);
+    insert into catalog.fastener_photo_cards values('hex-bolt','Hex bolt',true),('u-bolt','U bolt',true),('draft-only','Draft only',false),('drawing-only','Drawing only',false);
+    create table catalog.drawing_definitions(id uuid primary key, subcategory text, published_revision integer, published_data jsonb);
+    create table auth.users(id uuid primary key,phone text,phone_confirmed_at timestamptz);
+    insert into auth.users values('00000000-0000-0000-0000-000000000001','919000000001',now()),('00000000-0000-0000-0000-000000000002','919000000002',now());
+    create function internal.identity_actor() returns uuid language plpgsql stable set search_path='' as $$
+      begin if coalesce(current_setting('request.jwt.claim.sub',true),'')='' then raise exception 'Sign in required' using errcode='42501'; end if;
+      return current_setting('request.jwt.claim.sub')::uuid; end $$;
+    create table sales.raw_material_requests(id uuid primary key,buyer_id uuid not null,variant_id uuid,size_mm integer,quantity numeric(18,3),details jsonb,manual_entry boolean not null default false,created_at timestamptz not null default now(),check(manual_entry or variant_id is not null));
+    create table sales.raw_material_recipients(phone text primary key,enabled boolean);
+    insert into sales.raw_material_recipients values('+919000000009',true);
+    create table sales.raw_material_jobs(id uuid primary key default gen_random_uuid(),request_id uuid,phone text,template text,parameters jsonb,unique(request_id,phone,template));
+    create table platform.audit_logs(actor_id uuid,action text,resource_type text,resource_id uuid);
+  `);
+  const migration = await readFile('supabase/migrations/202610290004_fastener_guided_requirements.sql', 'utf8');
+  await db.exec(migration);
+  await db.exec(migration); // SQL Editor retry is safe: no duplicated rows or requests.
+  await db.exec(`set role anon`);
+  let result = await db.query(`select public.fti_catalog_fastener_detail('hex-bolt') as detail`);
+  assert.equal(result.rows[0].detail.specifications.length, 11);
+  assert.equal(result.rows[0].detail.specifications[0].value, 'Wire and round bars');
+  result = await db.query(`select public.fti_catalog_fastener_detail('u-bolt') as detail`);
+  assert.deepEqual(result.rows[0].detail.materials, []);
+  result = await db.query(`select public.fti_catalog_fastener_detail('draft-only') as detail`);
+  assert.equal(result.rows[0].detail, null);
+  await assert.rejects(db.query(`select * from catalog.fastener_details`), /permission denied/);
+  const buyer = { name: 'Test buyer', business: 'Test business', location: 'Ludhiana 141014', whatsapp_consent: true };
+  const req = { subcategory: 'hex-bolt', definition_id: null, revision: null, standard: 'Not sure', shape: 'hex-bolt', dimensions: { diameter_mm: 12, length_mm: 80 }, material: 'MS', grade: 'Not sure', thread: 'UNC', pitch: 'Confirm with FTI', finish: 'Zinc plating', with_nut: true, notes: 'Please confirm standard and pitch.', custom: true };
+  const submit = (id, requirement=req, quantity=100, info=buyer) => db.query(`select public.fti_catalog_fastener_requirement_submit($1,$2,$3,$4) as result`, [id, JSON.stringify(requirement), quantity, JSON.stringify(info)]);
+  const id = '10000000-0000-0000-0000-000000000001';
+  await assert.rejects(submit(id), /permission denied/);
+  await db.exec(`reset role; set role authenticated; select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',false)`);
+  result = await submit(id);
+  assert.equal(result.rows[0].result.replayed, false);
+  assert.match(result.rows[0].result.reference, /^FTI-FN-/);
+  result = await submit(id);
+  assert.equal(result.rows[0].result.replayed, true);
+  await assert.rejects(submit(id, {...req, finish: 'Auto black'}), /already used/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000002', {...req, dimensions:{diameter_mm:-1}}), /must be positive/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000003', {...req, dimensions:{bad:1}}), /Invalid dimension/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000004', req, 0), /whole quantity/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000005', {...req, custom:false}), /published drawing/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000006', {...req, subcategory:'u-bolt'}), /Combined nut supply/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000007', {...req, dimensions:{},notes:''}), /describe your custom/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000008', req, 1, {...buyer,whatsapp_consent:false}), /agree to WhatsApp/);
+  await db.exec(`reset role`);
+  result = await db.query(`select details from sales.raw_material_requests where id=$1`,[id]);
+  assert.deepEqual(result.rows[0].details.fastener_requirement, req);
+  assert.equal(result.rows[0].details.price_state, 'request_quote');
+  result = await db.query(`select count(*)::integer as n from sales.raw_material_jobs where request_id=$1`,[id]);
+  assert.equal(result.rows[0].n, 2);
+  const published = {shape:'hex-bolt',standard:'IS 1363',edition:'1967',dimensions:{diameter:12}};
+  await db.query(`insert into catalog.drawing_definitions values($1,'hex-bolt',1,$2)`,['20000000-0000-0000-0000-000000000001',JSON.stringify(published)]);
+  await db.exec(`insert into catalog.drawing_definitions values('20000000-0000-0000-0000-000000000002','drawing-only',1,'{"shape":"hex-bolt","standard":"IS 1363","edition":"1967","dimensions":{"diameter":12}}')`);
+  result = await db.query(`select public.fti_catalog_fastener_detail('drawing-only') as detail`);
+  assert.equal(result.rows[0].detail.title, 'Drawing only');
+  await db.exec(`set role authenticated`);
+  const known = {...req,definition_id:'20000000-0000-0000-0000-000000000001',revision:1,standard:'IS 1363:1967',custom:false};
+  await submit('10000000-0000-0000-0000-000000000009',known);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000010',{...known,dimensions:{diameter_mm:16}}), /Diameter does not match/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000011',{...known,revision:2}), /changed or were withdrawn/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000012',{...known,standard:'Wrong standard'}), /Standard does not match/);
+  await assert.rejects(submit('10000000-0000-0000-0000-000000000013',{...req,subcategory:'draft-only',with_nut:false}), /Choose a fastener from the catalogue/);
+  await db.exec(`reset role; update catalog.drawing_definitions set published_data='{"shape":"hex-bolt","standard":"NEW","edition":"2030","dimensions":{"diameter":16}}',published_revision=2 where id='20000000-0000-0000-0000-000000000001'`);
+  result = await db.query(`select details->'drawing_snapshot' as snapshot from sales.raw_material_requests where id='10000000-0000-0000-0000-000000000009'`);
+  assert.deepEqual(result.rows[0].snapshot,published);
+  await db.exec(`set role authenticated`);
+  await db.exec(`select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000002',false)`);
+  await assert.rejects(submit(id), /Request unavailable/);
+  console.log('PASS: published-only details/requests, nonhex options, denied direct/anonymous writes, complete persistence and immutable drawing snapshot, quote references, idempotency, cross-user isolation, published drawing revision/diameter/standard, validation and one-time jobs.');
+} catch (error) {
+  console.error(error.message, { code: error.code, position: error.position, where: error.where });
+  process.exitCode = 1;
+} finally { await db.close(); }

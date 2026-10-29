@@ -10,6 +10,7 @@ import { catalogApi, selectionPrice, type Product } from '@features/catalog';
 import { Button, Txt } from '@shared/ui';
 import { cartLinePrice } from '../model/line-price';
 import { MobileBasket } from '../components/MobileBasket';
+import { FastenerRequirementSummary } from '../components/FastenerRequirementSummary';
 
 const money = (value: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -25,7 +26,7 @@ export function Cart() {
   const setProducts = useStore((state) => state.setCatalogProducts);
   const ids = [
     ...new Set(
-      cart.map((line) => line.productId),
+      cart.filter(line => !line.material?.fastenerRequirement).map((line) => line.productId),
     ),
   ];
   const queries = useQueries({
@@ -42,7 +43,7 @@ export function Cart() {
   const materialPrices = useQueries({
     queries: cart.map((line) => ({
       queryKey: ['catalog', 'basket-price', line.productId, line.material?.optionId ?? ''],
-      enabled: priceAccess && !!line.material?.optionId,
+      enabled: priceAccess && !line.material?.fastenerRequirement && !!line.material?.optionId,
       queryFn: async () => {
         const sizes = await catalogApi.selectionOptions(undefined, undefined, line.productId);
         const normalize = (value: string) => value.toUpperCase().replace(/\s+/g, '');
@@ -61,7 +62,7 @@ export function Cart() {
     if (products.length) setProducts(products);
   }, [productsKey, setProducts]); // eslint-disable-line react-hooks/exhaustive-deps
   const prices = cart.map((line, index) =>
-    !priceAccess
+    !priceAccess || line.material?.fastenerRequirement
       ? null
       : cartLinePrice(
           line.material?.optionId ? { ...line, material: { ...line.material, indicativePrice: materialPrices[index].data ?? undefined } } : line,
@@ -101,7 +102,7 @@ export function Cart() {
           const variant = product?.variants.find((v) => v.id === line.variantId);
           return <View key={`${line.productId}-${line.variantId ?? material?.key}`} style={{ flexDirection: 'row', padding: 16, gap: 12, borderBottomWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' }}>
             <View style={{ flex: 2 }}><Txt style={{ fontWeight: '700', color: '#0B1B36' }}>{material?.name ?? product?.name ?? 'Loading material...'}</Txt></View>
-            <View style={{ flex: 2, gap: 5 }}><Txt>Size: {material?.size ?? variant?.size_label ?? 'To confirm'}</Txt><Txt>Grade: {material?.grade || 'To confirm'}</Txt>{material?.brand ? <Txt>Brand: {material.brand}</Txt> : null}</View>
+            <View style={{ flex: 2, gap: 5 }}>{material?.fastenerRequirement ? <FastenerRequirementSummary material={material} editable /> : <><Txt>Size: {material?.size ?? variant?.size_label ?? 'To confirm'}</Txt><Txt>Grade: {material?.grade || 'To confirm'}</Txt>{material?.brand ? <Txt>Brand: {material.brand}</Txt> : null}</>}</View>
             <View style={{ flex: 1, gap: 6 }}><Txt style={{ fontWeight: '700' }}>{line.quantity} {material?.unit ?? variant?.uom ?? ''}</Txt>{priceAccess ? <Txt style={{ color: '#64748B', fontSize: 11 }}>{prices[index] ? money(prices[index]!.total) : materialPrices[index].isFetching ? 'Loading price...' : 'Quote required'}</Txt> : null}</View>
             <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${material?.name ?? product?.name ?? 'material'}`} onPress={() => updateQuantity(line.productId, 0, line.variantId)} style={{ width: 65 }}><Txt style={{ color: '#E51B23', fontSize: 12 }}>Remove</Txt></Pressable>
           </View>;

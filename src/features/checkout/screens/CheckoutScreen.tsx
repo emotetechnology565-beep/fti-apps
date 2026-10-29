@@ -1,5 +1,5 @@
 import { supabase } from '@core/api/supabase-client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -15,6 +15,20 @@ import { catalogApi } from '@features/catalog/export';
 import { commerceApi } from '@features/orders';
 import { Button, Icon, Txt } from '@shared/ui';
 import { companyCertificate } from '@shared/config/company-certificates';
+import { FastenerRequirementSummary } from '@features/cart/components/FastenerRequirementSummary';
+import type { MaterialCartSelection } from '@features/cart/model/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type GuidedSubmission = {
+  id: string;
+  fingerprint: string;
+  productId: string;
+  variantId?: string;
+  material: MaterialCartSelection;
+  quantity: number;
+  acknowledged: boolean;
+  reference?: string;
+};
 
 const newRequest = () =>
   globalThis.crypto?.randomUUID?.() ??
@@ -31,6 +45,7 @@ export function Checkout() {
   const catalogProducts = useStore((state) => state.catalogProducts);
   const quantity = useStore((state) => state.quantity);
   const hasMaterials = cart.some((line) => line.material);
+  const hasFastenerRequirements = cart.some(line => line.material?.fastenerRequirement);
 
   const [buyer, setBuyer] = useState(auth.identity?.profile.full_name ?? '');
   const [business, setBusiness] = useState(
@@ -39,8 +54,8 @@ export function Checkout() {
   const [consent, setConsent] = useState(true);
   const [attempted, setAttempted] = useState(false);
   const materialRequests = useRef(new Map<string, string>());
-  const [address, setAddress] = useState('');
-  const [showAddAddress, setShowAddAddress] = useState(false);
+  const [addressChoice, setAddress] = useState('');
+  const [addAddressOpen, setShowAddAddress] = useState(false);
 
   // New address form fields
   const [line1, setLine1] = useState('');
@@ -51,6 +66,7 @@ export function Checkout() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [references, setReferences] = useState<string[]>([]);
   const request = useRef({ fingerprint: '', id: newRequest() });
 
   const addresses = useQuery({
@@ -61,19 +77,10 @@ export function Checkout() {
 
   const available = addresses.data?.filter((item) => !item.business_id) ?? [];
 
-  // Auto-select first address if none selected
-  useEffect(() => {
-    if (!address && available.length > 0) {
-      setAddress(available[0].id);
-    }
-  }, [available, address]);
-
-  // If no saved addresses exist, expand address form by default
-  useEffect(() => {
-    if (!addresses.isPending && available.length === 0) {
-      setShowAddAddress(true);
-    }
-  }, [addresses.isPending, available.length]);
+  const address = available.some(item => item.id === addressChoice)
+    ? addressChoice
+    : available[0]?.id ?? '';
+  const showAddAddress = addAddressOpen || (!addresses.isPending && available.length === 0);
 
   // Aggregate stats
   const totalTonnes = useMemo(() => {
@@ -181,6 +188,23 @@ export function Checkout() {
     setMessage('');
 
     try {
+      // Save each guided request ID before the network call. A timeout may mean
+      // the server committed, so a retry must use the identical ID and payload,
+      // including after navigating back to the basket or reloading the page.
+      const submissionStorageKey = `fti-fastener-submissions-${auth.session?.user.id ?? 'guest'}`;
+      const savedSubmissions = await AsyncStorage.getItem(submissionStorageKey);
+      const saved: GuidedSubmission[] = savedSubmissions ? JSON.parse(savedSubmissions) : [];
+      if (!Array.isArray(saved) || saved.some(entry => !entry?.id || !entry.fingerprint || !entry.material?.key)) {
+        throw new Error('Saved quotation submission status is unavailable. Contact FTI before submitting again.');
+      }
+      const guidedSubmissions = new Map(saved.map(entry => [entry.material.key, entry]));
+      const persistSubmissions = () => AsyncStorage.setItem(submissionStorageKey, JSON.stringify([...guidedSubmissions.values()]));
+      for (const pending of guidedSubmissions.values()) {
+        if (!pending.acknowledged && !cart.some(line => line.material?.key === pending.material.key)) {
+          throw new Error(`${pending.material.name}: a previous request for ${pending.quantity} pieces is awaiting confirmation. Restore the original requirement in your basket or contact FTI with request ID ${pending.id} before submitting a changed requirement.`);
+        }
+      }
+      const submittedReferences = [...guidedSubmissions.values()].filter(entry => entry.acknowledged && entry.reference).map(entry => entry.reference!);
       for (const line of cart.filter((line) => line.material)) {
         const item = line.material!;
         let id = materialRequests.current.get(item.key);
@@ -195,7 +219,41 @@ export function Checkout() {
           whatsapp_consent: consent,
         };
 
-        if (item.fastenerRequest) {
+        if (item.fastenerRequirement) {
+          if (!supabase) throw new Error('Ordering service is not configured.');
+          const payloadFingerprint = JSON.stringify({ requirement: item.fastenerRequirement, quantity: line.quantity, buyer: details });
+          let submission = guidedSubmissions.get(item.key);
+          if (submission && submission.fingerprint !== payloadFingerprint) {
+            throw new Error(submission.acknowledged
+              ? `${item.name}: quotation ${submission.reference ?? submission.id} was already received for ${submission.quantity} pieces. Contact FTI to change that request rather than submitting it again.`
+              : `${item.name}: the earlier submission for ${submission.quantity} pieces has an unconfirmed outcome. Restore the original quantity and buyer details before retrying; the same request ID will be reused. Contact FTI with request ID ${submission.id} for changes.`);
+          }
+          if (submission?.acknowledged) {
+            quantity(line.productId, 0, line.variantId);
+            continue;
+          }
+          if (!submission) {
+            submission = { id: newRequest(), fingerprint: payloadFingerprint, productId: line.productId, variantId: line.variantId, material: item, quantity: line.quantity, acknowledged: false };
+            guidedSubmissions.set(item.key, submission);
+            await persistSubmissions();
+          }
+          const { data, error } = await supabase.rpc(
+            'fti_catalog_fastener_requirement_submit',
+            { p_id: submission.id, p_requirement: item.fastenerRequirement, p_quantity: line.quantity, p_buyer: details },
+          );
+          if (error) throw new Error(error.code === 'PGRST202'
+            ? 'Fastener quotation requests need the latest database update. Contact FTI to complete this request.'
+            : error.message);
+          submission.acknowledged = true;
+          if (typeof data?.reference === 'string') {
+            submission.reference = data.reference;
+            submittedReferences.push(data.reference);
+          }
+          await persistSubmissions();
+          // Remove only acknowledged lines immediately. If a later item fails,
+          // returning to the basket cannot submit the successful item twice.
+          quantity(line.productId, 0, line.variantId);
+        } else if (item.fastenerRequest) {
           if (!supabase) throw new Error('Ordering service is not configured.');
           const fastener = item.fastenerRequest;
           const { error } = await supabase.rpc(
@@ -252,8 +310,10 @@ export function Checkout() {
       if (lines.length)
         await commerceApi.placeCart(request.current.id, address, lines);
 
+      setReferences([...new Set(submittedReferences)]);
       for (const line of cart) quantity(line.productId, 0, line.variantId);
       setSubmitted(true);
+      await AsyncStorage.removeItem(submissionStorageKey);
       await client.invalidateQueries({ queryKey: ['commerce'] });
     } catch (error) {
       setMessage((error as Error).message);
@@ -269,17 +329,20 @@ export function Checkout() {
           <View style={styles.successIconWrap}>
             <Icon name="check" size={32} color="#15803D" />
           </View>
-          <Txt style={styles.successTitle}>Order Submitted Successfully!</Txt>
+          <Txt style={styles.successTitle}>{references.length ? 'Quotation request submitted' : 'Order Submitted Successfully!'}</Txt>
           <Txt style={styles.successDesc}>
-            Your requisition has been dispatched to FTI Ludhiana Central Works.
+            {references.length ? 'FTI has received your requirements and will confirm specifications, availability and pricing before you place an order.' : <>Your requisition has been dispatched to FTI Ludhiana Central Works.
             Our engineers will verify heat batch certificates, road freight, and
-            confirm the final invoice before requesting any payment.
+            confirm the final invoice before requesting any payment.</>}
           </Txt>
+          {references.length ? <View style={{ gap: 8 }}>
+            <Txt style={{ fontWeight: '700', color: '#0B1B36' }}>Request reference{references.length === 1 ? '' : 's'}</Txt>
+            {references.map(reference => <Txt key={reference} selectable style={{ color: '#00409A', fontSize: 12 }}>{reference}</Txt>)}
+          </View> : null}
           <View style={styles.successNoticeBox}>
             <Icon name="message-circle" size={18} color="#15803D" />
             <Txt style={styles.successNoticeText}>
-              Updates & Mill Test Certificate (MTC) will be dispatched directly
-              to your WhatsApp.
+              {references.length ? 'FTI will send request updates to your verified WhatsApp number.' : 'Updates & Mill Test Certificate (MTC) will be dispatched directly to your WhatsApp.'}
             </Txt>
           </View>
           <Button
@@ -414,7 +477,7 @@ export function Checkout() {
                 <View style={styles.itemLeft}>
                   <View style={styles.itemBadgeRow}>
                     <Txt style={styles.itemKindBadge}>
-                      {mat?.fastenerRequest
+                      {mat?.fastenerRequest || mat?.fastenerRequirement
                         ? 'FASTENER'
                         : mat
                           ? 'RAW MATERIAL'
@@ -431,6 +494,7 @@ export function Checkout() {
                     Spec: <Txt style={styles.itemSpecBold}>{size}</Txt> • Grade:{' '}
                     <Txt style={styles.itemSpecBold}>{grade}</Txt>
                   </Txt>
+                  {mat?.fastenerRequirement ? <FastenerRequirementSummary material={mat} editable /> : null}
                 </View>
 
                 <View style={styles.itemRight}>
@@ -526,12 +590,12 @@ export function Checkout() {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Icon name="message-circle" size={15} color="#15803D" />
                 <Txt style={styles.whatsappTitle}>
-                  WhatsApp Dispatch & MTC Updates
+                  {hasFastenerRequirements ? 'WhatsApp quotation updates' : 'WhatsApp Dispatch & MTC Updates'}
                 </Txt>
               </View>
               <Txt style={styles.whatsappDesc}>
-                Receive certified Mill Test Certificates (MTC), dispatch photos,
-                and weight-bridge slips on your WhatsApp.
+                {hasFastenerRequirements ? 'Receive updates about your quotation request and specification confirmation on WhatsApp.' : <>Receive certified Mill Test Certificates (MTC), dispatch photos,
+                and weight-bridge slips on your WhatsApp.</>}
               </Txt>
             </View>
           </Pressable>
@@ -715,12 +779,12 @@ export function Checkout() {
           onPress={() => void submit()}
           style={styles.submitBtn}
         >
-          {busy ? 'Submitting Order...' : 'Submit Order for Confirmation'}
+          {hasFastenerRequirements ? (busy ? 'Submitting quotation…' : 'Request quotation') : (busy ? 'Submitting Order...' : 'Submit Order for Confirmation')}
         </Button>
 
         <Button
           secondary
-          disabled={busy || attempted}
+          disabled={busy}
           onPress={() => router.push('/cart')}
           style={styles.backBtn}
         >
