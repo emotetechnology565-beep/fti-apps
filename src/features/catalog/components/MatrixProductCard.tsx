@@ -17,6 +17,7 @@ import { rawMaterialDetails } from '../model/raw-material-details';
 import { selectionPrice } from '../model/material-selection';
 import { formatTractorPrice, tractorPricing } from '../model/tractor-pricing';
 import { isTmtCategory } from '../model/tmt';
+import { companyCertificate } from '@shared/config/company-certificates';
 
 export function MatrixProductCard({ product: p }: { product: Product }) {
   const saved = useStore((state) => state.saved.includes(p.id));
@@ -87,6 +88,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   const [manualBrandText, setManualBrandText] = useState('');
 
   const [added, setAdded] = useState(false);
+  const [certModalOpen, setCertModalOpen] = useState(false);
 
   const isCustomSize = !availableSizes.includes(selectedSize);
   const isCustomBrand = !availableBrandsOrGrades.includes(selectedBrandOrGrade);
@@ -419,6 +421,34 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
             : `Add ${tonnage} MT to cart`}
         </Button>
 
+        {/* Company ISO 9001:2015 Verified Strip (Exact Match to Reference Mockup) */}
+        <View style={styles.isoCardStrip}>
+          <View style={styles.isoCardLeft}>
+            <Icon name="shield" size={18} color="#16A34A" />
+            <View style={{ gap: 1 }}>
+              <Txt style={styles.isoCompanyText}>
+                Company <Txt style={styles.isoStandardText}>{companyCertificate.standard}</Txt>
+              </Txt>
+              <Txt style={styles.isoSubText}>{companyCertificate.scope}</Txt>
+            </View>
+          </View>
+
+          <View style={styles.isoDivider} />
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="View ISO 9001:2015 Certificate"
+            onPress={() => setCertModalOpen(true)}
+            style={({ pressed }) => [
+              styles.viewCertBtn,
+              pressed && { opacity: 0.75 },
+            ]}
+          >
+            <Icon name="file-text" size={15} color="#00409A" />
+            <Txt style={styles.viewCertText}>View certificate</Txt>
+          </Pressable>
+        </View>
+
         {/* Modal 1: Choose Size (Presets or Manual Custom Entry) */}
         {sizePickerOpen ? (
           <Modal
@@ -559,6 +589,73 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                     </Button>
                   </View>
                 )}
+              </Pressable>
+            </Pressable>
+          </Modal>
+        ) : null}
+
+
+        {/* ISO Certificate Modal */}
+        {certModalOpen ? (
+          <Modal
+            transparent
+            visible={certModalOpen}
+            animationType="fade"
+            onRequestClose={() => setCertModalOpen(false)}
+          >
+            <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setCertModalOpen(false)}
+            >
+              <Pressable
+                style={[styles.modalCard, { maxWidth: 440 }]}
+                onPress={(e) => e.stopPropagation()}
+              >
+                <View style={styles.modalHeader}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Icon name="award" size={20} color="#16A34A" />
+                    <View>
+                      <Txt style={styles.modalTitle}>Company ISO 9001:2015</Txt>
+                      <Txt style={{ fontSize: 11, color: '#64748B' }}>
+                        Certificate No. {companyCertificate.certificate_number}
+                      </Txt>
+                    </View>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Close"
+                    onPress={() => setCertModalOpen(false)}
+                    style={{ padding: 4 }}
+                  >
+                    <Icon name="x" size={20} color="#64748B" />
+                  </Pressable>
+                </View>
+
+                <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+                  <Image
+                    source={{ uri: companyCertificate.cdn_url }}
+                    style={styles.certImage}
+                    contentFit="contain"
+                    accessibilityLabel="ISO 9001:2015 Registration Certificate"
+                  />
+
+                  <View style={styles.certMetaCard}>
+                    <Txt style={styles.certMetaOrg}>{companyCertificate.organization}</Txt>
+                    <Txt style={styles.certMetaDetail}>
+                      Accreditation: {companyCertificate.accreditation}
+                    </Txt>
+                    <Txt style={styles.certMetaDetail}>
+                      Valid Through: March 2028 · Verified by {companyCertificate.issuer}
+                    </Txt>
+                  </View>
+                </ScrollView>
+
+                <Button
+                  style={styles.applyBtn}
+                  onPress={() => setCertModalOpen(false)}
+                >
+                  Done
+                </Button>
               </Pressable>
             </Pressable>
           </Modal>
@@ -724,6 +821,84 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
 }
 
 const styles = StyleSheet.create({
+  isoCardStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    borderRadius: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    marginTop: 4,
+  },
+  isoCardLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+  },
+  isoCompanyText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#16A34A',
+  },
+  isoStandardText: {
+    fontSize: 11.5,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  isoSubText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#64748B',
+  },
+  isoDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#CBD5E1',
+    marginHorizontal: 8,
+  },
+  viewCertBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+  },
+  viewCertText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#00409A',
+  },
+  certImage: {
+    width: '100%',
+    height: 280,
+    borderRadius: 8,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  certMetaCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    padding: 10,
+    gap: 3,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  certMetaOrg: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  certMetaDetail: {
+    fontSize: 11,
+    color: '#64748B',
+  },
   wrapper: {
     flex: 1,
     minWidth: 0,
@@ -779,6 +954,23 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 4,
     letterSpacing: 0.4,
+  },
+  isoVerifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3.5,
+    backgroundColor: '#FEE2E2',
+    paddingHorizontal: 6,
+    paddingVertical: 2.5,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  isoVerifiedText: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#A70101',
+    letterSpacing: 0.3,
   },
   bookmarkBtn: {
     padding: 4,

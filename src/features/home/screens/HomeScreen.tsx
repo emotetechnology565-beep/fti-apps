@@ -16,6 +16,7 @@ import { HomeActivity } from '../components/HomeActivity';
 import { loadHomeCatalogue } from '../data/category-images';
 import materialImageFallbacks from '../data/material-image-fallbacks.json';
 import { Button, Txt, Icon, c } from '@shared/ui';
+import { companyCertificate } from '@shared/config/company-certificates';
 
 const services = [
   {
@@ -330,15 +331,23 @@ export function Home() {
         {/* ISO 9001:2015 & Ludhiana Manufacturing Trust Strip */}
         <View style={styles.trustStripContainer}>
           <View style={styles.trustStrip}>
-            <View style={styles.trustItem}>
-              <View style={[styles.trustIcon, { backgroundColor: '#FEE2E2' }]}>
-                <Icon name="award" size={14} color="#A70101" />
-              </View>
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel="View ISO 9001:2015 Registration Certificate"
+              onPress={() => router.push({ pathname: '/account', params: { section: 'business' } })}
+              style={styles.trustItem}
+            >
+              <Image
+                source={{ uri: companyCertificate.badge_cdn_url || 'https://ftis.b-cdn.net/icons/iso-9001-certified-badge.png' }}
+                style={styles.trustBadgeImg}
+                contentFit="contain"
+                accessibilityLabel="ISO 9001 Certified"
+              />
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Txt style={styles.trustTitle}>ISO 9001:2015</Txt>
                 <Txt numberOfLines={1} style={styles.trustDesc}>QMS Certified</Txt>
               </View>
-            </View>
+            </Pressable>
 
             <View style={styles.trustDivider} />
 
@@ -571,6 +580,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  trustBadgeImg: {
+    width: 48,
+    height: 32,
   },
   trustIcon: {
     width: 28,
