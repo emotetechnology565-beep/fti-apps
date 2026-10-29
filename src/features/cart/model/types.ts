@@ -17,6 +17,7 @@ export type MaterialCartSelection = {
     withNut: boolean;
   };
   optionId?: string;
+  catalogVariantId?: string;
   manualRequest?: ManualRequest;
 };
 export type CartLine = {

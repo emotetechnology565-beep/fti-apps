@@ -213,7 +213,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               },
             }
           : {}),
-        optionId: selectedVariant?.id,
+        catalogVariantId: selectedVariant?.id,
         manualRequest:
           isCustomSize || isCustomBrand
             ? {

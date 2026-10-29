@@ -48,8 +48,8 @@ function Lot({
     <Card style={styles.card}>
       <View style={[styles.row, { alignItems: 'flex-start' }]}>
         <View style={{ flex: 1, gap: 6 }}>
-          <View style={[styles.row, { flexWrap: 'wrap' }]}>
-            <Txt style={styles.chip}>
+          <View style={[styles.row, { flexWrap: 'wrap', gap: 6 }]}>
+            <Txt style={styles.kindChip}>
               {material?.fastenerRequest
                 ? 'CONFIGURED FASTENER'
                 : material
@@ -57,21 +57,27 @@ function Lot({
                   : 'TRACTOR SPARE'}
             </Txt>
             {material?.brand ? (
-              <Txt style={styles.chip}>Brand: {material.brand}</Txt>
+              <Txt style={styles.brandChip}>Brand: {material.brand}</Txt>
             ) : null}
-            {material?.grade ? (
-              <Txt style={styles.chip}>{material.grade}</Txt>
+            {material?.grade && material.grade !== material.brand ? (
+              <Txt style={styles.gradeChip}>Grade: {material.grade}</Txt>
             ) : null}
           </View>
           <Txt accessibilityRole="header" style={styles.lotTitle}>
             {name}
           </Txt>
-          <Txt style={styles.secondary}>
-            {material?.size ??
-              variant?.size_label ??
-              variant?.sku ??
-              'Configuration unavailable'}
-          </Txt>
+          <View style={styles.sizeRow}>
+            <Icon name="tag" size={13} color="#00409A" />
+            <Txt style={styles.sizeText}>
+              Spec:{' '}
+              <Txt style={styles.sizeTextBold}>
+                {material?.size ??
+                  variant?.size_label ??
+                  variant?.sku ??
+                  'Standard'}
+              </Txt>
+            </Txt>
+          </View>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -79,7 +85,7 @@ function Lot({
           onPress={() => change(0)}
           style={styles.remove}
         >
-          <Icon name="x" size={20} color="#44474e" />
+          <Icon name="x" size={19} color="#64748B" />
         </Pressable>
       </View>
       {error ? (
@@ -91,29 +97,33 @@ function Lot({
         <View style={{ flex: 1, gap: 4 }}>
           <Txt style={styles.label}>CONFIGURED QUANTITY</Txt>
           <Txt style={styles.value}>
-            Quantity: {line.quantity} {unit}
+            {line.quantity} {unit}
           </Txt>
         </View>
         <View style={{ flex: 1, gap: 4 }}>
           <Txt style={styles.label}>INDICATIVE UNIT RATE</Txt>
-          {!priceAccess ? <SubscribeForPrices /> : <Txt style={styles.value}>
-            {price
-              ? `${money(price.amount)} / ${price.unit}`
-              : 'Quotation required'}
-          </Txt>}
+          {!priceAccess ? (
+            <SubscribeForPrices />
+          ) : (
+            <Txt style={styles.value}>
+              {price
+                ? `${money(price.amount)} / ${price.unit}`
+                : 'Quotation required'}
+            </Txt>
+          )}
         </View>
       </View>
-      <View style={styles.row}>
-        <Icon name="info" size={15} color="#485f83" />
-        <Txt style={[styles.secondary, { flex: 1 }]}>
+      <View style={styles.taxNoticeRow}>
+        <Icon name="info" size={14} color="#00409A" />
+        <Txt style={styles.taxNoticeText}>
           {price?.tax ??
-            'FTI will confirm pricing and availability for this configuration.'}
+            'GST and freight are excluded. Both will be added during order confirmation.'}
         </Txt>
       </View>
       <View
         style={[
           styles.row,
-          { justifyContent: 'space-between', flexWrap: 'wrap' },
+          { justifyContent: 'space-between', flexWrap: 'wrap', paddingTop: 2 },
         ]}
       >
         <View style={styles.stepper}>
@@ -127,10 +137,10 @@ function Lot({
               (!valid || line.quantity <= minimum) && { opacity: 0.35 },
             ]}
           >
-            <Icon name="minus" size={16} color="#111827" />
+            <Icon name="minus" size={15} color="#0F172A" />
           </Pressable>
           <Txt style={styles.quantity}>
-            {line.quantity} <Txt style={styles.secondary}>{unit}</Txt>
+            {line.quantity} <Txt style={styles.quantityUnit}>{unit}</Txt>
           </Txt>
           <Pressable
             accessibilityRole="button"
@@ -139,10 +149,10 @@ function Lot({
             onPress={() => change(line.quantity + minimum)}
             style={styles.stepButton}
           >
-            <Icon name="plus" size={16} color="#111827" />
+            <Icon name="plus" size={15} color="#0F172A" />
           </Pressable>
         </View>
-        <View style={{ alignItems: 'flex-end', gap: 4 }}>
+        <View style={{ alignItems: 'flex-end', gap: 2 }}>
           <Txt style={styles.label}>INDICATIVE LOT TOTAL</Txt>
           <Txt style={styles.lotTotal}>
             {price ? money(price.total) : 'Awaiting quotation'}
@@ -305,13 +315,18 @@ export function Cart() {
                 />
               );
             })}
-            <Button
-              secondary
-              icon="plus"
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Add another size or product"
               onPress={() => router.push('/products')}
+              style={({ pressed }) => [
+                styles.addAnotherBtn,
+                pressed && { opacity: 0.8 },
+              ]}
             >
-              Add another size or product
-            </Button>
+              <Icon name="plus" size={16} color="#00409A" />
+              <Txt style={styles.addAnotherText}>Add another size or product</Txt>
+            </Pressable>
             <Card style={styles.card}>
               <View style={styles.row}>
                 <Icon name="truck" size={20} color="#111827" />
@@ -487,23 +502,68 @@ const styles = StyleSheet.create({
   card: {
     gap: 12,
     padding: 16,
-    borderWidth: 0,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    boxShadow: '0 1px 8px rgba(0,24,53,0.04)',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    boxShadow: '0 2px 8px rgba(0, 24, 53, 0.04)',
   },
   lotTitle: {
-    fontSize: 19,
-    lineHeight: 26,
-    color: '#101c2c',
+    fontSize: 18,
+    lineHeight: 24,
+    color: '#0F172A',
+    fontWeight: '800',
+  },
+  sizeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 1,
+  },
+  sizeText: {
+    fontSize: 12.5,
+    color: '#64748B',
+  },
+  sizeTextBold: {
     fontWeight: '700',
+    color: '#0F172A',
   },
   sectionTitle: {
-    fontSize: 18,
-    lineHeight: 25,
-    color: '#111827',
+    fontSize: 17,
+    lineHeight: 24,
+    color: '#0F172A',
     fontWeight: '700',
     flexShrink: 1,
+  },
+  kindChip: {
+    color: '#00409A',
+    backgroundColor: '#EEF4FC',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+    paddingVertical: 3,
+    paddingHorizontal: 7,
+    borderRadius: 5,
+  },
+  brandChip: {
+    color: '#15803D',
+    backgroundColor: '#ECFDF5',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+    paddingVertical: 3,
+    paddingHorizontal: 7,
+    borderRadius: 5,
+  },
+  gradeChip: {
+    color: '#0F172A',
+    backgroundColor: '#F1F5F9',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+    paddingVertical: 3,
+    paddingHorizontal: 7,
+    borderRadius: 5,
   },
   chip: {
     color: '#111827',
@@ -517,52 +577,97 @@ const styles = StyleSheet.create({
   },
   secondary: { color: '#44474e', fontSize: 12, lineHeight: 19 },
   label: {
-    color: '#485f83',
-    fontSize: 10,
-    lineHeight: 15,
+    color: '#64748B',
+    fontSize: 9.5,
+    lineHeight: 14,
     fontWeight: '700',
-    letterSpacing: 0.4,
+    letterSpacing: 0.5,
   },
-  value: { fontSize: 14, lineHeight: 21, color: '#101c2c', fontWeight: '700' },
+  value: { fontSize: 14, lineHeight: 20, color: '#0F172A', fontWeight: '800' },
   specGrid: {
     flexDirection: 'row',
     gap: 12,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#eff4ff',
+    backgroundColor: '#EEF4FC',
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+  },
+  taxNoticeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#F8FAFC',
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  taxNoticeText: {
+    flex: 1,
+    fontSize: 11,
+    color: '#475569',
   },
   remove: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 18,
+    backgroundColor: '#F1F5F9',
   },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#eff4ff',
-    padding: 4,
+    backgroundColor: '#F1F5F9',
+    padding: 3,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   stepButton: {
-    width: 36,
-    height: 40,
+    width: 34,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
   },
   quantity: {
     paddingHorizontal: 12,
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#111827',
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  quantityUnit: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: '#64748B',
   },
   lotTotal: {
-    fontSize: 18,
-    lineHeight: 25,
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: '800',
+    color: '#00409A',
+  },
+  addAnotherBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 46,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: '#00409A',
+    backgroundColor: '#FFFFFF',
+  },
+  addAnotherText: {
+    fontSize: 13,
     fontWeight: '700',
-    color: '#111827',
+    color: '#00409A',
   },
   clear: { color: '#A70101', fontSize: 12, fontWeight: '600' },
   error: { color: '#ba1a1a', fontSize: 12, lineHeight: 19 },
