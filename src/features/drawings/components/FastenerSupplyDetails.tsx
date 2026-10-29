@@ -89,6 +89,11 @@ export function FastenerSupplyDetails({
     );
   return (
     <View style={styles.details}>
+      {hexBolts ? <>
+        <Detail label="Description" value="Hex bolts with advertised cold and hot forging capabilities for industrial and OEM supply. Choose dimensions, material, thread system and finish. Confirm property class, product standard, thread pitch and coating thickness with FTI." />
+        <Detail label="Threading capacity" value="5–56 mm" />
+        <Detail label="Inspection" value="Dimensional check and quality inspection" />
+      </> : null}
       {section(
         'size',
         hexBolts ? (

@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import { Icon, Txt, c } from '@shared/ui';
 
 export function HomeHeader({
@@ -23,13 +24,7 @@ export function HomeHeader({
         onPress={onMenu}
         style={styles.brand}
       >
-        <View style={styles.logo}>
-          <Txt style={styles.logoText}>FTI</Txt>
-        </View>
-        <View>
-          <Txt style={styles.fieldfast}>FIELDFAST</Txt>
-          <Txt style={styles.company}>Tech Int.</Txt>
-        </View>
+        <Image source={require('../../../../assets/logo/logo.jpeg')} contentFit="contain" accessibilityLabel="Fieldfast Tech International" style={{ width: 94, height: 48 }} />
       </Pressable>
       <Pressable
         accessibilityRole="button"

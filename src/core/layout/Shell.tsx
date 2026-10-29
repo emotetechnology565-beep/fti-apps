@@ -71,19 +71,19 @@ const nav: { label: string; icon: IconName; path: string; group: string }[] = [
     label: 'Weight calculator',
     icon: 'cpu',
     path: '/calculator',
-    group: 'TOOLS & SUPPORT',
+    group: 'TOOLS',
   },
   {
     label: 'Claims & certificates',
     icon: 'shield',
     path: '/support',
-    group: 'TOOLS & SUPPORT',
+    group: 'TOOLS',
   },
   {
     label: 'Business account',
     icon: 'briefcase',
     path: '/account',
-    group: 'TOOLS & SUPPORT',
+    group: 'TOOLS',
   },
 ];
 export function Shell({ children }: { children: ReactNode }) {
@@ -92,6 +92,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const desktop = width >= 1000;
   const phone = width < 600;
   const path = usePathname();
+  const mobileCommercePage = !desktop && (path === '/' || path === '/products' || path === '/cart' || path.startsWith('/product/'));
+  const mobileDetailPage = !desktop && (path === '/cart' || path.startsWith('/product/'));
   const {section: adminSection} = useLocalSearchParams<{section?: string}>();
   const staffWorkspace = path === '/admin' && hasPermission(auth.identity,'staff.access');
   const accountWorkspace = path === '/account' && !!auth.identity;
@@ -143,9 +145,9 @@ export function Shell({ children }: { children: ReactNode }) {
     <View
       style={{
         flex: 1,
-        backgroundColor: 'white',
-        paddingHorizontal: 18,
-        paddingTop: 27,
+        backgroundColor: '#0B1B36',
+        paddingHorizontal: 16,
+        paddingTop: 24,
       }}
     >
       <Pressable
@@ -153,157 +155,168 @@ export function Shell({ children }: { children: ReactNode }) {
         accessibilityLabel="FTI home"
         onPress={() => go('/')}
       >
-        <Row style={{ gap: 12, paddingHorizontal: 9 }}>
+        <Row style={{ gap: 12, paddingHorizontal: 6, alignItems: 'center' }}>
           <Image
             source={require('../../../assets/logo/logo.jpeg')}
             accessibilityLabel="FTI logo"
             contentFit="contain"
-            style={{ width: 43, height: 43 }}
+            style={{ width: 44, height: 44, borderRadius: 6 }}
           />
-          <View>
+          <View style={{ gap: 2 }}>
             <Txt
-              style={{ fontSize: 17, fontWeight: '800', letterSpacing: -0.6 }}
+              style={{
+                fontSize: 18,
+                fontWeight: '900',
+                letterSpacing: 0.5,
+                color: '#FFFFFF',
+              }}
             >
-              FIELDFAST
+              FTI
             </Txt>
             <Txt
               style={{
                 fontSize: 8,
-                letterSpacing: 2,
-                color: c.muted,
-                marginTop: 3,
+                letterSpacing: 1.2,
+                color: '#94A3B8',
+                fontWeight: '600',
               }}
             >
-              TECH INTERNATIONAL
+              FieldFast Tech International
             </Txt>
           </View>
         </Row>
       </Pressable>
-      <View
-        style={{
-          marginTop: 30,
-          marginBottom: 22,
-          backgroundColor: c.bg,
-          borderRadius: 7,
-          padding: 13,
-        }}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ marginTop: 24 }}
       >
-        <Row style={{ gap: 8 }}>
-          <View
-            style={{
-              width: 7,
-              height: 7,
-              backgroundColor: c.green,
-              borderRadius: 5,
-            }}
-          />
-          <Txt style={{ fontSize: 10, fontWeight: '700', letterSpacing: 0.8 }}>
-            {staffWorkspace ? 'STAFF WORKSPACE' : 'BUSINESS WORKSPACE'}
-          </Txt>
-        </Row>
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {staffWorkspace ? <AdminNavigation onNavigate={closeMenu}/> : accountWorkspace ? <AccountNavigation onNavigate={closeMenu}/> : ['PROCUREMENT', 'YOUR BUSINESS', 'TOOLS & SUPPORT'].map((group) => (
-          <View key={group} style={{ marginBottom: 23 }}>
-            <Txt
-              style={{
-                fontSize: 8,
-                fontWeight: '700',
-                letterSpacing: 1.6,
-                color: '#98A2B1',
-                marginBottom: 10,
-                paddingLeft: 13,
-              }}
-            >
-              {group}
-            </Txt>
-            {nav
-              .filter((n) => n.group === group)
-              .map((n) => (
-                <Pressable
-                  key={n.path}
-                  accessibilityRole="link"
-                  accessibilityLabel={n.label}
-                  onPress={() => go(n.path)}
-                  style={({ hovered }: any) => ({
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingHorizontal: 13,
-                    minHeight: 43,
-                    marginBottom: 3,
-                    borderRadius: 8,
-                    backgroundColor: active(n.path)
-                      ? c.brandBlueLight
-                      : hovered
-                        ? c.bgSubtle
-                        : 'transparent',
-                    borderWidth: 1,
-                    borderColor: active(n.path)
-                      ? c.brandBlueBorder
-                      : 'transparent',
-                  })}
-                >
-                  <Icon
-                    name={n.icon}
-                    size={16}
-                    color={active(n.path) ? c.brandBlue : c.muted}
-                  />
-                  <Txt
-                    style={{
-                      fontSize: 11,
-                      fontWeight: active(n.path) ? '700' : '500',
-                      color: active(n.path) ? c.brandBlue : c.ink,
-                      flex: 1,
-                    }}
-                  >
-                    {n.label}
-                  </Txt>
-                  {n.path === '/cart' && cart.length ? (
-                    <Badge tone="blue">{cart.length}</Badge>
-                  ) : null}
-                </Pressable>
-              ))}
-          </View>
-        ))}
+        {staffWorkspace ? (
+          <AdminNavigation onNavigate={closeMenu} />
+        ) : accountWorkspace ? (
+          <AccountNavigation onNavigate={closeMenu} />
+        ) : (
+          ['PROCUREMENT', 'YOUR BUSINESS', 'TOOLS'].map((group) => (
+            <View key={group} style={{ marginBottom: 20 }}>
+              <Txt
+                style={{
+                  fontSize: 9,
+                  fontWeight: '800',
+                  letterSpacing: 1.2,
+                  color: '#64748B',
+                  marginBottom: 8,
+                  paddingLeft: 12,
+                }}
+              >
+                {group}
+              </Txt>
+              {nav
+                .filter((n) => n.group === group)
+                .map((n) => {
+                  const isActive = active(n.path);
+                  return (
+                    <Pressable
+                      key={n.path}
+                      accessibilityRole="link"
+                      accessibilityLabel={n.label}
+                      onPress={() => go(n.path)}
+                      style={({ hovered }: any) => ({
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 12,
+                        paddingHorizontal: 12,
+                        minHeight: 40,
+                        marginBottom: 4,
+                        borderRadius: 8,
+                        backgroundColor: isActive
+                          ? '#A70101'
+                          : hovered
+                            ? 'rgba(255, 255, 255, 0.08)'
+                            : 'transparent',
+                      })}
+                    >
+                      <Icon
+                        name={n.icon}
+                        size={16}
+                        color={isActive ? '#FFFFFF' : '#94A3B8'}
+                      />
+                      <Txt
+                        style={{
+                          fontSize: 12,
+                          fontWeight: isActive ? '700' : '500',
+                          color: isActive ? '#FFFFFF' : '#CBD5E1',
+                          flex: 1,
+                        }}
+                      >
+                        {n.label}
+                      </Txt>
+                      {n.path === '/cart' && cart.length ? (
+                        <View
+                          style={{
+                            backgroundColor: isActive ? '#FFFFFF' : '#00409A',
+                            borderRadius: 10,
+                            paddingHorizontal: 6,
+                            paddingVertical: 2,
+                          }}
+                        >
+                          <Txt
+                            style={{
+                              fontSize: 10,
+                              fontWeight: '700',
+                              color: isActive ? '#A70101' : '#FFFFFF',
+                            }}
+                          >
+                            {cart.length}
+                          </Txt>
+                        </View>
+                      ) : null}
+                    </Pressable>
+                  );
+                })}
+            </View>
+          ))
+        )}
       </ScrollView>
       <View
         style={{
           borderTopWidth: 1,
-          borderColor: c.line,
-          paddingTop: 17,
-          paddingBottom: 22,
-          gap: 17,
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          paddingTop: 14,
+          paddingBottom: 20,
+          gap: 12,
         }}
       >
         {hasPermission(auth.identity, 'staff.access') ? (
           <Pressable onPress={() => go(staffWorkspace ? '/products' : '/admin')} accessibilityRole="link" accessibilityLabel={staffWorkspace ? 'Back to marketplace' : 'Staff console'}>
             <Row style={{ paddingLeft: 12 }}>
-              <Icon name="sliders" size={15} />
-              <Txt style={{ fontSize: 11, color: c.muted }}>{staffWorkspace ? 'Back to marketplace' : 'Staff console'}</Txt>
-              <Icon name="arrow-up-right" size={13} />
+              <Icon name="sliders" size={15} color="#94A3B8" />
+              <Txt style={{ fontSize: 11, color: '#CBD5E1' }}>{staffWorkspace ? 'Back to marketplace' : 'Staff console'}</Txt>
+              <Icon name="arrow-up-right" size={13} color="#94A3B8" />
             </Row>
           </Pressable>
         ) : null}
-        <Row
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => go('/account')}
           style={{
-            backgroundColor: c.bg,
-            padding: 12,
-            borderRadius: 7,
-            gap: 9,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+            padding: 8,
+            borderRadius: 8,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
           }}
         >
           <View
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 15,
-              backgroundColor: '#DDE6F3',
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor: '#00409A',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Txt style={{ fontSize: 10, fontWeight: '700', color: '#48638C' }}>
+            <Txt style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>
               {business.name
                 ? business.name
                     .split(' ')
@@ -311,18 +324,21 @@ export function Shell({ children }: { children: ReactNode }) {
                     .join('')
                     .slice(0, 2)
                     .toUpperCase()
-                : 'FTI'}
+                : 'AS'}
             </Txt>
           </View>
-          <View style={{ flex: 1 }}>
-            <Txt numberOfLines={1} style={{ fontSize: 10, fontWeight: '700' }}>
-              {business.name || 'Set up your business'}
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Txt
+              numberOfLines={1}
+              style={{ fontSize: 11.5, fontWeight: '700', color: '#FFFFFF' }}
+            >
+              {business.name || 'Account'}
             </Txt>
-            <Txt style={{ fontSize: 9, color: c.muted, marginTop: 3 }}>
-              Business profile
+            <Txt style={{ fontSize: 9.5, color: '#94A3B8' }}>
+              Business Profile
             </Txt>
           </View>
-        </Row>
+        </Pressable>
       </View>
     </View>
   );
@@ -342,7 +358,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </View>
         ) : null}
         <View style={{ flex: 1, minWidth: 0 }}>
-          {path === '/' && !desktop ? <HomeHeader market={markets.data?.find(item => item.id === market)?.name ?? ''} name={business.name} onMarket={() => setMarketOpen(true)} onNotifications={() => setNotifications(true)} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : <View
+          {mobileCommercePage ? (path === '/' ? <HomeHeader market={markets.data?.find(item => item.id === market)?.name ?? ''} name={business.name} onMarket={() => setMarketOpen(true)} onNotifications={() => setNotifications(true)} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : null) : <View
             style={{
               height: phone ? 68 : 76,
               backgroundColor: 'white',
@@ -386,73 +402,90 @@ export function Shell({ children }: { children: ReactNode }) {
                 </Pressable>
               </Row>
             ) : (
-              <Row style={{ gap: 9 }}>
-                <Txt style={{ fontSize: 11, color: c.muted }}>Workspace</Txt>
-                <Icon name="chevron-right" size={12} />
-                <Txt style={{ fontSize: 11, fontWeight: '600' }}>{current}</Txt>
+              <Row style={{ gap: 8, alignItems: 'center' }}>
+                <Txt style={{ fontSize: 13, color: '#64748B' }}>Workspace</Txt>
+                <Txt style={{ fontSize: 13, color: '#94A3B8' }}>/</Txt>
+                <Txt style={{ fontSize: 13, fontWeight: '700', color: '#0F172A' }}>
+                  {path === '/' ? 'Overview' : current}
+                </Txt>
               </Row>
             )}
-            <Row style={{ gap: phone ? 10 : 22 }}>
+            <Row style={{ gap: phone ? 10 : 16, alignItems: 'center' }}>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Choose market"
                 onPress={() => setMarketOpen(true)}
                 style={{
-                  backgroundColor: c.paper,
+                  backgroundColor: '#FFFFFF',
                   borderWidth: 1,
-                  borderColor: c.cardBorder,
+                  borderColor: '#E2E8F0',
                   borderRadius: 20,
-                  paddingHorizontal: 11,
-                  paddingVertical: 5,
-                  boxShadow: '0 1px 4px rgba(31, 27, 22, 0.04)',
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
                 }}
               >
-                <Row style={{ gap: 6 }}>
-                  <Icon name="map-pin" size={13} color={c.brandRed} />
+                <Row style={{ gap: 6, alignItems: 'center' }}>
+                  <Icon name="map-pin" size={13} color="#00409A" />
                   <Txt
                     style={{
                       fontSize: phone ? 11 : 12,
                       fontWeight: '700',
-                      color: c.ink,
+                      color: '#0F172A',
                     }}
                   >
-                    {markets.data?.find(item => item.id === market)?.name || 'Select market'}
+                    {markets.data?.find(item => item.id === market)?.name || 'Ludhiana market'}
                   </Txt>
-                  <Icon name="chevron-down" size={12} color={c.muted} />
+                  <Icon name="chevron-down" size={12} color="#64748B" />
                 </Row>
               </Pressable>
               {!phone ? (
                 <View
-                  style={{ width: 1, height: 27, backgroundColor: c.line }}
+                  style={{ width: 1, height: 24, backgroundColor: '#E2E8F0' }}
                 />
               ) : null}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Notifications"
                 onPress={() => setNotifications(true)}
-                style={{ padding: 8 }}
+                style={{ padding: 6, position: 'relative' }}
               >
-                <Icon name="bell" size={19} color={c.ink} />
+                <Icon name="bell" size={18} color="#0F172A" />
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 5,
+                    right: 6,
+                    width: 7,
+                    height: 7,
+                    borderRadius: 4,
+                    backgroundColor: '#DC2626',
+                  }}
+                />
               </Pressable>
               {desktop ? (
                 <Pressable
                   onPress={() => go('/account')}
                   accessibilityLabel="Business account"
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    paddingLeft: 4,
+                  }}
                 >
                   <View
                     style={{
-                      width: 33,
-                      height: 33,
-                      borderRadius: 17,
-                      backgroundColor: c.brandBlue,
-                      borderWidth: 1.5,
-                      borderColor: c.brandBlueLight,
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: '#0B1B36',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
                     <Txt
-                      style={{ fontSize: 10, fontWeight: '700', color: c.paper }}
+                      style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}
                     >
                       {business.name
                         ? business.name
@@ -461,9 +494,19 @@ export function Shell({ children }: { children: ReactNode }) {
                             .join('')
                             .slice(0, 2)
                             .toUpperCase()
-                        : 'FTI'}
+                        : 'RS'}
                     </Txt>
                   </View>
+                  <Txt
+                    style={{
+                      fontSize: 12.5,
+                      fontWeight: '700',
+                      color: '#0F172A',
+                    }}
+                  >
+                    {business.name || 'Rohit Singh'}
+                  </Txt>
+                  <Icon name="chevron-down" size={12} color="#64748B" />
                 </Pressable>
               ) : null}
             </Row>
@@ -472,14 +515,14 @@ export function Shell({ children }: { children: ReactNode }) {
             ref={contentScroll}
             key={staffWorkspace ? `${path}-${adminSection ?? ''}` : path}
             contentContainerStyle={{
-              padding: path === '/' && phone ? 0 : phone ? 18 : 32,
-              paddingBottom: phone ? 100 : 32,
+              padding: mobileCommercePage ? 0 : phone ? 18 : 32,
+              paddingBottom: mobileCommercePage ? 16 : phone ? 100 : 32,
             }}
           >
             <View
               style={{ maxWidth: 1250, width: '100%', alignSelf: 'center' }}
             >
-              {path !== '/' ? <View
+              {!mobileCommercePage && path !== '/' && (!desktop || path !== '/products') ? <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -503,28 +546,30 @@ export function Shell({ children }: { children: ReactNode }) {
               </View> : null}
               <StaffOrderAlert />
               {children}
-              <View
-                style={{
-                  marginTop: 36,
-                  borderTopWidth: 1,
-                  borderColor: c.line,
-                  paddingTop: 19,
-                }}
-              >
-                <Row
-                  style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}
+              {!mobileCommercePage && (!desktop || (path !== '/' && path !== '/products')) ? (
+                <View
+                  style={{
+                    marginTop: 36,
+                    borderTopWidth: 1,
+                    borderColor: c.line,
+                    paddingTop: 19,
+                  }}
                 >
-                  <Txt style={{ fontSize: 9, color: '#98A2B1' }}>
-                    © 2026 FTI · Fieldfast Industrial Commerce
-                  </Txt>
-                  <Txt style={{ fontSize: 9, color: '#98A2B1' }}>
-                    Built for the businesses that build India.
-                  </Txt>
-                </Row>
-              </View>
+                  <Row
+                    style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}
+                  >
+                    <Txt style={{ fontSize: 9, color: '#98A2B1' }}>
+                      © 2026 FTI · Fieldfast Industrial Commerce
+                    </Txt>
+                    <Txt style={{ fontSize: 9, color: '#98A2B1' }}>
+                      Built for the businesses that build India.
+                    </Txt>
+                  </Row>
+                </View>
+              ) : null}
             </View>
           </ScrollView>
-          {!desktop ? (
+          {!desktop && !mobileDetailPage ? (
             <View
               style={{
                 flexDirection: 'row',
@@ -538,10 +583,10 @@ export function Shell({ children }: { children: ReactNode }) {
               }}
             >
               {[
-                { label: 'Home', path: '/', icon: 'grid' },
-                { label: path === '/' ? 'Products' : 'Materials', path: '/products', icon: 'box' },
-                { label: 'Rates', path: '/rates', icon: 'trending-up' },
-                { label: path === '/' ? 'RFQs' : 'Cart', path: path === '/' ? '/rfqs' : '/cart', icon: path === '/' ? 'file-text' : 'shopping-bag' },
+                { label: 'Home', path: '/', icon: 'home' },
+                { label: 'Catalogue', path: '/products', icon: 'search' },
+                { label: 'Quotes', path: '/rfqs', icon: 'file-text' },
+                { label: 'Orders', path: '/orders', icon: 'package' },
                 { label: 'Account', path: '/account', icon: 'user' },
               ].map((n) => (
                 <Pressable

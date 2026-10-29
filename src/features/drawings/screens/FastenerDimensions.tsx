@@ -1,13 +1,15 @@
 import {
-  MaterialSpecificationHeader,
+  BackToCatalogue,
   MaterialSectionTitle,
   MaterialSpecFilter,
 } from '@features/catalog/ui';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View, useWindowDimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Card, CatalogFilter, Empty, Field, Txt, s } from '@shared/ui';
+import { Button, Card, CatalogFilter, Empty, Field, Icon, Txt, c, s } from '@shared/ui';
+import { FastenerSupplyDetails } from '../components/FastenerSupplyDetails';
 import { drawingApi } from '../services/drawing-api';
 import { DrawingPreview } from '../components/DrawingPreview';
 import { CategoryWeight, DrawingWeight } from '../components/FastenerWeight';
@@ -35,6 +37,8 @@ const choices = (values: string[]) =>
 export function FastenerDimensions({
   subcategory = '',
 }: { subcategory?: string } = {}) {
+  const { width } = useWindowDimensions();
+  const desktop = width >= 1000;
   const query = useQuery({
     queryKey: ['fastener-dimensions', 'public'],
     queryFn: drawingApi.list,
@@ -51,9 +55,11 @@ export function FastenerDimensions({
   const [shape, setShape] = useState('');
   const [id, setId] = useState('');
   const [version, setVersion] = useState('');
+  const [tab, setTab] = useState<'Specifications' | 'Description'>('Specifications');
   if (query.isPending)
     return (
       <Card>
+        {subcategory ? <BackToCatalogue fastener /> : null}
         <Txt>Loading fastener dimensions…</Txt>
       </Card>
     );
@@ -149,34 +155,33 @@ export function FastenerDimensions({
     <View
       style={{
         gap: 16,
-        backgroundColor: '#f8f9ff',
-        padding: 16,
+        backgroundColor: c.bg,
+        padding: 0,
         paddingBottom: 32,
       }}
     >
-      <MaterialSpecificationHeader
-        fastener
-        product={{
-          name:
-            types.find((item) => item.value === selectedType)?.label ??
-            'Fastener',
-          category: 'Fastener',
-          description:
-            'Select standard, size and grade for your fastener requirement.',
-          images: (photos.data ?? [])
-            .filter((photo) => photo.slug === selectedType && photo.image_url)
-            .map((photo) => ({
-              id: photo.slug,
-              product_id: photo.slug,
-              url: photo.image_url!,
-              mime_type: 'image/jpeg',
-            })),
-        }}
-      />
-      <Card style={{ gap: 12, padding: 12, borderWidth: 0, borderRadius: 8 }}>
+      <BackToCatalogue fastener />
+      <View style={{ flexDirection: desktop ? 'row' : 'column', alignItems: 'flex-start', gap: 20 }}>
+      <Card style={{ width: desktop ? '36%' : '100%', gap: 20, padding: 20, borderRadius: 8 }}>
+        {photos.data?.find(photo => photo.slug === selectedType)?.image_url ? <Image
+          source={{ uri: photos.data.find(photo => photo.slug === selectedType)!.image_url! }}
+          accessibilityLabel={`${types.find(item => item.value === selectedType)?.label ?? 'Fastener'} product photo`}
+          contentFit="contain" style={{ width: '100%', height: desktop ? 280 : 180, borderRadius: 8 }}
+        /> : <View style={{ width: '100%', height: desktop ? 280 : 180, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg, borderRadius: 8 }}><Icon name="tool" size={48} color={c.brandBlue} /></View>}
+        <View style={{ minWidth: 0, gap: 10 }}>
+          <Txt style={{ fontSize: 11, color: c.muted, fontWeight: '600' }}>FASTENERS</Txt>
+          <Txt accessibilityRole="header" style={s.h2}>{types.find(item => item.value === selectedType)?.label ?? 'Fastener'}</Txt>
+          <Txt style={s.muted}>Choose your specifications to build a quotation.</Txt>
+          <View style={{ height: 1, backgroundColor: c.line, marginVertical: 4 }} />
+          <Txt style={{ color: c.brandRed, fontWeight: '700' }}>Rate on request</Txt>
+          <Txt style={s.muted}>Final rate and availability confirmed with your quote.</Txt>
+        </View>
+      </Card>
+      <View style={{ flex: desktop ? 1 : undefined, width: desktop ? undefined : '100%', minWidth: 0, gap: 16 }}>
+      <Card style={{ gap: 16, padding: 20, borderRadius: 8 }}>
         <MaterialSectionTitle
           number={1}
-          title="Standard & size specifications"
+          title="Configure your fastener"
         />
         {!subcategory ? (
           <Field
@@ -276,6 +281,21 @@ export function FastenerDimensions({
           progressive
         />
       ) : null}
+      </View>
+      </View>
+      <Card style={{ gap: 16 }}>
+        <View style={{ flexDirection: 'row', gap: 24, borderBottomWidth: 1, borderColor: c.line }}>
+          {(['Specifications', 'Description'] as const).map(label => <Pressable key={label}
+            accessibilityRole="tab" accessibilityState={{ selected: tab === label }} onPress={() => setTab(label)}
+            style={{ paddingVertical: 12, borderBottomWidth: tab === label ? 2 : 0, borderColor: c.brandRed }}
+          ><Txt style={{ color: tab === label ? c.brandRed : c.muted, fontWeight: '600' }}>{label}</Txt></Pressable>)}
+        </View>
+        {tab === 'Specifications' ? <FastenerSupplyDetails subcategory={selectedType} drawings={typed} sectionHeights={{}} onMeasureSection={() => {}} /> : <View style={{ gap: 12 }}>
+          {selectedType === 'hex-bolt' ? <Txt style={{ lineHeight: 22 }}>Hex bolts with advertised cold and hot forging capabilities for industrial and OEM supply. Cold forged sizes cover diameters of 5–24 mm and lengths of 10–200 mm; hot forged sizes cover diameters of 24–56 mm and lengths of 50–450 mm. Confirm property class, product standard, thread pitch and coating specification with FTI.</Txt> : <Txt style={{ lineHeight: 22 }}>{types.find(item => item.value === selectedType)?.label ?? 'Fastener'} specifications are based on the published standards and drawings. Select a standard and size to view dimensions and configure your quote.</Txt>}
+          {unique(typed.map(row => row.notes?.trim()).filter(Boolean)).map(note => <Txt key={note} style={s.muted}>{note}</Txt>)}
+          <Txt style={s.muted}>Confirm your required material, grade, finish, quantity and availability when requesting a quote.</Txt>
+        </View>}
+      </Card>
     </View>
   );
 }

@@ -5,7 +5,7 @@ import { FastenerPhotoCards } from './FastenerPhotoCards';
 import { Button, Card, Txt } from '@shared/ui';
 
 /** Published fastener cards are maintained separately from catalogue SKU records. */
-export function FastenerCatalogueCards({ search = '' }: { search?: string }) {
+export function FastenerCatalogueCards({ search = '', desktop = false }: { search?: string; desktop?: boolean }) {
   const drawings = useQuery({
     queryKey: ['fastener-dimensions', 'public'],
     queryFn: drawingApi.list,
@@ -33,6 +33,7 @@ export function FastenerCatalogueCards({ search = '' }: { search?: string }) {
       search={search}
       fallbackWhenEmpty
       matrix
+      desktop={desktop}
       drawings={drawings.data ?? []}
       onSelect={(slug) =>
         router.push({ pathname: '/fastener/[slug]', params: { slug } })

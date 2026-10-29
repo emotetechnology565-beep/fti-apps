@@ -23,6 +23,7 @@ export function FastenerPhotoCards({
   drawings = [],
   fallbackWhenEmpty = false,
   matrix = false,
+  desktop = false,
 }: {
   selected: string;
   onSelect: (slug: string) => void;
@@ -31,6 +32,7 @@ export function FastenerPhotoCards({
   drawings?: DrawingDefinition[];
   fallbackWhenEmpty?: boolean;
   matrix?: boolean;
+  desktop?: boolean;
 }) {
   const [gridWidth, setGridWidth] = useState(0);
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>(
@@ -117,7 +119,7 @@ export function FastenerPhotoCards({
             (row) => drawingSubcategory(row) === card.slug,
           );
           if (matrix && !onlySelected) {
-            const columns = gridWidth >= 920 ? 3 : gridWidth >= 630 ? 2 : 1;
+            const columns = desktop ? (gridWidth >= 630 ? 2 : 1) : gridWidth >= 920 ? 3 : gridWidth >= 630 ? 2 : 1;
             return (
               <View
                 key={card.slug}
@@ -128,6 +130,7 @@ export function FastenerPhotoCards({
                 }}
               >
                 <MatrixFastenerCard
+                  desktop={desktop}
                   slug={card.slug}
                   imageUrl={card.image_url}
                   drawings={productDrawings}

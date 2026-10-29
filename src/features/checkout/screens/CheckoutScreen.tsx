@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
 import { useAuth } from '@features/auth/ui';
@@ -24,6 +24,7 @@ const newRequest = () =>
   });
 
 export function Checkout() {
+  const params = useLocalSearchParams<{ pincode?: string; notes?: string }>();
   const auth = useAuth();
   const client = useQueryClient();
   const cart = useStore((state) => state.cart);
@@ -45,7 +46,7 @@ export function Checkout() {
   const [line1, setLine1] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
-  const [pincode, setPincode] = useState('');
+  const [pincode, setPincode] = useState(typeof params.pincode === 'string' && /^[1-9]\d{5}$/.test(params.pincode) ? params.pincode : '');
 
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');

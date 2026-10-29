@@ -21,3 +21,13 @@ supabase/
 tests/
 test-results/
 .github/
+.agents/
+.claude/
+.codex/
+artifacts/
+reports/
+exports/
+tmp/
+scripts/
+docs/
+*.xlsx

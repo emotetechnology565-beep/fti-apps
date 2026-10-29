@@ -15,9 +15,9 @@ export function MaterialSpecificationHeader({
   product: Pick<Product, 'images' | 'category' | 'name' | 'description'>;
   fastener?: boolean;
 }) {
-  const image = product.images[0]?.url
+  const image = getCategoryImage(product.category) ?? (product.images[0]?.url
     ? { uri: product.images[0].url }
-    : getCategoryImage(product.category);
+    : undefined);
   return (
     <View style={{ gap: 12, marginBottom: 16 }}>
       <View style={styles.toolbar}>

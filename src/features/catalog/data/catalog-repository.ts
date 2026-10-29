@@ -4,6 +4,7 @@ import { supabase } from '@core/api/supabase-client';
 import type { CatalogImage, CatalogPage, Category, Product, Variant } from '../model/types';
 import type { GradeSheet } from '../model/grade-sheet';
 import type { SelectionOptions } from '../model/material-selection';
+import { withinAdvertisedSizeRange } from '../model/material-selection';
 import type { ManualPreview, ManualRequest } from '../model/manual-material';
 
 export type CatalogQuery = {
@@ -106,9 +107,9 @@ export const catalogApi = {
     catalogRpc<ManualPreview>('fti_catalog_manual_preview', { p_material: material, p_size: size, p_grade: grade, p_product: productId || null }),
   submitManual: (id: string, request: ManualRequest, quantity: string, buyer: Record<string, unknown>) =>
     catalogRpc<{ id: string; reference: string; replayed: boolean }>('fti_catalog_manual_request_submit', { p_id: id, p_request: request, p_quantity: quantity, p_buyer: buyer }),
-  selectionOptions: (category?: string, sizeId?: string, productId?: string) => catalogRpc<SelectionOptions>('fti_catalog_selection_options', {
+  selectionOptions: async (category?: string, sizeId?: string, productId?: string) => withinAdvertisedSizeRange(await catalogRpc<SelectionOptions>('fti_catalog_selection_options', {
     p_category: category || null, p_size_id: sizeId || null, p_product: productId || null,
-  }),
+  }), sizeId),
   submitSelection: (id: string, optionId: string, quantity: string, buyer: Record<string, unknown>) =>
     catalogRpc<{ id: string; reference: string; replayed: boolean }>('fti_catalog_selection_request_submit', {
       p_id: id, p_option_id: optionId, p_quantity: quantity, p_buyer: buyer,

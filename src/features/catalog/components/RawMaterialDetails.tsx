@@ -10,8 +10,9 @@ export function RawMaterialDetails({
   product: Product;
   compact?: boolean;
 }) {
-  if (product.product_kind !== 'steel') return null;
+  if (!['steel', 'fastener'].includes(product.product_kind)) return null;
   const profile = rawMaterialDetails(product);
+  if (!profile) return null;
   const summary = (
     <>
       <Detail
@@ -24,18 +25,18 @@ export function RawMaterialDetails({
         label="Materials / grades"
         value={profile?.materials ?? 'Confirm required grade with FTI'}
       />
-      <Detail
+      {profile.specialGradeMoq ? <Detail
         compact={compact}
         label="Special-grade MOQ"
-        value={profile?.specialGradeMoq ?? 'Confirm with your enquiry'}
-      />
+        value={profile.specialGradeMoq}
+      /> : null}
     </>
   );
   if (compact) return <View style={styles.summary}>{summary}</View>;
   return (
     <Card style={styles.full}>
       <Txt accessibilityRole="header" style={styles.title}>
-        Material specifications
+        Product specifications
       </Txt>
       <View style={styles.grid}>{summary}</View>
       {profile?.details.map(([label, value]) => (

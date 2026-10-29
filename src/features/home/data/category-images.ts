@@ -51,6 +51,7 @@ export async function loadHomeCatalogue(
   repository = supabaseCatalogRepository,
 ) {
   const images: HomeCategoryImages = {};
+  const categories = new Map<string, { id: string; title: string; category: string; imageUrl?: string }>();
   const tractorParts = new Map<
     string,
     { id: string; title: string; imageUrl?: string }
@@ -60,6 +61,13 @@ export async function loadHomeCatalogue(
     const page = await repository.listProducts({ limit: 50, offset });
     collectCategoryImages(images, page.items);
     for (const product of page.items) {
+      if (product.status === 'published' && product.product_kind === 'steel') {
+        const category = page.categories.find((entry) => entry.id === product.category_id || entry.slug === product.category);
+        const key = category?.slug ?? product.category;
+        const imageUrl = product.images.find((entry) => /^https:\/\//i.test(entry.url))?.url;
+        const previous = categories.get(key);
+        categories.set(key, { id: key, category: key, title: category?.name ?? product.category, imageUrl: previous?.imageUrl ?? imageUrl });
+      }
       if (
         product.status === 'published' &&
         product.product_kind === 'tractor_part'
@@ -76,5 +84,5 @@ export async function loadHomeCatalogue(
     offset += page.items.length;
     if (!page.items.length || offset >= page.total) break;
   }
-  return { images, tractorParts: [...tractorParts.values()] };
+  return { images, categories: [...categories.values()], tractorParts: [...tractorParts.values()] };
 }

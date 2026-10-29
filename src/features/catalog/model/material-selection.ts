@@ -1,4 +1,5 @@
 import type { Variant } from './types';
+import { rawMaterialDetails } from './raw-material-details';
 import { hasOrderConfirmationCharges, orderConfirmationChargesNote } from './price-disclosure';
 
 export type SelectionCategory = { id: string; slug: string; name: string; product_kind: 'steel'; dimension_label: string; dimension_keys?: string[] };
@@ -10,6 +11,20 @@ export type SelectionOption = {
 export type SelectionOptions = {
   categories: SelectionCategory[]; category: SelectionCategory | null; sizes: SelectionSize[]; options: SelectionOption[];
 };
+
+// Older catalogue data includes sizes outside the supplied FTI ranges.
+// Restrict the returned stock choices without inventing availability within it.
+export function withinAdvertisedSizeRange(data: SelectionOptions, requestedSizeId?: string): SelectionOptions {
+  if (!data.category) return data;
+  const profile = rawMaterialDetails({ slug: data.category.slug, category: data.category.name, name: data.category.name });
+  const range = profile?.sideRange ?? profile?.diameterRange;
+  if (!range) return data;
+  const sizes = data.sizes.filter(({ dimensions }) => {
+    const size = profile?.sideRange ? dimensions.side_mm : dimensions.diameter_mm;
+    return Number.isFinite(size) && size >= range[0] && size <= range[1];
+  });
+  return { ...data, sizes, options: requestedSizeId && !sizes.some(size => size.id === requestedSizeId) ? [] : data.options };
+}
 export type SelectionDraft = {
   category: string; sizeId: string; grade: string; optionId: string; quantity: string; review: boolean; productId: string;
   requestedGrade?: string;

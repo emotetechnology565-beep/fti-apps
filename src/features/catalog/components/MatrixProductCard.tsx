@@ -18,6 +18,8 @@ import { selectionPrice } from '../model/material-selection';
 import { formatTractorPrice, tractorPricing } from '../model/tractor-pricing';
 import { isTmtCategory } from '../model/tmt';
 import { companyCertificate } from '@shared/config/company-certificates';
+import { useQuery } from '@tanstack/react-query';
+import { catalogApi } from '../data/catalog-repository';
 
 function extractIndividualSizes(variants: Variant[]): string[] {
   const set = new Set<string>();
@@ -67,15 +69,22 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   const tmt = isTmtCategory(p.category);
   const tractor = p.product_kind === 'tractor_part';
   const profile = rawMaterialDetails(p);
-  const variants = p.variants.length ? p.variants : [];
+  const variants = p.variants;
+  const sizesQuery = useQuery({
+    queryKey: ['catalog', 'selection-options', '', '', p.id],
+    queryFn: () => catalogApi.selectionOptions(undefined, undefined, p.id),
+    enabled: p.product_kind === 'steel',
+    staleTime: 30_000,
+  });
 
   // Extract available sizes: e.g. 16MM, 17MM, 18MM, ..., 80MM
   const availableSizes = useMemo(() => {
+    if (p.product_kind === 'steel') return sizesQuery.data?.sizes.map((size) => size.label) ?? [];
     const list = extractIndividualSizes(variants);
     if (!list.length && profile?.size) list.push(profile.size);
     if (!list.length) list.push('Standard Size');
     return list;
-  }, [variants, profile?.size]);
+  }, [variants, profile, p.product_kind, sizesQuery.data]);
 
   const availableBrandsOrGrades = useMemo(() => {
     const list = [
@@ -98,9 +107,10 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   }, [variants, tmt, p.brand, p.grade]);
 
   // Separate states for size, brand/grade, and tonnage
-  const [selectedSize, setSelectedSize] = useState<string>(
-    availableSizes[0] ?? 'Standard Size',
-  );
+  const [sizeChoice, setSelectedSize] = useState('');
+  const selectedSize = sizeChoice || availableSizes[0] || '';
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState('');
   const [selectedBrandOrGrade, setSelectedBrandOrGrade] = useState<string>(
     availableBrandsOrGrades[0] ?? (tmt ? 'Primary Mill' : 'Standard Grade'),
   );
@@ -162,7 +172,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
     getCategoryImage(p.category) ??
     (p.images[0] ? { uri: p.images[0].url } : undefined);
 
-  const selectedPrice = selectedVariant
+  const selectedPrice = selectedVariant && !isCustomSize && !isCustomBrand
     ? selectionPrice({
         id: selectedVariant.id,
         product_id: p.id,
@@ -189,13 +199,21 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
 
   const open = () => setDetailPopupOpen(true);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (adding) return;
+    if (!selectedSize.trim()) { setAddError('Choose an available size or enter a size manually.'); return; }
+    setAdding(true);
+    setAddError('');
+    try {
     setCatalogProducts([p]);
     const uom = selectedVariant?.uom ?? 'MT';
     const moq = selectedVariant?.min_order_qty ?? 1;
     const finalQty = Math.max(moq, tonnage);
 
     if (p.product_kind === 'steel') {
+      const preview = await catalogApi.manualPreview(p.name, selectedSize, selectedBrandOrGrade, p.id);
+      if (preview.status === 'dimensions_required') throw new Error('Enter all dimensions for this material.');
+      if (!isCustomSize && !isCustomBrand && !preview.option) throw new Error('This size and grade combination is unavailable. Choose another combination or enter a custom specification.');
       addMaterial(p.id, finalQty, {
         key: `${p.id}-${selectedSize}-${selectedBrandOrGrade}`,
         name: p.name,
@@ -213,24 +231,17 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               },
             }
           : {}),
-        catalogVariantId: selectedVariant?.id,
+        optionId: isCustomSize || isCustomBrand ? undefined : preview.option?.id,
         manualRequest:
           isCustomSize || isCustomBrand
             ? {
-                grade_entry: isCustomBrand ? 'manual' : 'list',
+                grade_entry: isCustomBrand || !preview.grades.includes(selectedBrandOrGrade.toUpperCase()) ? 'manual' : 'list',
                 material: p.name,
                 size: selectedSize,
                 grade: selectedBrandOrGrade,
                 uom,
                 product_id: p.id,
-                expected_match: {
-                  status: isCustomBrand ? 'unlisted_grade' : 'available',
-                  size_status: isCustomSize ? 'exact' : 'exact',
-                  category: null,
-                  matched_size: null,
-                  grades: [selectedBrandOrGrade],
-                  option: null,
-                },
+                expected_match: preview,
               }
             : undefined,
       });
@@ -240,6 +251,9 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
 
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
+    } catch (error) {
+      setAddError(error instanceof Error ? error.message : 'Unable to add this material. Please retry.');
+    } finally { setAdding(false); }
   };
 
   return (
@@ -475,6 +489,8 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
           </View>
         </View>
 
+        {addError ? <Txt>{addError}</Txt> : null}
+        {adding ? <Txt>Checking material selection...</Txt> : null}
         {/* BOTTOM ACTION: Proceed to Checkout (for added product) or Direct Add to Cart */}
         {isAdded ? (
           <View style={styles.actionRowContainer}>
@@ -837,6 +853,9 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                     style={{ maxHeight: 260 }}
                     showsVerticalScrollIndicator={false}
                   >
+                    {p.product_kind === 'steel' && sizesQuery.isPending ? <Txt>Loading available sizes...</Txt> : null}
+                    {p.product_kind === 'steel' && sizesQuery.isError ? <Txt>Could not load sizes. Reopen the catalogue to retry, or enter a size manually.</Txt> : null}
+                    {!sizesQuery.isPending && !availableSizes.length ? <Txt>No listed sizes. Enter your required size manually.</Txt> : null}
                     {availableSizes.map((size) => {
                       const isSelected = size === selectedSize;
                       return (
