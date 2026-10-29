@@ -61,7 +61,7 @@ with sync_playwright() as p:
         expect(page.get_by_role('button',name='Hex bolt',exact=True)).to_be_visible()
         page.get_by_role('tab',name='Tractor Spares',exact=True).click()
         expect(page.get_by_role('link',name='View specifications for Tractor Pin',exact=True)).to_be_visible()
-        page.get_by_role('tab',name='Raw Steel',exact=True).click()
+        page.get_by_role('tab',name='Raw Material',exact=True).click()
         page.get_by_role('button',name='Filter specifications',exact=True).click()
         expect(page.get_by_text('Specification filters',exact=True)).to_be_visible()
         page.get_by_role('button',name='Close',exact=True).click()

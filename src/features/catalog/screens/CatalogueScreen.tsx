@@ -25,7 +25,7 @@ import {
 } from '@features/drawings/ui';
 
 const tabs = [
-  { value: 'steel', label: 'Raw Steel', icon: 'download' },
+  { value: 'steel', label: 'Raw Material', icon: 'layers' },
   { value: 'fastener', label: 'Fastener', icon: 'tool' },
   { value: 'tractor_part', label: 'Tractor Spares', icon: 'truck' },
 ] as const;
