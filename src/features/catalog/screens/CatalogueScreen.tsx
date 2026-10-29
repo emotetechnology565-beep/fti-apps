@@ -17,6 +17,7 @@ import { Button, Card, Empty, Icon, Row, Txt } from '@shared/ui';
 import { MatrixProductCard } from '../components/MatrixProductCard';
 import { MaterialSelection } from '../components/MaterialSelection';
 import { useProducts } from '../hooks/use-products';
+import { useAvailableFilters } from '../hooks/use-available-filters';
 import {
   catalogueCategoryLabel,
   isFastenerCategory,
@@ -78,6 +79,7 @@ function CatalogueMatrix({
   const [page, setPage] = useState(0);
   const [width, setWidth] = useState(0);
   const saved = useStore((state) => state.saved);
+  const availableFilters = useAvailableFilters(category, undefined, kind);
   const query = useProducts({
     productKind: kind,
     groupTmt: true,
@@ -318,12 +320,12 @@ function CatalogueMatrix({
                       ? 'All grades'
                       : 'All grades / brands',
                 },
-                ...(query.data?.grades ?? []).map((value) => ({
+                ...availableFilters.options.grades.map((value) => ({
                   value,
                   label: value,
                 })),
               ]}
-              disabled={query.isFetching}
+              disabled={availableFilters.isFetching || availableFilters.isError}
               onChange={(value) => {
                 setGrade(value);
                 setPage(0);
@@ -444,6 +446,7 @@ function CatalogueMatrix({
                     onPress={() => {
                       setSelectionIds(filters.ids);
                       setCategory(filters.category ?? '');
+                      setGrade('');
                       setKind('steel');
                       setPage(0);
                       setSpecs(false);
