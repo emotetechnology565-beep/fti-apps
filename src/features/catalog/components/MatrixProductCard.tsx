@@ -19,6 +19,39 @@ import { formatTractorPrice, tractorPricing } from '../model/tractor-pricing';
 import { isTmtCategory } from '../model/tmt';
 import { companyCertificate } from '@shared/config/company-certificates';
 
+function extractIndividualSizes(variants: Variant[]): string[] {
+  const set = new Set<string>();
+
+  for (const v of variants) {
+    const attrs = (v.attributes || {}) as Record<string, unknown>;
+    // 1. Explicit available_sizes list: e.g. [16, 17, 18, ..., 80]
+    if (Array.isArray(attrs.available_sizes) && attrs.available_sizes.length) {
+      for (const item of attrs.available_sizes) {
+        if (typeof item === 'number' || typeof item === 'string') {
+          const s = String(item).trim();
+          if (s) set.add(`${s.toUpperCase().replace(/MM$/, '')}MM`);
+        }
+      }
+    } else if (v.diameter_mm) {
+      set.add(`${v.diameter_mm}MM`);
+    } else if (attrs.size_group && typeof attrs.size_group === 'string') {
+      set.add(attrs.size_group.trim().toUpperCase());
+    } else if (v.size_label) {
+      const raw = v.size_label;
+      const clean = raw.includes(' / ') ? raw.split(' / ').pop()?.trim() : raw.trim();
+      if (clean) set.add(clean.toUpperCase());
+    }
+  }
+
+  // Sort numerically: 16MM, 17MM, ..., 80MM
+  return Array.from(set).sort((a, b) => {
+    const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+    const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
+    if (numA !== numB) return numA - numB;
+    return a.localeCompare(b);
+  });
+}
+
 export function MatrixProductCard({ product: p }: { product: Product }) {
   const saved = useStore((state) => state.saved.includes(p.id));
   const toggle = useStore((state) => state.toggleSaved);
@@ -31,19 +64,9 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   const profile = rawMaterialDetails(p);
   const variants = p.variants.length ? p.variants : [];
 
-  // Extract preset sizes and brands/grades
+  // Extract available sizes: e.g. 16MM, 17MM, 18MM, ..., 80MM
   const availableSizes = useMemo(() => {
-    const list = [
-      ...new Set(
-        variants
-          .map(
-            (v) =>
-              v.size_label ||
-              (v.diameter_mm ? `${v.diameter_mm}mm` : ''),
-          )
-          .filter(Boolean),
-      ),
-    ];
+    const list = extractIndividualSizes(variants);
     if (!list.length && profile?.size) list.push(profile.size);
     if (!list.length) list.push('Standard Size');
     return list;
@@ -89,30 +112,45 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
 
   const [added, setAdded] = useState(false);
   const [certModalOpen, setCertModalOpen] = useState(false);
+  const [detailPopupOpen, setDetailPopupOpen] = useState(false);
 
   const isCustomSize = !availableSizes.includes(selectedSize);
   const isCustomBrand = !availableBrandsOrGrades.includes(selectedBrandOrGrade);
 
   // Match corresponding variant
   const selectedVariant: Variant | undefined = useMemo(() => {
+    const targetNum = parseInt(selectedSize.replace(/\D/g, ''), 10);
+
     return (
       variants.find((v) => {
-        const sizeMatch =
-          v.size_label === selectedSize ||
-          (v.diameter_mm && `${v.diameter_mm}mm` === selectedSize);
-        const bgMatch =
-          String(v.attributes?.brand ?? v.attributes?.grade ?? '') ===
-          selectedBrandOrGrade;
-        return sizeMatch && bgMatch;
+        const attrs = (v.attributes || {}) as Record<string, unknown>;
+        const g = String(attrs.grade ?? attrs.brand ?? p.grade ?? '');
+        if (g !== selectedBrandOrGrade) return false;
+
+        if (Array.isArray(attrs.available_sizes) && targetNum) {
+          if (attrs.available_sizes.map(Number).includes(targetNum)) return true;
+        }
+        if (v.diameter_mm && v.diameter_mm === targetNum) return true;
+        const sGroup = String(attrs.size_group ?? '').toUpperCase();
+        if (sGroup && sGroup === selectedSize.toUpperCase()) return true;
+        const vClean = (v.size_label || '').split(' / ').pop()?.trim().toUpperCase();
+        return vClean === selectedSize.toUpperCase();
       }) ??
-      variants.find(
-        (v) =>
-          v.size_label === selectedSize ||
-          (v.diameter_mm && `${v.diameter_mm}mm` === selectedSize),
-      ) ??
+      variants.find((v) => {
+        const attrs = (v.attributes || {}) as Record<string, unknown>;
+        const g = String(attrs.grade ?? attrs.brand ?? p.grade ?? '');
+        return g === selectedBrandOrGrade;
+      }) ??
+      variants.find((v) => {
+        const attrs = (v.attributes || {}) as Record<string, unknown>;
+        if (Array.isArray(attrs.available_sizes) && targetNum) {
+          if (attrs.available_sizes.map(Number).includes(targetNum)) return true;
+        }
+        return false;
+      }) ??
       variants[0]
     );
-  }, [variants, selectedSize, selectedBrandOrGrade]);
+  }, [variants, selectedSize, selectedBrandOrGrade, p.grade]);
 
   const image =
     getCategoryImage(p.category) ??
@@ -143,8 +181,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
       ? Math.round(unitRateNumber * tonnage).toLocaleString('en-IN')
       : null;
 
-  const open = () =>
-    router.push({ pathname: '/product/[id]', params: { id: p.id } });
+  const open = () => setDetailPopupOpen(true);
 
   const handleAddToCart = () => {
     setCatalogProducts([p]);
@@ -212,9 +249,28 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
         style={styles.card}
         testID={tractor ? 'matrix-tractor-card' : 'matrix-product-card'}
       >
-        {/* Top Header: Image with Angled ISO Ribbon + Badge + Title + Subtitle + Bookmark */}
+        {/* Top Header: ISO Badge + Company Certification + Photo + Product Info */}
         <View style={styles.topRow}>
-          <View style={styles.imageWrapper}>
+          {/* Left Column: ISO 9001 Badge + Caption + Product Photo */}
+          <View style={styles.leftCol}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="View ISO 9001:2015 Registration Certificate"
+              onPress={() => setCertModalOpen(true)}
+              style={({ pressed }) => [
+                styles.badgeTopWrap,
+                pressed && { opacity: 0.8 },
+              ]}
+            >
+              <Image
+                source={{ uri: companyCertificate.badge_cdn_url || 'https://ftis.b-cdn.net/icons/iso-9001-certified-badge.png' }}
+                style={styles.badgeTopImg}
+                contentFit="contain"
+                accessibilityLabel="ISO 9001 Certified Badge"
+              />
+              <Txt style={styles.badgeTopCaption}>Company certification</Txt>
+            </Pressable>
+
             <Pressable
               accessibilityRole="link"
               accessibilityLabel={`View ${p.name}`}
@@ -237,24 +293,6 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
                   <Icon name="box" size={28} color="#64748B" />
                 </View>
               )}
-            </Pressable>
-
-            {/* Angled ISO 9001 Ribbon Emblem above Image */}
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="View ISO 9001:2015 Registration Certificate"
-              onPress={() => setCertModalOpen(true)}
-              style={({ pressed }) => [
-                styles.angledRibbonPressable,
-                pressed && { opacity: 0.8 },
-              ]}
-            >
-              <Image
-                source={{ uri: companyCertificate.badge_cdn_url || 'https://ftis.b-cdn.net/icons/iso-9001-certified-badge.png' }}
-                style={styles.angledRibbonImg}
-                contentFit="contain"
-                accessibilityLabel="ISO 9001 Certified Ribbon"
-              />
             </Pressable>
           </View>
 
@@ -472,7 +510,202 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
 
 
 
-        {/* Modal 1: Choose Size (Presets or Manual Custom Entry) */}
+  
+      {/* Product Detail Quickview Pop-up Modal (replaces navigating to ugly page) */}
+      {detailPopupOpen ? (
+        <Modal
+          transparent
+          visible={detailPopupOpen}
+          animationType="fade"
+          onRequestClose={() => setDetailPopupOpen(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setDetailPopupOpen(false)}
+          >
+            <Pressable
+              style={styles.popupCard}
+              onPress={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <View style={styles.popupHeader}>
+                <View style={{ flex: 1, gap: 3 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Txt style={styles.badge}>
+                      {tmt ? 'TMT BAR' : (p.category ? p.category.toUpperCase() : 'STEEL')}
+                    </Txt>
+                    <Txt style={styles.popupIsoTag}>ISO 9001:2015</Txt>
+                  </View>
+                  <Txt style={styles.popupTitle}>{p.name}</Txt>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Close"
+                  onPress={() => setDetailPopupOpen(false)}
+                  style={{ padding: 6 }}
+                >
+                  <Icon name="x" size={22} color="#64748B" />
+                </Pressable>
+              </View>
+
+              <ScrollView
+                style={{ maxHeight: 440 }}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ gap: 12 }}
+              >
+                {/* Product Photo with Angled Ribbon */}
+                <View style={styles.popupImageWrap}>
+                  {image ? (
+                    <Image
+                      source={image}
+                      contentFit="cover"
+                      style={styles.popupImage}
+                      accessibilityLabel={p.name}
+                    />
+                  ) : (
+                    <View style={[styles.popupImage, { alignItems: 'center', justifyContent: 'center' }]}>
+                      <Icon name="box" size={40} color="#64748B" />
+                    </View>
+                  )}
+                  <Image
+                    source={{ uri: companyCertificate.badge_cdn_url || 'https://ftis.b-cdn.net/icons/iso-9001-certified-badge.png' }}
+                    style={styles.popupRibbonImg}
+                    contentFit="contain"
+                    accessibilityLabel="ISO 9001 Certified"
+                  />
+                </View>
+
+                {/* Description & Technical Summary */}
+                <View style={styles.popupDescBox}>
+                  <Txt style={styles.popupDescText}>
+                    {p.description || profile?.materials || 'Industrial supply specification from Fieldfast Tech International. Full Mill-Test Certificate (MTC) batch verified.'}
+                  </Txt>
+                  <View style={styles.popupDispatchRow}>
+                    <Icon name="map-pin" size={13} color="#00409A" />
+                    <Txt style={styles.popupDispatchText}>
+                      Dispatched from Ludhiana Area-C Works • Pan-India Delivery
+                    </Txt>
+                  </View>
+                </View>
+
+                {/* Specs Selection Bar (Size, Tonnage, Grade) */}
+                <View style={styles.specsStrip}>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      setSizeTab('preset');
+                      setSizePickerOpen(true);
+                    }}
+                    style={styles.specCol}
+                  >
+                    <Txt style={styles.specLabel}>SIZE RANGE</Txt>
+                    <View style={styles.specValueRow}>
+                      <Txt numberOfLines={1} style={styles.specValue}>{selectedSize}</Txt>
+                      <Icon name="chevron-down" size={12} color="#00409A" />
+                    </View>
+                  </Pressable>
+
+                  <View style={styles.colDivider} />
+
+                  <View style={styles.specCol}>
+                    <Txt style={styles.specLabel}>MIN ORDER</Txt>
+                    <View style={styles.stepperRow}>
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => setTonnage((prev) => Math.max(1, prev - 1))}
+                        style={styles.stepBtn}
+                      >
+                        <Icon name="minus" size={11} color="#00409A" />
+                      </Pressable>
+                      <Txt style={styles.specValueTonnage}>{tonnage} MT</Txt>
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => setTonnage((prev) => prev + 1)}
+                        style={styles.stepBtn}
+                      >
+                        <Icon name="plus" size={11} color="#00409A" />
+                      </Pressable>
+                    </View>
+                  </View>
+
+                  <View style={styles.colDivider} />
+
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      setBrandTab('preset');
+                      setBrandPickerOpen(true);
+                    }}
+                    style={styles.specCol}
+                  >
+                    <Txt style={styles.specLabel}>{tmt ? 'BRANDS' : 'GRADES'}</Txt>
+                    <View style={styles.specValueRow}>
+                      <Txt numberOfLines={1} style={styles.specValue}>{selectedBrandOrGrade}</Txt>
+                      <Icon name="chevron-down" size={12} color="#00409A" />
+                    </View>
+                  </Pressable>
+                </View>
+
+                {/* Quick Bulk Tons */}
+                <View style={styles.quickBulkRow}>
+                  <Txt style={styles.quickBulkLabel}>Quick tons:</Txt>
+                  {[1, 5, 10, 25].map((tons) => (
+                    <Pressable
+                      key={tons}
+                      onPress={() => setTonnage(tons)}
+                      style={[styles.bulkPill, tonnage === tons && styles.bulkPillActive]}
+                    >
+                      <Txt style={[styles.bulkPillText, tonnage === tons && styles.bulkPillTextActive]}>
+                        {tons} MT
+                      </Txt>
+                    </Pressable>
+                  ))}
+                </View>
+
+                {/* Price Box */}
+                <View style={styles.priceOuterBox}>
+                  <View style={styles.priceInnerCard}>
+                    <View style={styles.priceLeft}>
+                      <View style={styles.liveIndicator}>
+                        <View style={styles.liveDot} />
+                        <Txt style={styles.liveBadgeText}>LIVE BENCHMARK</Txt>
+                      </View>
+                      <Txt style={styles.unitRate}>
+                        {selectedPrice
+                          ? `₹${selectedPrice.amount} / ${selectedPrice.unit}`
+                          : tractorPrice
+                            ? formatTractorPrice(tractorPrice.discounted ?? tractorPrice.base)
+                            : 'Direct Factory Rate'}
+                      </Txt>
+                    </View>
+
+                    <View style={styles.priceRight}>
+                      <Txt style={styles.estLabel}>ESTIMATED TOTAL</Txt>
+                      <Txt style={styles.estTotal}>
+                        {totalPrice ? `₹${totalPrice}` : `${tonnage} MT dispatch`}
+                      </Txt>
+                    </View>
+                  </View>
+                </View>
+              </ScrollView>
+
+              {/* Action Button */}
+              <Button
+                icon={added ? 'check' : 'shopping-cart'}
+                onPress={() => {
+                  handleAddToCart();
+                  setTimeout(() => setDetailPopupOpen(false), 900);
+                }}
+                style={added ? styles.addedButton : styles.actionButton}
+              >
+                {added ? `Added ${tonnage} MT to cart` : `Add ${tonnage} MT to cart`}
+              </Button>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      ) : null}
+
+            {/* Modal 1: Choose Size (Presets or Manual Custom Entry) */}
         {sizePickerOpen ? (
           <Modal
             transparent
@@ -922,6 +1155,81 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#64748B',
   },
+  popupCard: {
+    width: '100%',
+    maxWidth: 480,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 18,
+    gap: 14,
+    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.2)',
+  },
+  popupHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  popupIsoTag: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#15803D',
+    backgroundColor: '#F0FDF4',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  popupTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  popupImageWrap: {
+    position: 'relative',
+    width: '100%',
+    height: 170,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#F1F5F9',
+  },
+  popupImage: {
+    width: '100%',
+    height: '100%',
+  },
+  popupRibbonImg: {
+    position: 'absolute',
+    top: -4,
+    left: -4,
+    width: 96,
+    height: 38,
+    transform: [{ rotate: '-12deg' }],
+  },
+  popupDescBox: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 10,
+    padding: 12,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  popupDescText: {
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: '#475569',
+  },
+  popupDispatchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  popupDispatchText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#00409A',
+  },
   wrapper: {
     flex: 1,
     minWidth: 0,
@@ -950,21 +1258,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
   },
-  imageWrapper: {
-    position: 'relative',
-    width: 92,
-    height: 92,
+  leftCol: {
+    gap: 6,
+    alignItems: 'flex-start',
   },
-  angledRibbonPressable: {
-    position: 'absolute',
-    top: -9,
-    left: -9,
-    zIndex: 10,
+  badgeTopWrap: {
+    gap: 2,
+    alignItems: 'flex-start',
   },
-  angledRibbonImg: {
+  badgeTopImg: {
     width: 96,
     height: 38,
-    transform: [{ rotate: '-14deg' }],
+  },
+  badgeTopCaption: {
+    fontSize: 10.5,
+    fontWeight: '500',
+    color: '#64748B',
+    paddingLeft: 2,
   },
   image: {
     width: 92,
