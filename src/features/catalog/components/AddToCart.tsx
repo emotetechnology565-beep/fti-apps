@@ -23,6 +23,12 @@ export function AddToCart({
         borderRadius: 8,
       }
     : undefined;
+  const checkoutStyle = {
+    minHeight: 44,
+    backgroundColor: '#A70101',
+    borderColor: '#A70101',
+    borderRadius: 8,
+  };
   const add = useStore((state) => state.add);
   const setProducts = useStore((state) => state.setCatalogProducts);
   const count = useStore(
@@ -61,29 +67,54 @@ export function AddToCart({
     );
   return (
     <View style={{ gap: 8 }}>
-      <Button
-        style={actionStyle}
-        icon="shopping-cart"
-        onPress={() => {
-          setProducts([product]);
-          add(product.id, variant.min_order_qty, variant.id);
-        }}
-      >
-        Add to cart
-      </Button>
-      {count > 0 && !compact ? (
+      {count > 0 ? (
         <>
-          <Txt
-            accessibilityLiveRegion="polite"
-            style={{ fontSize: 12, color: c.muted }}
+          {!compact ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Txt
+                accessibilityLiveRegion="polite"
+                style={{ fontSize: 12, color: c.muted }}
+              >
+                {count} {variant.uom} in cart
+              </Txt>
+              <Button
+                secondary
+                style={{ minHeight: 36, paddingVertical: 4 }}
+                onPress={() => {
+                  setProducts([product]);
+                  add(product.id, variant.min_order_qty, variant.id);
+                }}
+              >
+                + Add more
+              </Button>
+            </View>
+          ) : null}
+          <Button
+            style={checkoutStyle}
+            icon="arrow-right"
+            onPress={() => router.push('/checkout')}
           >
-            {count} {variant.uom} in cart
-          </Txt>
-          <Button secondary onPress={() => router.push('/cart')}>
-            View cart
+            Proceed to checkout
           </Button>
         </>
-      ) : null}
+      ) : (
+        <Button
+          style={actionStyle}
+          icon="shopping-cart"
+          onPress={() => {
+            setProducts([product]);
+            add(product.id, variant.min_order_qty, variant.id);
+          }}
+        >
+          Add to cart
+        </Button>
+      )}
     </View>
   );
 }

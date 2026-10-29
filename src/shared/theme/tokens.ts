@@ -1,5 +1,5 @@
 export const c = {
-  // Pamwill-style clean luxury canvas
+
   bg: '#F8FAFC',
   bgSubtle: '#F1F5F9',
   paper: '#FFFFFF',
@@ -23,7 +23,7 @@ export const c = {
   muted: '#64748B',
   subtle: '#94A3B8',
 
-  // Borders & Cards (hairline luxury like Pamwill)
+  // Borders & Cards )
   line: '#E2E8F0',
   cardBorder: '#E2E8F0',
 

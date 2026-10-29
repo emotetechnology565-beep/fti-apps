@@ -58,6 +58,11 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   const add = useStore((state) => state.add);
   const addMaterial = useStore((state) => state.addMaterial);
   const setCatalogProducts = useStore((state) => state.setCatalogProducts);
+  const cart = useStore((state) => state.cart);
+  const inCart = useMemo(
+    () => cart.some((line) => line.productId === p.id),
+    [cart, p.id],
+  );
 
   const tmt = isTmtCategory(p.category);
   const tractor = p.product_kind === 'tractor_part';
@@ -111,6 +116,7 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
   const [manualBrandText, setManualBrandText] = useState('');
 
   const [added, setAdded] = useState(false);
+  const isAdded = inCart || added;
   const [certModalOpen, setCertModalOpen] = useState(false);
   const [detailPopupOpen, setDetailPopupOpen] = useState(false);
 
@@ -469,16 +475,42 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
           </View>
         </View>
 
-        {/* BOTTOM ACTION: Full-Width Direct Add to Cart Button */}
-        <Button
-          icon={added ? 'check' : 'shopping-cart'}
-          onPress={handleAddToCart}
-          style={added ? styles.addedButton : styles.actionButton}
-        >
-          {added
-            ? `Added ${tonnage} MT to cart`
-            : `Add ${tonnage} MT to cart`}
-        </Button>
+        {/* BOTTOM ACTION: Proceed to Checkout (for added product) or Direct Add to Cart */}
+        {isAdded ? (
+          <View style={styles.actionRowContainer}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Add another ${tmt ? 'TMT' : tractor ? 'spare' : 'item'} (${tonnage} ${tractor ? 'units' : 'MT'})`}
+              onPress={handleAddToCart}
+              style={({ pressed }) => [
+                styles.addMoreBtn,
+                pressed && { opacity: 0.75 },
+              ]}
+            >
+              <Icon name={added ? 'check' : 'plus'} size={14} color="#00409A" />
+              <Txt style={styles.addMoreText}>
+                {added
+                  ? `Added! (+${tonnage} ${tractor ? 'units' : 'MT'})`
+                  : `Add another ${tmt ? 'TMT' : tractor ? 'spare' : 'size'} (${tonnage} ${tractor ? 'units' : 'MT'})`}
+              </Txt>
+            </Pressable>
+            <Button
+              icon="arrow-right"
+              onPress={() => router.push('/checkout')}
+              style={styles.checkoutButton}
+            >
+              Proceed to checkout
+            </Button>
+          </View>
+        ) : (
+          <Button
+            icon="shopping-cart"
+            onPress={handleAddToCart}
+            style={styles.actionButton}
+          >
+            {`Add ${tonnage} ${tractor ? 'units' : 'MT'} to cart`}
+          </Button>
+        )}
 
         {/* Company ISO 9001:2015 Strip with View Certificate Option */}
         <View style={styles.isoCardStrip}>
@@ -690,16 +722,44 @@ export function MatrixProductCard({ product: p }: { product: Product }) {
               </ScrollView>
 
               {/* Action Button */}
-              <Button
-                icon={added ? 'check' : 'shopping-cart'}
-                onPress={() => {
-                  handleAddToCart();
-                  setTimeout(() => setDetailPopupOpen(false), 900);
-                }}
-                style={added ? styles.addedButton : styles.actionButton}
-              >
-                {added ? `Added ${tonnage} MT to cart` : `Add ${tonnage} MT to cart`}
-              </Button>
+              {isAdded ? (
+                <View style={styles.actionRowContainer}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Add another ${tmt ? 'TMT' : tractor ? 'spare' : 'item'} (${tonnage} ${tractor ? 'units' : 'MT'})`}
+                    onPress={handleAddToCart}
+                    style={({ pressed }) => [
+                      styles.addMoreBtn,
+                      pressed && { opacity: 0.75 },
+                    ]}
+                  >
+                    <Icon name={added ? 'check' : 'plus'} size={14} color="#00409A" />
+                    <Txt style={styles.addMoreText}>
+                      {added
+                        ? `Added! (+${tonnage} ${tractor ? 'units' : 'MT'})`
+                        : `Add another ${tmt ? 'TMT' : tractor ? 'spare' : 'size'} (${tonnage} ${tractor ? 'units' : 'MT'})`}
+                    </Txt>
+                  </Pressable>
+                  <Button
+                    icon="arrow-right"
+                    onPress={() => {
+                      setDetailPopupOpen(false);
+                      router.push('/checkout');
+                    }}
+                    style={styles.checkoutButton}
+                  >
+                    Proceed to checkout
+                  </Button>
+                </View>
+              ) : (
+                <Button
+                  icon="shopping-cart"
+                  onPress={handleAddToCart}
+                  style={styles.actionButton}
+                >
+                  {`Add ${tonnage} ${tractor ? 'units' : 'MT'} to cart`}
+                </Button>
+              )}
             </Pressable>
           </Pressable>
         </Modal>
@@ -1533,6 +1593,33 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#00409A',
     borderColor: '#00409A',
+  },
+  checkoutButton: {
+    minHeight: 44,
+    borderRadius: 8,
+    backgroundColor: '#A70101',
+    borderColor: '#A70101',
+  },
+  actionRowContainer: {
+    gap: 8,
+  },
+  addMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    minHeight: 44,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    backgroundColor: '#EFF6FF',
+  },
+  addMoreText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#00409A',
   },
   addedButton: {
     minHeight: 44,
