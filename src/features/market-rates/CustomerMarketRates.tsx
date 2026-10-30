@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
@@ -6,10 +7,13 @@ import { SubscriptionNotice } from '@features/pricing/components/SubscriptionNot
 import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { Button, Card, Empty, Field, Icon, Row, Txt, c } from '@shared/ui';
 import { MarketMultiSelect } from './StateDropdown';
+import { RateAlerts } from './RateAlerts';
+import { MarketNotes } from './MarketNotes';
 import {
   customerMarketApi,
   type MarketQuote,
   type SaleQuote,
+  type CustomerOptions,
 } from './customer-api';
 import { saleMoney, saleMovement } from './customer-model';
 import {
@@ -196,12 +200,15 @@ function QuoteCard({
   quote,
   user,
   wide,
+  settings,
 }: {
   quote: MarketQuote;
   user: string | undefined;
   wide: boolean;
+  settings?: CustomerOptions['settings'];
 }) {
   const [open, setOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   return (
     <View style={[styles.quote, wide && styles.wideQuote]}>
       <View style={styles.quoteTop}>
@@ -237,6 +244,28 @@ function QuoteCard({
           />
         </Pressable>
       </View>
+      <RateAlerts quote={quote} settings={settings} />
+      {settings?.notes ? (
+        <View style={styles.cardNotes}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${notesOpen ? 'Hide' : 'Show'} market notes for ${quote.district}, ${quote.state}`}
+            accessibilityState={{ expanded: notesOpen }}
+            aria-expanded={notesOpen}
+            onPress={() => setNotesOpen((value) => !value)}
+            style={styles.notesToggle}
+          >
+            <Icon name="info" size={14} color={c.muted} />
+            <Txt style={styles.caption}>Market notes</Txt>
+            <Icon
+              name={notesOpen ? 'chevron-up' : 'chevron-down'}
+              size={14}
+              color={c.muted}
+            />
+          </Pressable>
+          {notesOpen ? <MarketNotes notes={settings.notes} /> : null}
+        </View>
+      ) : null}
       {open ? <QuoteHistory quote={quote} user={user} /> : null}
     </View>
   );
@@ -247,9 +276,23 @@ function MarketBoard() {
     client = useQueryClient();
   const user = auth.session?.user.id;
   const wide = useWindowDimensions().width >= 1200;
-  const [category, setCategory] = useState<Category>('Ingot');
-  const [states, setStates] = useState<string[]>([]),
-    [districts, setDistricts] = useState<string[]>([]);
+  const params = useLocalSearchParams<{
+    category?: string;
+    state?: string;
+    district?: string;
+  }>();
+  const [category, setCategory] = useState<Category>(
+    typeof params.category === 'string' &&
+      categories.includes(params.category as Category)
+      ? (params.category as Category)
+      : 'Ingot',
+  );
+  const [states, setStates] = useState<string[]>(
+      typeof params.state === 'string' ? [params.state] : [],
+    ),
+    [districts, setDistricts] = useState<string[]>(
+      typeof params.district === 'string' ? [params.district] : [],
+    );
   const [search, setSearch] = useState(''),
     [appliedSearch, setAppliedSearch] = useState('');
   const [offset, setOffset] = useState(0),
@@ -494,6 +537,7 @@ function MarketBoard() {
                     quote={quote}
                     user={user}
                     wide={wide}
+                    settings={settings}
                   />
                 ))}
               </View>
@@ -535,9 +579,11 @@ function MarketBoard() {
       {settings ? (
         <View style={styles.footer}>
           <Txt style={styles.sectionTitle}>Market notes</Txt>
-          <Txt style={styles.notes}>
-            {settings.notes || 'Rates are indicative and for information only.'}
-          </Txt>
+          <MarketNotes
+            notes={
+              settings.notes || 'Rates are indicative and for information only.'
+            }
+          />
           {settings.support ? (
             <Txt style={styles.support}>{settings.support}</Txt>
           ) : null}
@@ -660,33 +706,62 @@ const styles = StyleSheet.create({
   },
   quote: {
     width: '100%',
-    padding: 18,
-    gap: 16,
+    padding: 16,
+    gap: 12,
     borderWidth: 1,
-    borderColor: c.line,
-    borderRadius: 12,
-    backgroundColor: 'white',
+    borderColor: '#C8D8EC',
+    borderRadius: 14,
+    backgroundColor: '#EDF3FB',
+    overflow: 'hidden',
+    boxShadow: '0px 4px 14px rgba(11, 27, 54, 0.07)',
   },
-  wideQuote: { width: 'auto', flexBasis: '48%', flexGrow: 1 },
-  quoteTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
+  wideQuote: { width: 'auto', flexBasis: '48.5%', flexGrow: 0, maxWidth: 620 },
+  cardNotes: {
+    gap: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#D1DFF0',
+    paddingTop: 4,
+  },
+  notesToggle: {
+    minHeight: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  quoteTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    backgroundColor: '#102F53',
+    marginHorizontal: -16,
+    marginTop: -16,
+    padding: 18,
+    borderBottomWidth: 3,
+    borderBottomColor: c.brandRed,
+  },
   place: { flex: 1, gap: 7, paddingTop: 3 },
   state: {
     fontSize: 10,
     fontWeight: '600',
-    color: c.muted,
-    letterSpacing: 0.4,
+    color: '#A9C5E5',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
-  district: { fontSize: 18, lineHeight: 24, fontWeight: '700', color: c.dark },
+  district: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
   priceBlock: { alignItems: 'flex-end', gap: 5, flexShrink: 1 },
   salePrice: {
     fontSize: 27,
     fontWeight: '700',
-    color: c.dark,
+    color: '#FFFFFF',
     letterSpacing: -0.8,
     fontVariant: ['tabular-nums'],
   },
-  unit: { fontSize: 10, color: c.muted },
+  unit: { fontSize: 10, color: '#B6CCE4' },
   movement: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
@@ -701,9 +776,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F3F7',
-    paddingTop: 12,
+    paddingTop: 0,
   },
   updateLabel: {
     color: c.muted,
@@ -724,6 +797,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: c.line,
     paddingTop: 16,
+    backgroundColor: '#F8FAFE',
+    padding: 12,
+    borderRadius: 8,
   },
   historyRow: {
     flexDirection: 'row',

@@ -14,22 +14,13 @@ import { loadHomeCatalogue } from '../data/category-images';
 import { HomeCategoryImage } from './HomeCategoryImage';
 import rangeImages from '../data/range-images.json';
 import { drawingApi } from '@features/drawings/export';
-import { pricingApi } from '@features/pricing/export';
-import { usePriceAccess } from '@shared/hooks/use-price-access';
-import { useStore } from '@core/state/workspace-store';
-import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
+import { HomeMarketWatch } from '@features/market-rates/HomeMarketWatch';
 
 export function DesktopHome() {
   const [search, setSearch] = useState('');
-  const priceAccess = usePriceAccess();
-  const selectedMarket = useStore((state) => state.market);
   const catalogue = useQuery({ queryKey: ['catalog', 'home', 'categories'], queryFn: () => loadHomeCatalogue(), staleTime: 30_000 });
   const fasteners = useQuery({ queryKey: ['fastener-photos', 'public'], queryFn: drawingApi.photos, staleTime: 30_000 });
-  const markets = useQuery({ queryKey: ['pricing', 'markets'], queryFn: pricingApi.markets, staleTime: 30_000 });
-  const market = markets.data?.find((item) => item.id === selectedMarket || item.code === selectedMarket) ?? markets.data?.[0];
-  const rates = useQuery({ queryKey: ['pricing', 'rates', 'home', market?.id], queryFn: () => pricingApi.rates(market!.id, '', 0), enabled: !!market && priceAccess, staleTime: 30_000 });
   const categoryCards = catalogue.data?.categories ?? [];
-  const marketWatchItems = rates.data?.items.slice(0, 3) ?? [];
   const steelImage = categoryCards.find((item) => item.imageUrl)?.imageUrl;
   const photo = (uri: string | null | undefined, style: React.ComponentProps<typeof Image>['style']) => uri
     ? <Image source={{ uri }} contentFit="cover" style={style} />
@@ -111,56 +102,7 @@ export function DesktopHome() {
         </View>
       </View>
 
-      {/* 3. MARKET WATCH SECTION */}
-      {!priceAccess ? <View style={[styles.cardSection, { gap: 12 }]}>
-        <Txt style={styles.sectionTitle}>FTI rate subscription</Txt>
-        <Txt style={styles.sectionSubtitle}>Annual live-price access across material categories. View the current plan and subscribe from your business account.</Txt>
-        <SubscribeForPrices />
-      </View> : null}
-      <View style={styles.cardSection}>
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionHeaderLeft}>
-            <Icon name="bar-chart-2" size={18} color="#00409A" />
-            <View>
-              <Txt style={styles.sectionTitle}>Market watch</Txt>
-              <Txt style={styles.sectionSubtitle}>
-                {market ? `Latest published rates in ${market.name}.` : 'Published market rates.'}
-              </Txt>
-            </View>
-          </View>
-          <Pressable
-            accessibilityRole="link"
-            onPress={() => router.push('/rates')}
-            style={styles.viewMoreLink}
-          >
-            <Txt style={styles.viewMoreText}>View market rates →</Txt>
-          </Pressable>
-        </View>
-
-        <View style={styles.marketGrid}>
-          {!priceAccess ? <Txt>Sign in with price access to view current rates.</Txt> : markets.isPending || (market && rates.isPending) ? <Txt>Loading market rates...</Txt> : markets.isError || rates.isError ? <Pressable onPress={() => { void markets.refetch(); if (market) void rates.refetch(); }}><Txt>Market rates unavailable. Tap to retry.</Txt></Pressable> : !marketWatchItems.length ? <Txt>No published rates available for this market.</Txt> : null}
-          {marketWatchItems.map((item) => (
-            <View key={item.id} style={styles.marketCard}>
-              {photo(undefined, styles.marketImage)}
-              <View style={styles.marketBody}>
-                <Txt style={styles.marketTitle}>{item.name}</Txt>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => router.push('/rates')}
-                  style={({ pressed }) => [
-                    styles.rateRequestBtn,
-                    pressed && { opacity: 0.8 },
-                  ]}
-                >
-                  <Txt style={styles.rateRequestBtnText}>
-                    {`₹${Number(item.amount).toLocaleString('en-IN')} / ${item.uom}`}
-                  </Txt>
-                </Pressable>
-              </View>
-            </View>
-          ))}
-        </View>
-      </View>
+      <HomeMarketWatch />
 
       {/* 4. SHOP BY CATEGORY (6-CARD GRID) */}
       <View style={styles.cardSection}>

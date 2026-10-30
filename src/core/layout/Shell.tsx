@@ -584,7 +584,7 @@ export function Shell({ children }: { children: ReactNode }) {
               {[
                 { label: 'Home', path: '/', icon: 'home' },
                 { label: 'Catalogue', path: '/products', icon: 'grid' },
-                { label: 'Requirements', path: '/rfqs', icon: 'file-text' },
+                { label: 'Market rates', path: '/rates', icon: 'trending-up' },
                 { label: 'Orders', path: '/orders', icon: 'package' },
                 { label: 'Account', path: '/account', icon: 'user' },
               ].map((n) => (

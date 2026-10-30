@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -14,6 +14,7 @@ import { loadHomeCatalogue } from '../data/category-images';
 import { homeProductPrice, homeProductSpecs } from '../data/home-products';
 import { homeDivisions, homeSearchKind, normalizeCategory, rawHomeCategories, type HomeKind } from '../data/home-navigation';
 import { MobileHomeActivity } from './MobileHomeActivity';
+import { HomeMarketWatch } from '@features/market-rates/HomeMarketWatch';
 import { HomeButton, HomeNotice, HomePhoto, HomeSection, homeColors as c, homeFont, u } from './MobileHomeUI';
 import ranges from '../data/range-images.json';
 import materials from '../data/material-image-fallbacks.json';
@@ -43,6 +44,7 @@ function BrowseGrid({ tiles }: { tiles: BrowseTile[] }) {
 export function ProcurementMobileHome() {
   const auth = useAuth();
   const [kind, setKind] = useState<HomeKind>(lastHomeKind);
+  useEffect(() => { lastHomeKind = kind; }, [kind]);
   const [search, setSearch] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
@@ -56,7 +58,7 @@ export function ProcurementMobileHome() {
   const rawPhoto = (slug: string) => catalogue.data?.categories.find(entry => normalizeCategory(entry.category) === slug)?.imageUrl ?? (materials as Record<string, string>)[slug];
   const divisionPhoto = (value: HomeKind) => value === 'steel' ? rawPhoto('round-bright-bar') : value === 'fastener' ? ranges.fasteners : ranges['tractor-parts'];
   const catalogueLink = (value: HomeKind, category?: string, search?: string) => router.push({ pathname: '/products', params: { kind: value, ...(category ? { category } : {}), ...(search ? { search } : {}) } });
-  const choose = (value: HomeKind) => { lastHomeKind = value; setKind(value); };
+  const choose = (value: HomeKind) => setKind(value);
   const searchCatalogue = () => catalogueLink(homeSearchKind(search, kind, products, fasteners.map(photo => photo.label)), undefined, search.trim());
   const createRequirement = () => router.push('/rfqs?create=1');
   async function uploadList() {
@@ -103,6 +105,7 @@ export function ProcurementMobileHome() {
       <View style={h.bannerCopy}><Txt accessibilityRole="header" style={h.bannerTitle}>Industrial supplies{ '\n' }for your business</Txt><Txt style={h.bannerSubtitle}>Materials, fasteners & tractor parts</Txt><Pressable accessibilityRole="button" onPress={createRequirement} style={h.bannerAction}><Txt style={h.bannerActionText}>Create Requirement</Txt><Icon name="arrow-right" color="#FFFFFF" size={18} /></Pressable></View>
     </View>
     <View style={h.divisions}>{homeDivisions.map(division => <Pressable key={division.kind} accessibilityRole="link" accessibilityLabel={`Explore ${division.name}`} onPress={() => catalogueLink(division.kind)} style={h.divisionTile}><HomePhoto key={divisionPhoto(division.kind)} uri={divisionPhoto(division.kind)} label={division.name} height={82} /><Txt style={h.tileLabel}>{division.name}</Txt></Pressable>)}</View>
+    <HomeMarketWatch />
     <HomeSection title="Browse by category" />
     <View accessibilityRole="tablist" style={h.tabs}>{homeDivisions.map(division => <Pressable key={division.kind} accessibilityRole="tab" accessibilityLabel={division.name} accessibilityState={{ selected: kind === division.kind }} onPress={() => choose(division.kind)} style={[h.tab, kind === division.kind && h.activeTab]}><Txt style={[h.tabText, kind === division.kind && { color: '#FFFFFF' }]}>{division.name}</Txt></Pressable>)}</View>
     {loading ? <Txt style={u.small}>Loading uploaded catalogue…</Txt> : failed ? <Pressable accessibilityRole="button" onPress={() => { void catalogue.refetch(); void photos.refetch(); }} style={{ minHeight: 44, justifyContent: 'center' }}><HomeNotice>Catalogue could not be loaded. Tap to retry.</HomeNotice></Pressable> : tiles.length ? <BrowseGrid tiles={tiles} /> : <HomeNotice>No published tractor parts yet. Contact FTI for your requirement.</HomeNotice>}

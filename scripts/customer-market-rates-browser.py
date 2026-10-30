@@ -87,6 +87,7 @@ try:
             context = browser.new_context(viewport={'width':width,'height':1000})
             context.route('https://*.supabase.co/**',api)
             context.add_init_script('localStorage.setItem("fti-auth-v2",'+json.dumps(json.dumps(session))+')')
+            context.add_init_script('window.__alertLinks=[]; window.open=(url)=>{window.__alertLinks.push(url); return null;}')
             page = context.new_page()
             page.on('pageerror',lambda error: errors.append(str(error)))
             page.set_default_timeout(15000)
@@ -98,6 +99,24 @@ try:
             assert page.get_by_text(re.compile('Base price|Increase amount|Rolling charge|Profit amount')).count()==0
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
             page.screenshot(path=str(out/f'board-{width}.png'))
+            expect(page.get_by_role('button',name='WhatsApp alerts',exact=True)).to_have_count(4)
+            expect(page.get_by_role('button',name='SMS alerts',exact=True)).to_have_count(4)
+            if width < 1000:
+                expect(page.get_by_role('link',name='Market rates',exact=True)).to_be_visible()
+                assert page.get_by_role('link',name='Requirements',exact=True).count()==0
+            page.get_by_role('button',name='Show market notes for Mandi Gobindgarh, Punjab',exact=True).click()
+            expect(page.get_by_text('We are not responsible for any profit or loss.',exact=True)).to_have_count(2)
+            card = page.get_by_role('button',name='View price history for Mandi Gobindgarh, Punjab',exact=True).locator('..').locator('..')
+            card.screenshot(path=str(out/f'rate-card-notes-{width}.png'))
+            page.get_by_role('button',name='Hide market notes for Mandi Gobindgarh, Punjab',exact=True).click()
+            page.get_by_role('button',name='WhatsApp alerts',exact=True).first.click()
+            page.get_by_role('button',name='WhatsApp +91-9589971567',exact=True).click()
+            page.wait_for_function('window.__alertLinks.length===1')
+            assert page.evaluate('window.__alertLinks[0]').startswith('https://wa.me/919589971567?text=')
+            assert 'Mandi%20Gobindgarh' in page.evaluate('window.__alertLinks[0]')
+            page.get_by_role('button',name='SMS alerts',exact=True).first.click()
+            page.wait_for_function('window.__alertLinks.length===2')
+            assert page.evaluate('window.__alertLinks[1]')=='sms:+919780830333'
             for category,price in [('Scrap','₹35,800'),('Billet','₹47,000'),('Old Scrap','₹33,600')]:
                 page.get_by_role('tab',name=category,exact=True).click()
                 expect(page.get_by_text(price,exact=True)).to_be_visible()
@@ -130,7 +149,7 @@ try:
             page.get_by_role('button',name='Clear market filters',exact=True).click()
             expect(page.get_by_text('₹46,300',exact=True)).to_be_visible()
             page.get_by_role('button',name='Filter markets',exact=True).click()
-            page.get_by_text('Market notes',exact=True).scroll_into_view_if_needed()
+            page.get_by_text('Market notes',exact=True).last.scroll_into_view_if_needed()
             expect(page.get_by_text('SMS ALERTS',exact=True)).to_be_visible()
             expect(page.get_by_text('WHATSAPP ALERTS',exact=True)).to_be_visible()
             expect(page.get_by_text('Support 24×7 +91-9780830333',exact=True)).to_be_visible()
@@ -157,6 +176,6 @@ try:
             context.close()
         browser.close()
     assert not errors,errors
-    print(json.dumps({'widths':[390,1440],'page_errors':errors,'checks':['sale-only prices','four categories','up/down/unchanged indicators','sale-only dated history','multi-state and district filters','search/empty state','admin notes and alert contacts','refreshing saved notes','error/retry','pagination','subscription gate','no page overflow']}))
+    print(json.dumps({'widths':[390,1440],'page_errors':errors,'checks':['sale-only prices','four categories','up/down/unchanged indicators','sale-only dated history','multi-state and district filters','search/empty state','per-card WhatsApp and SMS actions','saved contact selection','per-card note cards','middle mobile Market Rates navigation','admin notes and alert contacts','refreshing saved notes','error/retry','pagination','subscription gate','no page overflow']}))
 finally:
     server.shutdown()

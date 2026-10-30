@@ -2,6 +2,31 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { saleMovement } from '../src/features/market-rates/customer-model';
+import {
+  alertContacts,
+  rateAlertLink,
+} from '../src/features/market-rates/alert-links';
+
+test('alert actions use configured numbers and keep market context in WhatsApp requests', () => {
+  const contacts = alertContacts(
+    '+91-9780830333\n+91-9589971567\n+919780830333\ninvalid\n123',
+  );
+  assert.equal(contacts.length, 2);
+  assert.equal(alertContacts('9780830333')[0].digits, '919780830333');
+  assert.equal(alertContacts('javascript:alert(1)').length, 0);
+  const quote = {
+    category: 'Old Scrap' as const,
+    district: 'Mandi Gobindgarh',
+    state: 'Punjab',
+  };
+  const url = rateAlertLink('whatsapp', contacts[1], quote);
+  assert.ok(url.startsWith('https://wa.me/919589971567?text='));
+  assert.match(
+    decodeURIComponent(url),
+    /Old Scrap market rate alerts for Mandi Gobindgarh, Punjab/,
+  );
+  assert.equal(rateAlertLink('sms', contacts[0], quote), 'sms:+919780830333');
+});
 
 test('sale price movement has separate increase/decrease/unchanged/unknown labels', () => {
   assert.deepEqual(saleMovement('200'), {
@@ -104,11 +129,14 @@ test('customer APIs expose sale prices and public movements only, enforce subscr
     assert.equal(options.locations.length, 4);
     const hidden =
       /base_price|increase_amount|profit|rolling|published_by|private_note|usd_inr|revision/;
-    const hasPrivateKeys = (input: unknown): boolean => Array.isArray(input)
-      ? input.some(hasPrivateKeys)
-      : input !== null && typeof input === 'object'
-        ? Object.entries(input).some(([key, value]) => hidden.test(key) || hasPrivateKeys(value))
-        : false;
+    const hasPrivateKeys = (input: unknown): boolean =>
+      Array.isArray(input)
+        ? input.some(hasPrivateKeys)
+        : input !== null && typeof input === 'object'
+          ? Object.entries(input).some(
+              ([key, value]) => hidden.test(key) || hasPrivateKeys(value),
+            )
+          : false;
     assert.ok(!hasPrivateKeys(board));
     assert.ok(!hasPrivateKeys(options));
     const filtered = await value<Board>(
