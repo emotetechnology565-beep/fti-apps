@@ -13,6 +13,8 @@ import { Button, Empty, Icon, Txt } from '@shared/ui';
 import { orderHistory, type HistoryOrder } from '../services/order-history';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
+import { FulfillmentTimeline } from '@features/operations/components/FulfillmentTimeline';
+import { DriverDetails } from '@features/operations/components/DriverDetails';
 
 const filters = [
   ['all', 'All Orders'],
@@ -34,19 +36,8 @@ function LedgerCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const { details: d, fulfillment: f } = order;
-  const progress =
-    order.status === 'delivered'
-      ? 100
-      : order.status === 'shipped'
-        ? 75
-        : ['processing', 'confirmed'].includes(order.status)
-          ? 50
-          : 15;
   return (
     <View style={styles.card}>
-      <View style={styles.track}>
-        <View style={[styles.progress, { width: `${progress}%` }]} />
-      </View>
       <View style={styles.body}>
         <View style={styles.row}>
           <View style={styles.grow}>
@@ -94,18 +85,6 @@ function LedgerCard({
             </View>
           ))}
         </View>
-        {f.carrier ? (
-          <View style={styles.inset}>
-            <Icon name="truck" color="#A70101" />
-            <View style={styles.grow}>
-              <Txt style={styles.strong}>{f.carrier}</Txt>
-              <Txt style={styles.small}>
-                LR / Tracking: {f.tracking_number}
-                {f.vehicle_number ? ` · ${f.vehicle_number}` : ''}
-              </Txt>
-            </View>
-          </View>
-        ) : null}
         <View style={styles.financial}>
           <View style={styles.grow}>
             <Txt style={styles.small}>
@@ -124,6 +103,31 @@ function LedgerCard({
           order.amount_due ? (
             <Txt style={styles.small}>Due {money(order.amount_due)}</Txt>
           ) : null}
+        </View>
+        <View style={styles.timelineSection}>
+          <Txt style={styles.strong}>Order & dispatch timeline</Txt>
+          <FulfillmentTimeline
+            status={order.status}
+            createdAt={order.created_at}
+            history={f.history}
+            compact={!expanded}
+            confirmationNote={f.confirmation_note}
+            deliveryNote={f.delivery_note}
+            dispatchDetails={
+              f.carrier ? (
+                <>
+                  <Txt style={styles.strong}>{f.carrier}</Txt>
+                  <Txt style={styles.small}>
+                    LR / tracking: {f.tracking_number || 'Not provided'}
+                  </Txt>
+                  {f.vehicle_number ? (
+                    <Txt style={styles.small}>Vehicle: {f.vehicle_number}</Txt>
+                  ) : null}
+                  <DriverDetails name={f.driver_name} phone={f.driver_phone} />
+                </>
+              ) : undefined
+            }
+          />
         </View>
         <Button
           icon={order.kind === 'commerce' ? 'truck' : 'file-text'}
@@ -417,8 +421,12 @@ const styles = StyleSheet.create({
     borderColor: '#e6eeff',
     borderWidth: 1,
   },
-  track: { height: 4, backgroundColor: '#e6eeff' },
-  progress: { height: 4, backgroundColor: '#A70101' },
+  timelineSection: {
+    gap: 12,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E8EE',
+  },
   body: { padding: 16, gap: 12 },
   reference: { color: '#111827', fontSize: 17, fontWeight: '700' },
   small: { color: '#44474e', fontSize: 12, lineHeight: 18 },

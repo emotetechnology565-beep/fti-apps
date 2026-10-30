@@ -1,4 +1,4 @@
-import { TextInput, View } from 'react-native';
+import { TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import { s } from '../theme/styles';
 import { Txt } from './Txt';
 export function Field({
@@ -9,6 +9,7 @@ export function Field({
   multiline = false,
   numeric = false,
   editable = true,
+  keyboardType,
 }: {
   label: string;
   value: string;
@@ -17,6 +18,7 @@ export function Field({
   multiline?: boolean;
   numeric?: boolean;
   editable?: boolean;
+  keyboardType?: KeyboardTypeOptions;
 }) {
   return (
     <View style={{ gap: 8, marginBottom: 16 }}>
@@ -29,7 +31,7 @@ export function Field({
         placeholder={placeholder}
         placeholderTextColor="#98A3B2"
         multiline={multiline}
-        keyboardType={numeric ? 'decimal-pad' : 'default'}
+        keyboardType={keyboardType ?? (numeric ? 'decimal-pad' : 'default')}
         style={[
           s.input,
           multiline ? { minHeight: 96, textAlignVertical: 'top' } : null,

@@ -14,6 +14,8 @@ export type RequestFulfillmentState = {
   carrier?: string | null;
   tracking_number?: string | null;
   vehicle_number?: string | null;
+  driver_name?: string | null;
+  driver_phone?: string | null;
   delivery_note?: string | null;
   history: { status: FulfillmentStatus; at: string; actor_id: string }[];
 };

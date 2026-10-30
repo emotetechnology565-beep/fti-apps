@@ -21,6 +21,9 @@ export type HistoryOrder = {
     carrier?: string;
     tracking_number?: string;
     vehicle_number?: string;
+    history?: { status: string; at: string }[];
+    driver_name?: string | null;
+    driver_phone?: string | null;
     confirmation_note?: string;
     delivery_note?: string;
   };

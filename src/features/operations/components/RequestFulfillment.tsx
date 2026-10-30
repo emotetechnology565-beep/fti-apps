@@ -1,3 +1,6 @@
+import { FulfillmentTimeline } from './FulfillmentTimeline';
+import { DriverDetails, DriverFields } from './DriverDetails';
+import { validDriverDetails } from '../model/driver-details';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,6 +42,8 @@ export function RequestFulfillment({
   const [carrier, setCarrier] = useState('');
   const [tracking, setTracking] = useState('');
   const [vehicle, setVehicle] = useState('');
+  const [driverName, setDriverName] = useState('');
+  const [driverPhone, setDriverPhone] = useState('');
   const [proof, setProof] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -61,7 +66,8 @@ export function RequestFulfillment({
           carrier.trim().length <= 120 &&
           tracking.trim().length >= 2 &&
           tracking.trim().length <= 120 &&
-          vehicle.trim().length <= 40
+          vehicle.trim().length <= 40 &&
+          validDriverDetails(driverName, driverPhone)
         : next?.status === 'delivered'
           ? proof.trim().length >= 5 && proof.trim().length <= 1000
           : !!next;
@@ -97,6 +103,8 @@ export function RequestFulfillment({
           carrier: carrier.trim(),
           tracking_number: tracking.trim(),
           vehicle_number: vehicle.trim(),
+          driver_name: driverName.trim(),
+          driver_phone: driverPhone.trim(),
           delivery_note: proof.trim(),
         },
       );
@@ -121,39 +129,27 @@ export function RequestFulfillment({
           {fulfillmentSteps[index]?.label ?? workflow.status}
         </Badge>
       </Row>
-      <View accessibilityLabel="Fulfillment progress" style={styles.steps}>
-        {fulfillmentSteps.map((step, stepIndex) => (
-          <View key={step.status} style={styles.step}>
-            <View
-              style={[styles.dot, stepIndex <= index ? styles.activeDot : null]}
-            >
-              {stepIndex < index ? (
-                <Icon name="check" size={12} color="white" />
-              ) : (
-                <Txt
-                  style={{
-                    fontSize: 10,
-                    fontWeight: '700',
-                    color: stepIndex === index ? 'white' : '#58697C',
-                  }}
-                >
-                  {stepIndex + 1}
-                </Txt>
-              )}
-            </View>
-            <Txt
-              style={{
-                fontSize: 11,
-                lineHeight: 17,
-                color: stepIndex <= index ? c.ink : '#58697C',
-                fontWeight: stepIndex === index ? '700' : '400',
-              }}
-            >
-              {step.label}
-            </Txt>
-          </View>
-        ))}
-      </View>
+      <FulfillmentTimeline
+        status={workflow.status}
+        history={workflow.history}
+        confirmationNote={workflow.confirmation_note}
+        deliveryNote={workflow.delivery_note}
+        dispatchDetails={
+          workflow.carrier ? (
+            <>
+              <Txt>Transporter: {workflow.carrier}</Txt>
+              <Txt selectable>LR / tracking: {workflow.tracking_number}</Txt>
+              {workflow.vehicle_number ? (
+                <Txt>Vehicle: {workflow.vehicle_number}</Txt>
+              ) : null}
+              <DriverDetails
+                name={workflow.driver_name}
+                phone={workflow.driver_phone}
+              />
+            </>
+          ) : undefined
+        }
+      />
       {workflow.confirmed_total ? (
         <Txt>
           Agreed order total: INR{' '}
@@ -167,23 +163,6 @@ export function RequestFulfillment({
           before accepting this request.
         </Txt>
       )}
-      {workflow.confirmation_note ? (
-        <Txt style={styles.muted}>
-          Confirmation: {workflow.confirmation_note}
-        </Txt>
-      ) : null}
-      {workflow.carrier ? (
-        <View style={{ gap: 5 }}>
-          <Txt>Transporter: {workflow.carrier}</Txt>
-          <Txt selectable>LR / tracking: {workflow.tracking_number}</Txt>
-          {workflow.vehicle_number ? (
-            <Txt>Vehicle: {workflow.vehicle_number}</Txt>
-          ) : null}
-        </View>
-      ) : null}
-      {workflow.delivery_note ? (
-        <Txt selectable>Delivery confirmation: {workflow.delivery_note}</Txt>
-      ) : null}
       {workflow.status !== 'pending_confirmation' ? (
         <Txt style={styles.muted}>
           Fulfillment tracking does not confirm receipt of payment. Verify
@@ -270,6 +249,24 @@ export function RequestFulfillment({
                 }}
                 placeholder="Vehicle registration"
               />
+              <DriverFields
+                name={driverName}
+                phone={driverPhone}
+                onName={(v) => {
+                  setDriverName(v);
+                  setReview(false);
+                }}
+                onPhone={(v) => {
+                  setDriverPhone(v);
+                  setReview(false);
+                }}
+              />
+              {!validDriverDetails(driverName, driverPhone) ? (
+                <Txt accessibilityRole="alert">
+                  Enter a name of 2-120 characters and a phone number of 7-15
+                  digits, or leave the fields empty.
+                </Txt>
+              ) : null}
               <Txt style={styles.muted}>
                 Record dispatch after the material has left with the transporter
                 and agreed payment terms have been checked.
@@ -299,6 +296,9 @@ export function RequestFulfillment({
                       ? `Confirm delivery against: ${proof}`
                       : 'Move this order to processing.'}
               </Txt>
+              {next.status === 'shipped' ? (
+                <DriverDetails name={driverName} phone={driverPhone} />
+              ) : null}
               <Txt style={styles.muted}>
                 This change will be recorded in the order history.
               </Txt>
@@ -344,18 +344,6 @@ export function RequestFulfillment({
         <Txt accessibilityLiveRegion="polite" style={{ color: c.green }}>
           {success}
         </Txt>
-      ) : null}
-      {workflow.history.length ? (
-        <View style={styles.history}>
-          <Txt style={styles.title}>Activity</Txt>
-          {workflow.history.map((event) => (
-            <Txt key={event.status} style={styles.muted}>
-              {fulfillmentSteps.find((step) => step.status === event.status)
-                ?.label ?? event.status}{' '}
-              - {new Date(event.at).toLocaleString('en-IN')}
-            </Txt>
-          ))}
-        </View>
       ) : null}
     </View>
   );

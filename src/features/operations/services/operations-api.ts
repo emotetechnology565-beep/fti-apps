@@ -23,7 +23,7 @@ export async function operationsRpc<T>(operation: string, args: Record<string, u
 export type Ticket = {id:string;subject:string;status:string;order_id:string|null;created_at:string};
 export type Message = {id:string;author_id:string;body:string;created_at:string};
 export type DispatchOrder = {id:string;order_no:string;status:string};
-export type Shipment = {id:string;carrier:string;tracking_number:string;vehicle_number:string|null;status:string;delivery_note:string|null};
+export type Shipment = {id:string;carrier:string;tracking_number:string;vehicle_number:string|null;driver_name?:string|null;driver_phone?:string|null;dispatched_at?:string|null;delivered_at?:string|null;status:string;delivery_note:string|null};
 export type Notice = {id:string;payload:{title?:string;entity_id?:string;request_type?:string;request_state?:string};read_at:string|null;created_at:string};
 export type Report = {orders_by_status:Record<string,number>;open_tickets:number;transfers_awaiting_review:number;failed_outbox_events:number};
 
