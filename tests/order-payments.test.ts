@@ -18,6 +18,10 @@ test('optional payment inputs add receipts and calculate the remaining balance i
   };
   assert.equal(paymentDraftError(draft, '7000.50'), null);
   assert.equal(remainingAfterPayment('7000.50', '2000.25'), '5000.25');
+  assert.equal(
+    remainingAfterPayment('99999999999999.99', '0.01'),
+    '99999999999999.98',
+  );
   assert.match(paymentDraftError(draft, '100')!, /exceeds/);
   for (const amount of ['0', '-1', '1.001', '1e3', 'NaN'])
     assert.ok(paymentDraftError({ ...draft, payment_amount: amount }));
@@ -105,7 +109,9 @@ test('receipts are atomic, permission checked, idempotent and reflected in all o
         'utf8',
       ),
     );
-    await db.exec('alter table sales.request_fulfillments add column closure_note text');
+    await db.exec(
+      'alter table sales.request_fulfillments add column closure_note text',
+    );
     await loadFunction(
       '202610180001_request_notifications.sql',
       'internal.operations_whatsapp_enqueue',
@@ -197,6 +203,14 @@ test('receipts are atomic, permission checked, idempotent and reflected in all o
         update(kind, id, 0, 'confirmed', receipt('1001')),
         /exceeds/,
       );
+      await assert.rejects(
+        record(kind, id, receipt('100')),
+        /Confirm the order/,
+      );
+      await assert.rejects(
+        update(kind, id, 0, 'confirmed', receipt('-1')),
+        /positive payment/,
+      );
       assert.equal((await summary(kind, id)).total, null);
       await update(kind, id, 0, 'confirmed', receipt('300'));
       assert.equal((await summary(kind, id)).paid, '300.00');
@@ -204,6 +218,10 @@ test('receipts are atomic, permission checked, idempotent and reflected in all o
       const payment = receipt('200');
       await update(kind, id, 1, 'processing', payment);
       await record(kind, id, payment); // Retried receipt is not counted twice.
+      await assert.rejects(
+        record(kind, id, { ...payment, payment_id: randomUUID() }),
+        /reference already recorded/,
+      );
       assert.equal((await summary(kind, id)).paid, '500.00');
       await assert.rejects(
         record(kind, id, { ...payment, payment_amount: '201' }),

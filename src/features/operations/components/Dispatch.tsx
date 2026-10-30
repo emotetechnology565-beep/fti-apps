@@ -25,7 +25,6 @@ import {
 import { PrivateDocuments } from './PrivateDocuments';
 import { Pages, useAction, usePage } from './shared';
 import {
-  operationsRpc as rpc,
   type DispatchOrder,
   type Shipment,
 } from '../services/operations-api';
@@ -112,7 +111,11 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
     <Card style={{ gap: 10 }}>
       <Txt style={s.h2}>{order.order_no}</Txt>
       <Badge>{order.status === 'shipped' ? 'Dispatched' : order.status}</Badge>
-      <OrderPayments kind="commerce" id={order.id} editable />
+      <OrderPayments
+        kind="commerce"
+        id={order.id}
+        editable={order.status === 'delivered'}
+      />
       <ShipmentTracking
         orderId={order.id}
         status={order.status}
@@ -227,7 +230,7 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
               </Button>
               <Button
                 secondary
-                disabled={action.busy || !!paymentDraftError(payment)}
+                disabled={action.busy}
                 onPress={() => setConfirm(false)}
               >
                 Cancel

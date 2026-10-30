@@ -1,6 +1,6 @@
 begin;
 
-create table commerce.order_receipts (
+create table if not exists commerce.order_receipts (
  id uuid primary key,
  commerce_order_id uuid references commerce.orders(id),
  raw_request_id uuid references sales.raw_material_requests(id),
@@ -11,16 +11,16 @@ create table commerce.order_receipts (
  created_at timestamptz not null default now(),
  check(num_nonnulls(commerce_order_id,raw_request_id,fastener_request_id)=1)
 );
-create index order_receipts_commerce on commerce.order_receipts(commerce_order_id,created_at);
-create index order_receipts_raw on commerce.order_receipts(raw_request_id,created_at);
-create index order_receipts_fastener on commerce.order_receipts(fastener_request_id,created_at);
-create unique index order_receipts_reference on commerce.order_receipts(
+create index if not exists order_receipts_commerce on commerce.order_receipts(commerce_order_id,created_at);
+create index if not exists order_receipts_raw on commerce.order_receipts(raw_request_id,created_at);
+create index if not exists order_receipts_fastener on commerce.order_receipts(fastener_request_id,created_at);
+create unique index if not exists order_receipts_reference on commerce.order_receipts(
  (case when commerce_order_id is not null then 'commerce' when raw_request_id is not null then 'material' else 'fastener' end),
  coalesce(commerce_order_id,raw_request_id,fastener_request_id),lower(btrim(reference)));
 alter table commerce.order_receipts enable row level security;
 revoke all on commerce.order_receipts from public,anon,authenticated;
 
-create function internal.order_payment_summary(p_kind text,p_id uuid) returns jsonb
+create or replace function internal.order_payment_summary(p_kind text,p_id uuid) returns jsonb
 language plpgsql stable security definer set search_path='' as $$
 declare total numeric; paid numeric:=0; state text; receipts jsonb;
 begin
@@ -42,7 +42,7 @@ begin
 end $$;
 revoke all on function internal.order_payment_summary(text,uuid) from public,anon,authenticated;
 
-create function public.fti_order_payments(p_kind text,p_id uuid) returns jsonb
+create or replace function public.fti_order_payments(p_kind text,p_id uuid) returns jsonb
 language plpgsql stable security definer set search_path='' as $$
 declare actor uuid:=internal.identity_actor(); buyer uuid;
 begin
@@ -59,9 +59,9 @@ begin
  return internal.order_payment_summary(p_kind,p_id);
 end $$;
 
-create function internal.record_order_receipt(p_kind text,p_id uuid,p_details jsonb) returns void
+create or replace function internal.record_order_receipt(p_kind text,p_id uuid,p_details jsonb) returns void
 language plpgsql security definer set search_path='' as $$
-declare actor uuid; receipt_id uuid; amount_text text; amount numeric; reference text;
+declare actor uuid; receipt_id uuid; amount_text text; amount numeric; receipt_reference text;
  existing commerce.order_receipts; o commerce.orders; f sales.request_fulfillments;
  buyer uuid; summary jsonb; reservation record;
 begin
@@ -73,7 +73,7 @@ begin
  or coalesce(length(btrim(p_details->>'payment_reference')),0) not between 5 and 120 then
   raise exception 'Enter a positive payment amount, a receipt ID and a reference (5-120 characters)' using errcode='22023';
  end if;
- receipt_id:=(p_details->>'payment_id')::uuid; amount:=amount_text::numeric; reference:=btrim(p_details->>'payment_reference');
+ receipt_id:=(p_details->>'payment_id')::uuid; amount:=amount_text::numeric; receipt_reference:=btrim(p_details->>'payment_reference');
  -- Serialize payments with confirmation, closure, bank review and dispatch.
  if p_kind='commerce' then
   select * into o from commerce.orders where id=p_id for update; buyer:=o.buyer_id;
@@ -87,13 +87,18 @@ begin
  if buyer is null then raise exception 'Order not found' using errcode='P0002'; end if;
  select * into existing from commerce.order_receipts where id=receipt_id;
  if found then
-  if existing.amount<>amount or existing.reference<>reference
+  if existing.amount<>amount or existing.reference<>receipt_reference
   or (p_kind='commerce' and existing.commerce_order_id is distinct from p_id)
   or (p_kind='material' and existing.raw_request_id is distinct from p_id)
   or (p_kind='fastener' and existing.fastener_request_id is distinct from p_id) then
    raise exception 'Receipt ID already used for a different payment' using errcode='23505';
   end if;
   return;
+ end if;
+ if exists(select 1 from commerce.order_receipts r where lower(btrim(r.reference))=lower(receipt_reference)
+  and ((p_kind='commerce' and r.commerce_order_id=p_id) or (p_kind='material' and r.raw_request_id=p_id)
+   or (p_kind='fastener' and r.fastener_request_id=p_id))) then
+  raise exception 'Payment reference already recorded for this order' using errcode='23505';
  end if;
  summary:=internal.order_payment_summary(p_kind,p_id);
  if summary->>'total' is null or summary->>'status' not in ('pending_payment','confirmed','processing','shipped','delivered') then
@@ -125,13 +130,13 @@ begin
  end if;
  insert into commerce.order_receipts(id,commerce_order_id,raw_request_id,fastener_request_id,amount,reference,recorded_by)
  values(receipt_id,case when p_kind='commerce' then p_id end,case when p_kind='material' then p_id end,
-  case when p_kind='fastener' then p_id end,amount,reference,actor);
+  case when p_kind='fastener' then p_id end,amount,receipt_reference,actor);
  insert into platform.audit_logs(actor_id,action,resource_type,resource_id,after_data)
- values(actor,'order.payment_recorded',p_kind||'_order',p_id,jsonb_build_object('receipt_id',receipt_id,'amount',amount,'reference',reference));
+ values(actor,'order.payment_recorded',p_kind||'_order',p_id,jsonb_build_object('receipt_id',receipt_id,'amount',amount,'reference',receipt_reference));
 end $$;
 revoke all on function internal.record_order_receipt(text,uuid,jsonb) from public,anon,authenticated;
 
-create function public.fti_order_receipt_record(p_kind text,p_id uuid,p_details jsonb) returns jsonb
+create or replace function public.fti_order_receipt_record(p_kind text,p_id uuid,p_details jsonb) returns jsonb
 language plpgsql security definer set search_path='' as $$
 begin
  perform internal.identity_staff('payment.review');
@@ -144,29 +149,33 @@ end $$;
 -- revision checks still run before the receipt is recorded.
 do $$ declare definition text; revised text; begin
  definition:=pg_get_functiondef('public.fti_request_fulfillment_update(text,uuid,integer,text,jsonb)'::regprocedure);
+ if strpos(definition,'perform internal.record_order_receipt(p_kind,p_request,p_details);')=0 then
  revised:=replace(definition,' insert into platform.audit_logs(actor_id,action,resource_type,resource_id,before_data,after_data)',
   ' perform internal.record_order_receipt(p_kind,p_request,p_details);' || E'\n' || ' insert into platform.audit_logs(actor_id,action,resource_type,resource_id,before_data,after_data)');
  if definition=revised then raise exception 'Fulfillment receipt insertion point not found'; end if;
  execute revised;
+ end if;
  -- A buyer who has already paid an advance submits only the remaining balance.
  definition:=pg_get_functiondef('public.fti_commerce_bank_submit(uuid,text)'::regprocedure);
  revised:=replace(definition,'o.amount_due<>o.grand_total','o.amount_due<=0');
  revised:=replace(revised,'normalized,o.grand_total,','normalized,o.amount_due,');
- if definition=revised then raise exception 'Bank submission remaining balance update not found'; end if;
+ if definition=revised and strpos(definition,'normalized,o.amount_due,')=0 then raise exception 'Bank submission remaining balance update not found'; end if;
  execute revised;
  definition:=pg_get_functiondef('public.fti_commerce_payment_decide(uuid,boolean,text)'::regprocedure);
  revised:=replace(definition,'p.amount<>o.grand_total or o.amount_due<>o.grand_total','p.amount<>o.amount_due or o.amount_due<=0');
- if definition=revised then raise exception 'Bank review remaining balance update not found'; end if;
+ if definition=revised and strpos(definition,'p.amount<>o.amount_due or o.amount_due<=0')=0 then raise exception 'Bank review remaining balance update not found'; end if;
  execute revised;
  definition:=pg_get_functiondef('public.fti_commerce_expire(integer)'::regprocedure);
+ if strpos(definition,'commerce.order_receipts receipt where receipt.commerce_order_id=orders.id')=0 then
  revised:=replace(definition,
   'and not exists(select 1 from commerce.payments p where p.order_id=orders.id and p.status=''review'')',
   'and not exists(select 1 from commerce.payments p where p.order_id=orders.id and p.status=''review'') and not exists(select 1 from commerce.order_receipts receipt where receipt.commerce_order_id=orders.id)');
  if definition=revised then raise exception 'Reservation expiry payment guard insertion point not found'; end if;
  execute revised;
+ end if;
 end $$;
 
-create function public.fti_order_step_with_payment(p_action text,p_order uuid,p_details jsonb default '{}') returns jsonb
+create or replace function public.fti_order_step_with_payment(p_action text,p_order uuid,p_details jsonb default '{}') returns jsonb
 language plpgsql security definer set search_path='' as $$
 begin
  if p_action='confirm' then
@@ -186,10 +195,12 @@ end $$;
 do $$ declare signature text; definition text; revised text; begin
  foreach signature in array array['public.fti_customer_orders(integer,text,text)','public.fti_admin_orders(text,text,text,date,date,integer,integer)'] loop
   definition:=pg_get_functiondef(signature::regprocedure);
+  if strpos(definition,'internal.order_payment_summary(page.kind,page.id)')=0 then
   revised:=replace(definition,'to_jsonb(page) order by',
    '(to_jsonb(page)||jsonb_build_object(''payment_summary'',internal.order_payment_summary(page.kind,page.id))) order by');
   if definition=revised then raise exception 'Order list payment summary insertion point not found: %',signature; end if;
   execute revised;
+  end if;
  end loop;
 end $$;
 

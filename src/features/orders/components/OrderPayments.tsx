@@ -17,8 +17,10 @@ import {
   recordOrderPayment,
 } from '../services/order-payments-api';
 
-const money = (value: string) =>
-  `₹${Number(value).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const money = (value: string) => {
+  const [whole, fraction = ''] = value.trim().split('.');
+  return `₹${BigInt(whole).toLocaleString('en-IN')}.${fraction.padEnd(2, '0').slice(0, 2)}`;
+};
 export function PaymentTotals({ summary }: { summary: PaymentSummary }) {
   return (
     <View style={{ gap: 6 }}>

@@ -51,6 +51,9 @@ def api(route):
         result = user
     elif op == 'fti_identity_me':
         result = identity
+    elif op == 'fti_order_payments':
+        row = next(r for r in rows if r['id'] == args['p_id'])
+        result = {'total': row['total'] if row['status'] != 'pending_confirmation' else None, 'paid': '0', 'remaining': row['total'] if row['status'] != 'pending_confirmation' else None, 'status': row['status'], 'receipts': []}
     elif op == 'fti_admin_orders':
         requests.append(args)
         if mode['fail']:

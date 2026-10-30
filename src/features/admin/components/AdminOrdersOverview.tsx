@@ -5,7 +5,10 @@ import { router } from 'expo-router';
 import { hasPermission } from '@features/auth';
 import { useAuth } from '@features/auth/ui';
 import { RequestFulfillment } from '@features/operations/ui';
-import { OrderPayments } from '@features/orders/components/OrderPayments';
+import {
+  OrderPayments,
+  PaymentTotals,
+} from '@features/orders/components/OrderPayments';
 import { OrderOverview } from '@features/orders/components/OrderOverview';
 import { OrderClosure } from '@features/orders/components/OrderClosure';
 import { commerceApi } from '@features/orders/services/commerce-api';
@@ -163,6 +166,9 @@ function OrderCard({
             : 'Value awaiting confirmation'}
         </Txt>
       </View>
+      {order.payment_summary ? (
+        <PaymentTotals summary={order.payment_summary} />
+      ) : null}
       <Button
         secondary
         onPress={onToggle}

@@ -161,6 +161,13 @@ test('Excel export is a real two-sheet workbook with literal customer text and n
         total: '1234.50',
         amount_due: null,
         closure_note: null,
+        payment_summary: {
+          total: '1234.50',
+          paid: '234.50',
+          remaining: '1000.00',
+          status: 'processing',
+          receipts: [],
+        },
         fulfillment: { status: 'processing', revision: 2, history: [] },
       },
     ],
@@ -186,6 +193,8 @@ test('Excel export is a real two-sheet workbook with literal customer text and n
   assert.match(sheet, /A&amp;B &lt;Works&gt;/);
   assert.match(sheet, /2026-10-30 01:30:00/);
   assert.match(sheet, /<c r="M2" t="n"><v>1234.5<\/v>/);
+  assert.match(sheet, /<c r="S2" t="n"><v>234.5<\/v>/);
+  assert.match(sheet, /<c r="T2" t="n"><v>1000<\/v>/);
   assert.match(
     sheet,
     /<c r="E2" t="inlineStr"><is><t xml:space="preserve">=HYPERLINK/,

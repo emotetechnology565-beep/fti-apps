@@ -20,15 +20,21 @@ export const newPaymentDraft = (): PaymentDraft => ({
       return (ch === 'x' ? value : (value & 3) | 8).toString(16);
     }),
 });
-const cents = (value: string) => Math.round(Number(value) * 100);
+const validMoney = (value: string) => /^\d+(\.\d{1,2})?$/.test(value);
+const cents = (value: string) => {
+  const [whole, fraction = ''] = value.split('.');
+  return BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0'));
+};
 export function paymentDraftError(
   draft: PaymentDraft,
   remaining?: string | null,
 ): string | null {
   const amount = draft.payment_amount.trim();
   if (!amount) return null;
-  if (!/^\d{1,14}(\.\d{1,2})?$/.test(amount) || cents(amount) <= 0)
+  if (!/^\d{1,14}(\.\d{1,2})?$/.test(amount) || cents(amount) <= 0n)
     return 'Enter a positive payment amount with up to two decimals, or leave it blank.';
+  if (remaining !== undefined && remaining !== null && !validMoney(remaining))
+    return 'Enter a valid order total before recording payment.';
   if (
     remaining !== undefined &&
     remaining !== null &&
@@ -46,6 +52,14 @@ export function remainingAfterPayment(
   remaining: string | null | undefined,
   amount: string,
 ): string | null {
-  if (remaining === null || remaining === undefined) return null;
-  return ((cents(remaining) - cents(amount || '0')) / 100).toFixed(2);
+  if (
+    remaining === null ||
+    remaining === undefined ||
+    !validMoney(remaining) ||
+    !validMoney(amount.trim() || '0')
+  )
+    return null;
+  const difference = cents(remaining) - cents(amount.trim() || '0');
+  if (difference < 0n) return null;
+  return `${difference / 100n}.${(difference % 100n).toString().padStart(2, '0')}`;
 }

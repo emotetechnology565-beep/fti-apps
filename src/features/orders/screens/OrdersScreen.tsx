@@ -135,8 +135,8 @@ function OrderPanel({
               ) : (
                 <>
                   <Txt>
-                    Submit reference {utr.trim().toUpperCase()} for manual
-                    review?
+                    Submit reference {utr.trim().toUpperCase()} for the
+                    remaining INR {order.amount_due} for manual review?
                   </Txt>
                   <Button disabled={busy} onPress={() => void submit()}>
                     {busy ? 'Submitting…' : 'Confirm submission'}

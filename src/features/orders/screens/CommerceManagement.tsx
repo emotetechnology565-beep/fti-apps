@@ -94,11 +94,11 @@ function PaymentsPanel() {
     setBusy(true); setMessage('');
     try { await commerceApi.paymentDecide(selected,decision,note); setSelected(null); setDecision(null); setNote('');
       setMessage(decision?'Payment verified and order confirmed.':'Transfer claim rejected.');
-      await client.invalidateQueries({queryKey:['commerce']}); }
+      await client.invalidateQueries({queryKey:['commerce']}); await client.invalidateQueries({queryKey:['order-payments']}); await client.invalidateQueries({queryKey:['admin-orders']}); }
     catch(e) { setMessage((e as Error).message); } finally { setBusy(false); }
   }
   return <Card style={{gap:10}}><Txt style={s.h2}>Manual bank verification</Txt>
-    <Txt>Compare each UTR, payer, amount and order with the actual bank statement. Do not approve from the buyer&apos;s claim alone. Only full exact-amount payments are supported.</Txt>
+    <Txt>Compare each UTR, payer, amount and order with the actual bank statement. Do not approve from the buyer&apos;s claim alone. Bank claims must match the remaining balance after any recorded payments.</Txt>
     <Button secondary onPress={()=>void queue.refetch()}>Refresh transfer queue</Button>
     {queue.isPending ? <Txt>Loading transfer claims…</Txt> : queue.error ? <Txt accessibilityRole="alert">{queue.error.message}</Txt> : <>
       {!queue.data.length && <Txt>No transfers awaiting review.</Txt>}
@@ -126,7 +126,7 @@ function ExpiryPanel() {
   async function expire() {
     setBusy(true); setMessage('');
     try { const count=await commerceApi.expire(); setMessage(`${count} expired unpaid orders released.`); setConfirm(false);
-      await client.invalidateQueries({queryKey:['commerce']}); }
+      await client.invalidateQueries({queryKey:['commerce']}); await client.invalidateQueries({queryKey:['order-payments']}); await client.invalidateQueries({queryKey:['admin-orders']}); }
     catch(e) { setMessage((e as Error).message); } finally { setBusy(false); }
   }
   return <Card style={{gap:8}}><Txt style={s.h2}>Expired reservations</Txt>
