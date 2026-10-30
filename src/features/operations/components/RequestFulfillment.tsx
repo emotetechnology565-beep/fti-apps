@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { hasPermission } from '@features/auth';
 import { useAuth } from '@features/auth/ui';
-import { Badge, Button, Field, Icon, Row, Txt, c } from '@shared/ui';
+import { Badge, Button, Field, Row, Txt, c } from '@shared/ui';
 import {
   fulfillmentSteps,
   initialFulfillment,

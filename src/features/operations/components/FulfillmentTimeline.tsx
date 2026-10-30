@@ -101,6 +101,7 @@ export function FulfillmentTimeline({
                   styles.marker,
                   done && styles.doneMarker,
                   current && styles.currentMarker,
+                  current && stage.status === 'delivered' && styles.doneMarker,
                 ]}
               >
                 <Icon
@@ -141,6 +142,7 @@ export function FulfillmentTimeline({
                     style={[
                       styles.currentLabel,
                       stopped && styles.stoppedLabel,
+                      stage.status === 'delivered' && styles.completeLabel,
                     ]}
                   >
                     {stopped
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
     color: '#A70101',
   },
   stoppedLabel: { color: '#667386' },
+  completeLabel: { color: '#26734D' },
   date: { color: '#667386', fontSize: 11, lineHeight: 17 },
   detail: { color: '#58697C', fontSize: 12, lineHeight: 19 },
   dispatch: {

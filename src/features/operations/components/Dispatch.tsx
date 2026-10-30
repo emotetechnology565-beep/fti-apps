@@ -1,48 +1,82 @@
+import { FulfillmentTimeline } from './FulfillmentTimeline';
 import { DriverDetails, DriverFields } from './DriverDetails';
 import { validDriverDetails } from '../model/driver-details';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { Button, Card, Field, Txt, s } from '@shared/ui';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Badge, Button, Card, Field, Icon, Txt, s } from '@shared/ui';
 import { PrivateDocuments } from './PrivateDocuments';
 import { Pages, useAction, usePage } from './shared';
 import {
   operationsRpc as rpc,
   type DispatchOrder,
   type Shipment,
-  type Report,
 } from '../services/operations-api';
 
-export function ShipmentTracking({ orderId }: { orderId: string }) {
+export function ShipmentTracking({
+  orderId,
+  status,
+  createdAt,
+}: {
+  orderId: string;
+  status: string;
+  createdAt?: string;
+}) {
   const list = usePage<Shipment[]>('shipments', { p_order: orderId });
+  const shipments = list.data ?? [];
   return (
-    <Card style={{ gap: 8 }}>
-      <Txt style={s.h2}>Shipment tracking</Txt>
-      <Txt>Order ID: {orderId}</Txt>
+    <View style={{ gap: 14 }}>
+      <Txt style={s.h2}>Order & dispatch timeline</Txt>
       {list.isPending ? (
-        <Txt>Loading shipment?</Txt>
+        <Txt>Loading shipment details...</Txt>
       ) : list.error ? (
         <Txt accessibilityRole="alert">{list.error.message}</Txt>
-      ) : (
-        <>
-          {!list.data.length && <Txt>No dispatch recorded.</Txt>}
-          {list.data.map((s) => (
-            <View key={s.id}>
-              <Txt>
-                {s.status} ? {s.carrier}
-              </Txt>
-              <Txt>LR / tracking: {s.tracking_number}</Txt>
-              {!!s.vehicle_number && <Txt>Vehicle: {s.vehicle_number}</Txt>}
-              <DriverDetails name={s.driver_name} phone={s.driver_phone} />
-              {!!s.delivery_note && (
-                <Txt>Delivery confirmation: {s.delivery_note}</Txt>
-              )}
-            </View>
-          ))}
-        </>
-      )}
+      ) : null}
+      <FulfillmentTimeline
+        status={status}
+        createdAt={createdAt}
+        history={shipments.flatMap((shipment) => [
+          ...(shipment.dispatched_at
+            ? [{ status: 'shipped', at: shipment.dispatched_at }]
+            : []),
+          ...(shipment.delivered_at
+            ? [{ status: 'delivered', at: shipment.delivered_at }]
+            : []),
+        ])}
+        deliveryNote={shipments
+          .map((shipment) => shipment.delivery_note)
+          .filter(Boolean)
+          .join('; ')}
+        dispatchDetails={
+          shipments.length ? (
+            <>
+              {shipments.map((shipment) => (
+                <View key={shipment.id} style={{ gap: 8 }}>
+                  <Txt style={s.h2}>{shipment.carrier}</Txt>
+                  <Txt selectable>
+                    LR / tracking: {shipment.tracking_number}
+                  </Txt>
+                  {shipment.vehicle_number ? (
+                    <Txt>Vehicle: {shipment.vehicle_number}</Txt>
+                  ) : null}
+                  <DriverDetails
+                    name={shipment.driver_name}
+                    phone={shipment.driver_phone}
+                  />
+                </View>
+              ))}
+            </>
+          ) : undefined
+        }
+      />
+      {!list.isPending && !list.error && !shipments.length ? (
+        <Txt style={s.muted}>
+          No dispatch recorded. Add transporter and driver details below when
+          the order is ready.
+        </Txt>
+      ) : null}
       <PrivateDocuments kind="order_mtc" entityId={orderId} canUpload={false} />
       <PrivateDocuments kind="order_pod" entityId={orderId} canUpload={false} />
-    </Card>
+    </View>
   );
 }
 function DispatchEditor({ order }: { order: DispatchOrder }) {
@@ -57,10 +91,13 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
   const shipped = order.status === 'shipped';
   return (
     <Card style={{ gap: 10 }}>
-      <Txt style={s.h2}>
-        {order.order_no} ? {order.status}
-      </Txt>
-      <ShipmentTracking orderId={order.id} />
+      <Txt style={s.h2}>{order.order_no}</Txt>
+      <Badge>{order.status === 'shipped' ? 'Dispatched' : order.status}</Badge>
+      <ShipmentTracking
+        orderId={order.id}
+        status={order.status}
+        createdAt={order.created_at}
+      />
       {order.status !== 'delivered' && (
         <>
           {shipped ? (
@@ -188,65 +225,108 @@ export function DispatchManagement() {
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const list = usePage<DispatchOrder[]>('orders', { p_offset: offset });
-  const report = usePage<Report>('report');
-  const order = list.data?.find((o) => o.id === selected);
+  const order = list.data?.find((item) => item.id === selected);
   return (
-    <View style={{ gap: 12 }}>
-      <Txt style={s.h2}>Operations overview</Txt>
-      <Button
-        secondary
-        onPress={() => {
-          void list.refetch();
-          void report.refetch();
-        }}
-      >
-        Refresh operations
-      </Button>
-      {report.error ? (
-        <Txt accessibilityRole="alert">{report.error.message}</Txt>
-      ) : report.data ? (
-        <Card>
-          <Txt>
-            Open tickets: {report.data.open_tickets} ? Bank reviews:{' '}
-            {report.data.transfers_awaiting_review} ? Failed events:{' '}
-            {report.data.failed_outbox_events}
+    <View style={{ gap: 16 }}>
+      <View style={styles.header}>
+        <View style={{ flex: 1, minWidth: 160, gap: 4 }}>
+          <Txt style={s.h2}>Dispatch workspace</Txt>
+          <Txt style={s.muted}>
+            Choose an order to review its timeline, assign a driver or confirm
+            delivery.
           </Txt>
-          {Object.entries(report.data.orders_by_status).map(
-            ([status, count]) => (
-              <Txt key={status}>
-                {status}: {count}
-              </Txt>
-            ),
-          )}
-        </Card>
-      ) : (
-        <Txt>Loading totals?</Txt>
-      )}
+        </View>
+        <Button secondary icon="refresh-cw" onPress={() => void list.refetch()}>
+          Refresh orders
+        </Button>
+      </View>
       {list.isPending ? (
-        <Txt>Loading orders?</Txt>
+        <Txt>Loading orders...</Txt>
       ) : list.error ? (
         <Txt accessibilityRole="alert">{list.error.message}</Txt>
       ) : (
         <>
-          {!list.data.length && (
-            <Txt>No confirmed orders ready for tracking.</Txt>
-          )}
-          {list.data.map((o) => (
-            <Button key={o.id} secondary onPress={() => setSelected(o.id)}>
-              {o.order_no} ? {o.status}
-            </Button>
+          {!list.data.length ? (
+            <Card>
+              <Txt>No confirmed orders ready for tracking.</Txt>
+            </Card>
+          ) : null}
+          {list.data.map((item) => (
+            <Pressable
+              key={item.id}
+              accessibilityRole="button"
+              accessibilityLabel={`View dispatch ${item.order_no}`}
+              accessibilityState={{ selected: selected === item.id }}
+              onPress={() => setSelected(selected === item.id ? null : item.id)}
+              style={({ pressed }) => [
+                styles.order,
+                selected === item.id && styles.selectedOrder,
+                pressed && { opacity: 0.8 },
+              ]}
+            >
+              <Icon
+                name="truck"
+                size={18}
+                color={selected === item.id ? '#A70101' : '#58697C'}
+              />
+              <View style={{ flex: 1, gap: 4 }}>
+                <Txt style={styles.orderNumber}>{item.order_no}</Txt>
+                <Txt style={s.muted}>
+                  {item.status === 'shipped'
+                    ? 'Dispatched'
+                    : item.status === 'processing'
+                      ? 'Preparing for dispatch'
+                      : item.status === 'delivered'
+                        ? 'Delivery complete'
+                        : 'Ready for dispatch review'}
+                </Txt>
+              </View>
+              <Icon
+                name={selected === item.id ? 'chevron-up' : 'chevron-down'}
+                size={18}
+                color="#58697C"
+              />
+            </Pressable>
           ))}
           <Pages
             offset={offset}
-            setOffset={(n) => {
+            setOffset={(value) => {
               setSelected(null);
-              setOffset(n);
+              setOffset(value);
             }}
             count={list.data.length}
           />
         </>
       )}
-      {order && <DispatchEditor key={order.id + order.status} order={order} />}
+      {order ? (
+        <DispatchEditor key={order.id + order.status} order={order} />
+      ) : null}
     </View>
   );
 }
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  order: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E4E8EE',
+    borderRadius: 10,
+    minHeight: 72,
+  },
+  selectedOrder: { borderColor: '#A70101', backgroundColor: '#FFF8F8' },
+  orderNumber: {
+    color: '#142D4E',
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 21,
+  },
+});
