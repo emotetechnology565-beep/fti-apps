@@ -34,6 +34,7 @@ export function MarketMultiSelect({
         accessibilityRole="button"
         accessibilityLabel={`${label}: ${summary}`}
         accessibilityState={{ expanded: open, disabled }}
+        aria-expanded={open}
         disabled={disabled}
         onPress={() => {
           setDraft(selected);
@@ -90,6 +91,7 @@ export function MarketMultiSelect({
                     accessibilityRole="checkbox"
                     accessibilityLabel={option.label}
                     accessibilityState={{ checked }}
+                    aria-checked={checked}
                     onPress={() =>
                       setDraft((previous) =>
                         checked
