@@ -345,7 +345,7 @@ export function Shell({ children }: { children: ReactNode }) {
     return <Txt>{auth.error ?? 'Opening your workspace...'}</Txt>;
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: !desktop ? '#071A38' : c.bg }}
+      style={{ flex: 1, backgroundColor: !desktop && !staffWorkspace ? '#071A38' : c.bg }}
       edges={['top', 'bottom']}
     >
       <View style={{ flex: 1, flexDirection: 'row' }}>

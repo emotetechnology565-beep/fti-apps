@@ -15,3 +15,4 @@ export { Section } from './Section';
 export { Txt } from './Txt';
 
 export { RequestSummary } from './RequestSummary';
+export { OrderStatusFilters } from './OrderStatusFilters';

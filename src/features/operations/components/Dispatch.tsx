@@ -3,7 +3,16 @@ import { DriverDetails, DriverFields } from './DriverDetails';
 import { validDriverDetails } from '../model/driver-details';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Badge, Button, Card, Field, Icon, Txt, s } from '@shared/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  Field,
+  Icon,
+  OrderStatusFilters,
+  Txt,
+  s,
+} from '@shared/ui';
 import { PrivateDocuments } from './PrivateDocuments';
 import { Pages, useAction, usePage } from './shared';
 import {
@@ -223,8 +232,12 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
 
 export function DispatchManagement() {
   const [offset, setOffset] = useState(0);
+  const [status, setStatus] = useState('all');
   const [selected, setSelected] = useState<string | null>(null);
-  const list = usePage<DispatchOrder[]>('orders', { p_offset: offset });
+  const list = usePage<DispatchOrder[]>('orders', {
+    p_offset: offset,
+    p_status: status,
+  });
   const order = list.data?.find((item) => item.id === selected);
   return (
     <View style={{ gap: 16 }}>
@@ -240,6 +253,15 @@ export function DispatchManagement() {
           Refresh orders
         </Button>
       </View>
+      <OrderStatusFilters
+        dispatchOnly
+        value={status}
+        onChange={(value) => {
+          setStatus(value);
+          setOffset(0);
+          setSelected(null);
+        }}
+      />
       {list.isPending ? (
         <Txt>Loading orders...</Txt>
       ) : list.error ? (

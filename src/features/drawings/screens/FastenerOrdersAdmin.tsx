@@ -6,7 +6,16 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { supabase } from '@core/api/supabase-client';
-import { Button, Card, Row, Txt, RequestSummary, Badge, s } from '@shared/ui';
+import {
+  Button,
+  Card,
+  Row,
+  Txt,
+  RequestSummary,
+  OrderStatusFilters,
+  Badge,
+  s,
+} from '@shared/ui';
 import { DrawingPreview } from '../components/DrawingPreview';
 import type { DrawingDefinition, DrawingInput } from '../model/types';
 type RequestRow = {
@@ -23,16 +32,17 @@ type RequestRow = {
 export function FastenerOrdersAdmin() {
   const auth = useAuth();
   const [offset, setOffset] = useState(0);
+  const [status, setStatus] = useState('all');
   const [review, setReview] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const query = useQuery({
-    queryKey: ['fastener-orders', auth.session?.user.id, offset],
+    queryKey: ['fastener-orders', auth.session?.user.id, offset, status],
     queryFn: async () => {
       if (!supabase) throw new Error('Orders unavailable');
       const { data, error } = await supabase.rpc(
         'fti_catalog_fastener_orders',
-        { p_offset: offset },
+        { p_offset: offset, p_status: status },
       );
       if (error) throw new Error(error.message);
       return data as RequestRow[];
@@ -67,18 +77,26 @@ export function FastenerOrdersAdmin() {
       <Button secondary onPress={() => void query.refetch()}>
         Refresh fastener requests
       </Button>
+      <OrderStatusFilters
+        value={status}
+        onChange={(value) => {
+          setStatus(value);
+          setOffset(0);
+        }}
+      />
       {query.isPending ? (
         <Txt>Loading requests...</Txt>
       ) : query.isError ? (
         <Txt accessibilityRole="alert">{query.error.message}</Txt>
       ) : !query.data.length ? (
-        <Txt>No fastener requests.</Txt>
+        <Txt>No fastener requests match this filter.</Txt>
       ) : (
         query.data.map((order) => (
           <RequestSummary
             key={order.id}
             details={order.details}
             createdAt={order.created_at}
+            status={order.fulfillment?.status}
             fulfillment={
               <RequestFulfillment
                 kind="fastener"

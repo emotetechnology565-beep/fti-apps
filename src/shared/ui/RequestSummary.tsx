@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Icon } from './Icon';
+import { adminOrderStatusLabel } from './OrderStatusFilters';
 import { Card } from './Card';
 import { Txt } from './Txt';
 import { Badge } from './Badge';
@@ -40,20 +42,29 @@ export function RequestSummary({
   children,
   detailLabel = 'notification details',
   fulfillment,
+  status = 'pending_confirmation',
 }: {
   details: Record<string, unknown>;
   createdAt: string;
   children: ReactNode;
   detailLabel?: string;
   fulfillment?: ReactNode;
+  status?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [notificationsExpanded, setNotificationsExpanded] = useState(false);
   const fields = Object.entries(details).filter(
     ([key]) => !hiddenKeys.has(key) && !buyerKeys.has(key),
   );
   return (
     <Card style={{ padding: 0, overflow: 'hidden', gap: 0 }}>
-      <View style={styles.header}>
+      <Pressable
+        style={styles.header}
+        accessibilityRole="button"
+        accessibilityLabel={`${expanded ? 'Hide' : 'View'} order details ${String(details.reference ?? '')}`}
+        accessibilityState={{ expanded }}
+        onPress={() => setExpanded(!expanded)}
+      >
         <View style={{ gap: 5, flexShrink: 1 }}>
           <Txt style={styles.reference} selectable>
             {String(details.reference ?? 'Order request')}
@@ -67,49 +78,83 @@ export function RequestSummary({
               minute: '2-digit',
             })}
           </Txt>
+          <Txt style={styles.value}>
+            {[details.material, details.quantity]
+              .filter(Boolean)
+              .map(String)
+              .join(' · ')}
+          </Txt>
+          <Txt style={styles.muted}>
+            {String(details.business ?? details.name ?? '')}
+          </Txt>
         </View>
-        <Badge tone="gray">Buyer request</Badge>
-      </View>
-      <View style={styles.columns}>
-        <View style={styles.column}>
-          <Txt style={styles.heading}>Buyer & delivery</Txt>
-          {['name', 'business', 'phone', 'location'].map((key) => (
-            <View key={key} style={styles.field}>
-              <Txt style={styles.label}>{fieldLabels[key]}</Txt>
-              <Txt selectable style={styles.value}>
-                {display(details[key])}
-              </Txt>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Badge
+            tone={
+              status === 'delivered'
+                ? 'green'
+                : status === 'shipped'
+                  ? 'blue'
+                  : 'gray'
+            }
+          >
+            {adminOrderStatusLabel(status)}
+          </Badge>
+          <Icon
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={18}
+            color={c.muted}
+          />
+        </View>
+      </Pressable>
+      {expanded ? (
+        <>
+          <View style={styles.columns}>
+            <View style={styles.column}>
+              <Txt style={styles.heading}>Buyer & delivery</Txt>
+              {['name', 'business', 'phone', 'location'].map((key) => (
+                <View key={key} style={styles.field}>
+                  <Txt style={styles.label}>{fieldLabels[key]}</Txt>
+                  <Txt selectable style={styles.value}>
+                    {display(details[key])}
+                  </Txt>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-        <View style={styles.column}>
-          <Txt style={styles.heading}>Requested specifications</Txt>
-          {fields.map(([key, value]) => (
-            <View key={key} style={styles.field}>
-              <Txt style={styles.label}>
-                {fieldLabels[key] ??
-                  key
-                    .replaceAll('_', ' ')
-                    .replace(/^./, (v) => v.toUpperCase())}
-              </Txt>
-              <Txt selectable style={styles.value}>
-                {display(value)}
-              </Txt>
+            <View style={styles.column}>
+              <Txt style={styles.heading}>Requested specifications</Txt>
+              {fields.map(([key, value]) => (
+                <View key={key} style={styles.field}>
+                  <Txt style={styles.label}>
+                    {fieldLabels[key] ??
+                      key
+                        .replaceAll('_', ' ')
+                        .replace(/^./, (v) => v.toUpperCase())}
+                  </Txt>
+                  <Txt selectable style={styles.value}>
+                    {display(value)}
+                  </Txt>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      </View>
-      {fulfillment}
-      <View style={[styles.actions, fulfillment ? { paddingTop: 16 } : null]}>
-        <Button
-          secondary
-          icon={expanded ? 'chevron-up' : 'chevron-down'}
-          onPress={() => setExpanded(!expanded)}
-        >
-          {`${expanded ? 'Hide' : 'View'} ${detailLabel}`}
-        </Button>
-      </View>
-      {expanded ? <View style={styles.expanded}>{children}</View> : null}
+          </View>
+          {fulfillment}
+          <View
+            style={[styles.actions, fulfillment ? { paddingTop: 16 } : null]}
+          >
+            <Button
+              secondary
+              icon={notificationsExpanded ? 'chevron-up' : 'chevron-down'}
+              onPress={() => setNotificationsExpanded(!notificationsExpanded)}
+            >
+              {`${notificationsExpanded ? 'Hide' : 'View'} ${detailLabel}`}
+            </Button>
+          </View>
+          {notificationsExpanded ? (
+            <View style={styles.expanded}>{children}</View>
+          ) : null}
+        </>
+      ) : null}
     </Card>
   );
 }

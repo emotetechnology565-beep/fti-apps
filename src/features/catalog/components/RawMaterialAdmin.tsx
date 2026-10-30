@@ -12,6 +12,7 @@ import {
   Row,
   Txt,
   RequestSummary,
+  OrderStatusFilters,
   Badge,
   s,
 } from '@shared/ui';
@@ -52,6 +53,7 @@ export function RawMaterialAdmin({
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [status, setStatus] = useState('all');
   const [replay, setReplay] = useState<string | null>(null);
   const recipients = useQuery({
     queryKey: ['raw-recipients', auth.session?.user.id],
@@ -60,9 +62,12 @@ export function RawMaterialAdmin({
     enabled: section !== 'orders',
   });
   const orders = useQuery({
-    queryKey: ['raw-orders', auth.session?.user.id, offset],
+    queryKey: ['raw-orders', auth.session?.user.id, offset, status],
     queryFn: () =>
-      catalogApi.rpc<Request[]>('fti_catalog_raw_orders', { p_offset: offset }),
+      catalogApi.rpc<Request[]>('fti_catalog_raw_orders', {
+        p_offset: offset,
+        p_status: status,
+      }),
     retry: false,
     enabled: section !== 'recipients',
   });
@@ -219,16 +224,26 @@ export function RawMaterialAdmin({
           >
             Refresh material requests
           </Button>
+          <OrderStatusFilters
+            value={status}
+            onChange={(value) => {
+              setStatus(value);
+              setOffset(0);
+            }}
+          />
           {orders.isPending ? <Txt>Loading requests...</Txt> : null}
           {orders.error ? (
             <Txt accessibilityRole="alert">{orders.error.message}</Txt>
           ) : null}
-          {orders.data?.length === 0 ? <Txt>No order requests.</Txt> : null}
+          {orders.data?.length === 0 ? (
+            <Txt>No order requests match this filter.</Txt>
+          ) : null}
           {orders.data?.map((order) => (
             <RequestSummary
               key={order.id}
               details={order.details}
               createdAt={order.created_at}
+              status={order.fulfillment?.status}
               fulfillment={
                 <RequestFulfillment
                   kind="material"
