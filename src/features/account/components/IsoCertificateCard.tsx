@@ -164,6 +164,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   badge: {
     flexDirection: 'row',
@@ -218,6 +220,8 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
     alignItems: 'center',
     backgroundColor: '#F8FAFC',
     borderRadius: 8,
@@ -227,6 +231,7 @@ const styles = StyleSheet.create({
   },
   metaCol: {
     flex: 1,
+    minWidth: 90,
     gap: 2,
   },
   metaLabel: {

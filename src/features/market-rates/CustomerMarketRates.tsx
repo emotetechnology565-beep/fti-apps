@@ -15,7 +15,7 @@ import {
   type SaleQuote,
   type CustomerOptions,
 } from './customer-api';
-import { saleMoney, saleMovement } from './customer-model';
+import { saleMoney, saleMovement, salePublished } from './customer-model';
 import {
   categories,
   historyPreset,
@@ -24,7 +24,15 @@ import {
   type Category,
 } from './model';
 
-function Movement({ change }: { change: string | null }) {
+function Movement({
+  change,
+  prominent = false,
+  compact = false,
+}: {
+  change: string | null;
+  prominent?: boolean;
+  compact?: boolean;
+}) {
   const movement = saleMovement(change);
   const color =
     movement.tone === 'up'
@@ -41,9 +49,19 @@ function Movement({ change }: { change: string | null }) {
   return (
     <Txt
       accessibilityLabel={`${movement.tone === 'up' ? 'Increased by' : movement.tone === 'down' ? 'Decreased by' : ''} ${movement.label}`}
-      style={[styles.movement, { color, backgroundColor }]}
+      style={[
+        styles.movement,
+        prominent && styles.prominentMovement,
+        compact && mobileStyles.movement,
+        { color, backgroundColor },
+      ]}
     >
-      {movement.symbol} {movement.label}
+      {prominent && movement.tone === 'down'
+        ? '↓'
+        : prominent && movement.tone === 'up'
+          ? '↑'
+          : movement.symbol}{' '}
+      {movement.label}
     </Txt>
   );
 }
@@ -201,31 +219,40 @@ function QuoteCard({
   user,
   wide,
   settings,
+  mobile,
 }: {
   quote: MarketQuote;
   user: string | undefined;
   wide: boolean;
   settings?: CustomerOptions['settings'];
+  mobile: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   return (
-    <View style={[styles.quote, wide && styles.wideQuote]}>
-      <View style={styles.quoteTop}>
-        <View style={styles.place}>
-          <Txt style={styles.state}>{quote.state}</Txt>
-          <Txt style={styles.district}>{quote.district}</Txt>
-        </View>
-        <View style={styles.priceBlock}>
-          <Txt style={styles.salePrice}>{saleMoney(quote.sale_price)}</Txt>
-          <Txt style={styles.unit}>per metric tonne</Txt>
-          <Movement change={quote.price_change} />
-        </View>
-      </View>
-      <View style={styles.quoteBottom}>
-        <View style={{ flex: 1, gap: 3 }}>
-          <Txt style={styles.updateLabel}>PUBLISHED · IST</Txt>
-          <Txt style={styles.caption}>{rateTime(quote.published_at)}</Txt>
+    <View
+      style={[
+        styles.quote,
+        wide && styles.wideQuote,
+        mobile && mobileStyles.quote,
+      ]}
+    >
+      <View pointerEvents="none" style={styles.cardRule} />
+      <View style={[styles.quoteTop, mobile && mobileStyles.quoteTop]}>
+        <View style={[styles.place, mobile && mobileStyles.place]}>
+          <View
+            style={[styles.locationIcon, mobile && mobileStyles.locationIcon]}
+          >
+            <Icon name="map-pin" size={mobile ? 17 : 21} color="#0D315C" />
+          </View>
+          <View style={{ flex: 1, gap: 3 }}>
+            <Txt style={[styles.district, mobile && mobileStyles.district]}>
+              {quote.district}
+            </Txt>
+            <Txt style={[styles.state, mobile && mobileStyles.state]}>
+              {quote.state}
+            </Txt>
+          </View>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -233,37 +260,91 @@ function QuoteCard({
           accessibilityState={{ expanded: open }}
           aria-expanded={open}
           onPress={() => setOpen((value) => !value)}
-          style={styles.historyButton}
+          hitSlop={mobile ? 4 : undefined}
+          style={[styles.historyButton, mobile && mobileStyles.historyButton]}
         >
-          <Icon name="clock" size={15} color={c.brandBlue} />
-          <Txt style={styles.historyButtonText}>History</Txt>
+          <Txt
+            style={[
+              styles.historyButtonText,
+              mobile && mobileStyles.historyText,
+            ]}
+          >
+            {mobile
+              ? open
+                ? 'Hide'
+                : 'History'
+              : open
+                ? 'Hide history'
+                : 'View history'}
+          </Txt>
           <Icon
-            name={open ? 'chevron-up' : 'chevron-down'}
-            size={15}
+            name={open ? 'chevron-up' : 'arrow-up-right'}
+            size={mobile ? 12 : 15}
             color={c.brandBlue}
           />
         </Pressable>
       </View>
-      <RateAlerts quote={quote} settings={settings} />
-      {settings?.notes ? (
-        <View style={styles.cardNotes}>
+      <View style={[styles.priceSection, mobile && mobileStyles.priceSection]}>
+        <View style={styles.priceBlock}>
+          <Txt
+            style={[
+              styles.salePrice,
+              wide && { fontSize: 40 },
+              mobile && mobileStyles.salePrice,
+            ]}
+          >
+            {saleMoney(quote.sale_price)}
+          </Txt>
+          <Txt style={[styles.unit, mobile && mobileStyles.unit]}>
+            per metric tonne
+          </Txt>
+        </View>
+        <View style={styles.changeBlock}>
+          <Movement change={quote.price_change} prominent compact={mobile} />
+          <Txt style={[styles.caption, mobile && mobileStyles.small]}>
+            Price change
+          </Txt>
+        </View>
+      </View>
+      <View style={[styles.quoteBottom, mobile && mobileStyles.quoteBottom]}>
+        <Icon name="clock" size={mobile ? 12 : 15} color="#6C829F" />
+        <Txt
+          style={[styles.caption, { flex: 1 }, mobile && mobileStyles.small]}
+        >
+          {mobile
+            ? salePublished(quote.published_at).replace(/^Published /, '')
+            : salePublished(quote.published_at)}
+        </Txt>
+      </View>
+      <RateAlerts quote={quote} settings={settings} compact={mobile}>
+        {settings?.notes ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`${notesOpen ? 'Hide' : 'Show'} market notes for ${quote.district}, ${quote.state}`}
             accessibilityState={{ expanded: notesOpen }}
             aria-expanded={notesOpen}
             onPress={() => setNotesOpen((value) => !value)}
-            style={styles.notesToggle}
+            hitSlop={mobile ? 4 : undefined}
+            style={[styles.notesToggle, mobile && mobileStyles.notesToggle]}
           >
-            <Icon name="info" size={14} color={c.muted} />
-            <Txt style={styles.caption}>Market notes</Txt>
+            <Icon name="info" size={mobile ? 11 : 14} color={c.muted} />
+            <Txt
+              numberOfLines={1}
+              style={[styles.caption, mobile && mobileStyles.notesText]}
+            >
+              Market notes
+            </Txt>
             <Icon
-              name={notesOpen ? 'chevron-up' : 'chevron-down'}
-              size={14}
+              name={notesOpen ? 'chevron-up' : 'chevron-right'}
+              size={mobile ? 10 : 14}
               color={c.muted}
             />
           </Pressable>
-          {notesOpen ? <MarketNotes notes={settings.notes} /> : null}
+        ) : null}
+      </RateAlerts>
+      {notesOpen && settings?.notes ? (
+        <View style={styles.cardNotes}>
+          <MarketNotes notes={settings.notes} />
         </View>
       ) : null}
       {open ? <QuoteHistory quote={quote} user={user} /> : null}
@@ -276,6 +357,7 @@ function MarketBoard() {
     client = useQueryClient();
   const user = auth.session?.user.id;
   const wide = useWindowDimensions().width >= 1200;
+  const mobile = useWindowDimensions().width < 1000;
   const params = useLocalSearchParams<{
     category?: string;
     state?: string;
@@ -339,6 +421,19 @@ function MarketBoard() {
   );
   const filterCount = states.length + districts.length;
   const settings = options.data?.settings;
+  const lastPublished = rates.data?.items.reduce(
+    (latest, quote) =>
+      quote.published_at > latest ? quote.published_at : latest,
+    '',
+  );
+  const publicationDate = lastPublished
+    ? new Date(lastPublished).toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : 'Latest updates';
   function clear() {
     setStates([]);
     setDistricts([]);
@@ -347,16 +442,23 @@ function MarketBoard() {
     setOffset(0);
   }
   return (
-    <View style={styles.page}>
-      <View style={styles.header}>
-        <View style={styles.redRule} />
-        <Txt style={styles.eyebrow}>FIELDFAST MARKET WATCH</Txt>
-        <Txt accessibilityRole="header" style={styles.pageTitle}>
+    <View style={[styles.page, mobile && mobileStyles.page]}>
+      <View style={[styles.header, mobile && mobileStyles.header]}>
+        {!mobile ? <View style={styles.redRule} /> : null}
+        <Txt style={[styles.eyebrow, mobile && mobileStyles.eyebrow]}>
+          FIELDFAST MARKET WATCH
+        </Txt>
+        <Txt
+          accessibilityRole="header"
+          style={[styles.pageTitle, mobile && mobileStyles.pageTitle]}
+        >
           Market rates
         </Txt>
-        <Txt style={styles.intro}>Steel prices across your markets.</Txt>
+        <Txt style={[styles.intro, mobile && mobileStyles.intro]}>
+          Steel prices across your markets.
+        </Txt>
       </View>
-      <View style={styles.tabs}>
+      <View style={[styles.tabs, mobile && mobileStyles.tabs]}>
         {categories.map((value) => (
           <Pressable
             key={value}
@@ -368,11 +470,18 @@ function MarketBoard() {
               setCategory(value);
               clear();
             }}
-            style={[styles.tab, category === value && styles.activeTab]}
+            hitSlop={mobile ? { top: 4, bottom: 4 } : undefined}
+            style={[
+              styles.tab,
+              mobile && mobileStyles.tab,
+              category === value &&
+                (mobile ? mobileStyles.activeTab : styles.activeTab),
+            ]}
           >
             <Txt
               style={[
                 styles.tabText,
+                mobile && mobileStyles.tabText,
                 category === value && styles.activeTabText,
               ]}
             >
@@ -381,20 +490,34 @@ function MarketBoard() {
           </Pressable>
         ))}
       </View>
-      <View style={styles.toolbar}>
-        <View style={{ flex: 1 }}>
-          <Txt style={styles.sectionTitle}>{category} markets</Txt>
-          <Txt style={styles.caption}>
-            INR / metric tonne · Indicative spot rates
-          </Txt>
-        </View>
+      <View style={[styles.toolbar, mobile && mobileStyles.toolbar]}>
+        {mobile ? (
+          <View
+            accessibilityLabel={`Latest publication date: ${publicationDate}`}
+            style={mobileStyles.dateBadge}
+          >
+            <Icon name="calendar" size={14} color={c.dark} />
+            <Txt style={mobileStyles.dateText}>{publicationDate}</Txt>
+          </View>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <Txt style={styles.sectionTitle}>{category} markets</Txt>
+            <Txt style={styles.caption}>
+              INR / metric tonne · Indicative spot rates
+            </Txt>
+          </View>
+        )}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Filter markets"
           accessibilityState={{ expanded: filtersOpen }}
           aria-expanded={filtersOpen}
           onPress={() => setFiltersOpen((value) => !value)}
-          style={[styles.filterButton, filterCount > 0 && styles.filterActive]}
+          style={[
+            styles.filterButton,
+            mobile && mobileStyles.filterButton,
+            filterCount > 0 && styles.filterActive,
+          ]}
         >
           <Icon name="sliders" size={17} color={c.brandBlue} />
           <Txt style={styles.filterText}>
@@ -481,8 +604,13 @@ function MarketBoard() {
         />
       ) : (
         <>
-          <Row style={styles.summary}>
-            <Txt style={styles.caption}>
+          <Row
+            style={{
+              ...styles.summary,
+              ...(mobile ? mobileStyles.summary : {}),
+            }}
+          >
+            <Txt style={[styles.caption, mobile && mobileStyles.small]}>
               {rates.data && !rates.error
                 ? `${rates.data.total} district quote${rates.data.total === 1 ? '' : 's'}`
                 : 'Published district prices'}
@@ -496,14 +624,21 @@ function MarketBoard() {
                   queryKey: ['customer-market', user],
                 })
               }
-              style={styles.refresh}
+              style={[styles.refresh, mobile && mobileStyles.refresh]}
             >
               <Icon name="refresh-cw" size={13} color={c.muted} />
-              <Txt style={styles.caption}>
+              <Txt style={[styles.caption, mobile && mobileStyles.small]}>
                 {rates.isFetching ? 'Refreshing…' : 'Refresh'}
               </Txt>
             </Pressable>
           </Row>
+          {mobile ? (
+            <View style={mobileStyles.rateStrip}>
+              <Txt style={mobileStyles.rateStripText}>
+                ₹ / metric tonne · Indicative spot rates
+              </Txt>
+            </View>
+          ) : null}
           {rates.isPending ? (
             <Card>
               <Txt>Loading sale prices…</Txt>
@@ -530,7 +665,7 @@ function MarketBoard() {
             />
           ) : (
             <>
-              <View style={styles.quotes}>
+              <View style={[styles.quotes, mobile && mobileStyles.quotes]}>
                 {rates.data.items.map((quote) => (
                   <QuoteCard
                     key={quote.location_id}
@@ -538,6 +673,7 @@ function MarketBoard() {
                     user={user}
                     wide={wide}
                     settings={settings}
+                    mobile={mobile}
                   />
                 ))}
               </View>
@@ -571,6 +707,15 @@ function MarketBoard() {
           )}
         </>
       )}
+      {!mobile ? (
+        <View style={styles.infoStrip}>
+          <Icon name="info" size={16} color={c.blue} />
+          <Txt style={styles.infoText}>
+            Indicative market rates. Confirm availability and commercial terms
+            before ordering.
+          </Txt>
+        </View>
+      ) : null}
       <View style={styles.legend}>
         <Txt style={styles.caption}>▲ Price increased</Txt>
         <Txt style={styles.caption}>▼ Price decreased</Txt>
@@ -706,16 +851,46 @@ const styles = StyleSheet.create({
   },
   quote: {
     width: '100%',
-    padding: 16,
-    gap: 12,
+    padding: 18,
+    paddingTop: 20,
+    gap: 14,
     borderWidth: 1,
-    borderColor: '#C8D8EC',
-    borderRadius: 14,
-    backgroundColor: '#EDF3FB',
+    borderColor: '#E0E7EF',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
     overflow: 'hidden',
     boxShadow: '0px 4px 14px rgba(11, 27, 54, 0.07)',
   },
   wideQuote: { width: 'auto', flexBasis: '48.5%', flexGrow: 0, maxWidth: 620 },
+  cardRule: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    backgroundColor: '#123B70',
+  },
+  locationIcon: {
+    width: 36,
+    height: 38,
+    borderRadius: 6,
+    backgroundColor: '#E9EEF4',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  priceSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+  changeBlock: {
+    gap: 5,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E3EAF3',
+    paddingLeft: 16,
+  },
+  prominentMovement: { fontSize: 15, paddingVertical: 5, paddingHorizontal: 9 },
   cardNotes: {
     gap: 10,
     borderTopWidth: 1,
@@ -723,27 +898,30 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   notesToggle: {
-    minHeight: 36,
+    minHeight: 42,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
+    flexGrow: 1,
+    justifyContent: 'flex-end',
   },
   quoteTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
-    backgroundColor: '#102F53',
-    marginHorizontal: -16,
-    marginTop: -16,
-    padding: 18,
-    borderBottomWidth: 3,
-    borderBottomColor: c.brandRed,
+    alignItems: 'center',
   },
-  place: { flex: 1, gap: 7, paddingTop: 3 },
+  place: {
+    flex: 1,
+    gap: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 0,
+  },
   state: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#A9C5E5',
+    color: '#69809E',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
@@ -751,17 +929,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#0D2B50',
   },
-  priceBlock: { alignItems: 'flex-end', gap: 5, flexShrink: 1 },
+  priceBlock: { gap: 2, flexShrink: 1 },
   salePrice: {
-    fontSize: 27,
+    fontSize: 36,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#071E41',
     letterSpacing: -0.8,
     fontVariant: ['tabular-nums'],
   },
-  unit: { fontSize: 10, color: '#B6CCE4' },
+  unit: { fontSize: 11, color: '#69809E' },
   movement: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
@@ -776,7 +954,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingTop: 0,
+    paddingVertical: 9,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E7EDF5',
   },
   updateLabel: {
     color: c.muted,
@@ -825,6 +1006,15 @@ const styles = StyleSheet.create({
     gap: 14,
     paddingVertical: 4,
   },
+  infoStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderRadius: 6,
+    backgroundColor: '#E8F1FD',
+  },
+  infoText: { flex: 1, fontSize: 11, lineHeight: 17, color: '#3E5877' },
   footer: {
     gap: 12,
     borderTopWidth: 1,
@@ -836,4 +1026,76 @@ const styles = StyleSheet.create({
   support: { fontSize: 13, fontWeight: '600', color: c.dark },
   contacts: { flexDirection: 'row', flexWrap: 'wrap', gap: 24 },
   contact: { gap: 7, flexBasis: 200, flexGrow: 1 },
+});
+const mobileStyles = StyleSheet.create({
+  page: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    gap: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  header: { gap: 2, paddingTop: 0, paddingBottom: 5 },
+  eyebrow: {
+    fontSize: 8,
+    letterSpacing: 0.7,
+    lineHeight: 12,
+    color: '#D70B1D',
+  },
+  pageTitle: { fontSize: 26, lineHeight: 32, letterSpacing: -0.6 },
+  intro: { fontSize: 12, lineHeight: 17 },
+  tabs: { padding: 3, gap: 2, borderRadius: 5, backgroundColor: '#E9EEF4' },
+  tab: {
+    minHeight: 36,
+    paddingVertical: 7,
+    paddingHorizontal: 3,
+    borderRadius: 4,
+  },
+  tabText: { fontSize: 10, lineHeight: 16 },
+  activeTab: { backgroundColor: '#DF0921' },
+  toolbar: { paddingTop: 4, justifyContent: 'space-between' },
+  dateBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 10,
+    minHeight: 36,
+    borderWidth: 1,
+    borderColor: '#D4DEED',
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+  },
+  dateText: { fontSize: 10, fontWeight: '600', color: '#17365C' },
+  filterButton: { minHeight: 36, paddingHorizontal: 10, borderRadius: 4 },
+  summary: { minHeight: 26 },
+  refresh: { minHeight: 30, paddingHorizontal: 2 },
+  small: { fontSize: 9, lineHeight: 14 },
+  rateStrip: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  rateStripText: { fontSize: 9, lineHeight: 14, color: '#174879' },
+  quotes: { gap: 10 },
+  quote: {
+    padding: 12,
+    paddingTop: 14,
+    gap: 8,
+    borderRadius: 6,
+    boxShadow: '0px 1px 4px rgba(11, 27, 54, 0.04)',
+  },
+  quoteTop: { gap: 8 },
+  place: { gap: 8 },
+  locationIcon: { width: 28, height: 30, borderRadius: 4 },
+  district: { fontSize: 16, lineHeight: 20 },
+  state: { fontSize: 8, lineHeight: 11, letterSpacing: 0.3 },
+  historyButton: { minHeight: 36, gap: 3, paddingLeft: 0 },
+  historyText: { fontSize: 10 },
+  priceSection: { gap: 14 },
+  salePrice: { fontSize: 32, lineHeight: 38, letterSpacing: -0.8 },
+  unit: { fontSize: 9, lineHeight: 13 },
+  movement: { fontSize: 12, paddingHorizontal: 7, paddingVertical: 3 },
+  quoteBottom: { paddingVertical: 6, gap: 6 },
+  notesToggle: { minHeight: 36, gap: 4, flexShrink: 1 },
+  notesText: { fontSize: 9, lineHeight: 13, flexShrink: 1 },
 });

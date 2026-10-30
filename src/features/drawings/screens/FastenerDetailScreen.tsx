@@ -9,6 +9,7 @@ import { drawingApi } from '../services/drawing-api';
 import { loadFastenerDetail } from '../services/fastener-requirement-api';
 import { drawingSubcategory, subcategoryShapes } from '../model/subcategories';
 import { FastenerRequirementWizard } from '../components/FastenerRequirementWizard';
+import { ProductDetailSkeleton } from '@features/catalog/components/ProductSkeleton';
 
 export function FastenerDetail({ subcategory }: { subcategory: string }) {
   const { width } = useWindowDimensions();
@@ -21,7 +22,7 @@ export function FastenerDetail({ subcategory }: { subcategory: string }) {
   const imageUrl = photos.data?.find(photo => photo.slug === subcategory)?.image_url;
   const typed = (drawings.data ?? []).filter(row => drawingSubcategory(row) === subcategory && subcategoryShapes(subcategory).includes(row.shape));
   const standards = [...new Set(typed.map(row => `${row.standard}:${row.edition}`))];
-  if (detail.isPending) return <View style={{ gap: 16 }}><BackToCatalogue fastener /><Card><Txt>Loading fastener details…</Txt></Card></View>;
+  if (detail.isPending) return <View style={{ gap: 16 }}><BackToCatalogue fastener /><ProductDetailSkeleton /></View>;
   if (detail.isError) return <View style={{ gap: 16 }}><BackToCatalogue fastener /><Empty title="Fastener details unavailable" description={detail.error.message} action={<Button onPress={() => void detail.refetch()}>Retry details</Button>} /></View>;
   const product = detail.data;
   if (configure === '1') return <FastenerRequirementWizard key={`${subcategory}:${editKey ?? 'new'}`} detail={product} drawings={typed} imageUrl={imageUrl} editKey={editKey}

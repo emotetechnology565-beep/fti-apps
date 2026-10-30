@@ -39,7 +39,8 @@ function LedgerCard({
   onOpen: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const { details: d, fulfillment: f } = order;
+  const d = order.details ?? {};
+  const f = order.fulfillment ?? {};
   return (
     <View style={styles.card}>
       <View style={styles.body}>
@@ -116,7 +117,7 @@ function LedgerCard({
           <FulfillmentTimeline
             status={order.status}
             createdAt={order.created_at}
-            history={f.history}
+            history={f.history ?? []}
             compact={!expanded}
             confirmationNote={f.confirmation_note}
             deliveryNote={f.delivery_note}

@@ -34,7 +34,7 @@ export type TimelineEvent = { status: string; at: string };
 export function FulfillmentTimeline({
   status,
   createdAt,
-  history = [],
+  history,
   dispatchDetails,
   confirmationNote,
   deliveryNote,
@@ -42,12 +42,13 @@ export function FulfillmentTimeline({
 }: {
   status: string;
   createdAt?: string;
-  history?: TimelineEvent[];
+  history?: TimelineEvent[] | null;
   dispatchDetails?: ReactNode;
   confirmationNote?: string | null;
   deliveryNote?: string | null;
   compact?: boolean;
 }) {
+  const safeHistory = Array.isArray(history) ? history : [];
   const normalized = ['dispatched', 'in_transit'].includes(status)
     ? 'shipped'
     : status === 'paid'
@@ -90,7 +91,7 @@ export function FulfillmentTimeline({
         const timestamp =
           stage.status === 'placed'
             ? createdAt
-            : history.find((event) => event.status === stage.status)?.at;
+            : safeHistory.find((event) => event.status === stage.status)?.at;
         const date =
           timestamp && !Number.isNaN(Date.parse(timestamp))
             ? new Date(timestamp).toLocaleString('en-IN', {

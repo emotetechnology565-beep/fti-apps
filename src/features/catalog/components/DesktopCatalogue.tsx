@@ -25,6 +25,7 @@ import { companyCertificate } from '@shared/config/company-certificates';
 import { FastenerCatalogueCards } from '@features/drawings/ui';
 import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
+import { ProductGridSkeleton } from './ProductSkeleton';
 
 type DesktopCatalogueProps = {
   products: Product[];
@@ -422,7 +423,7 @@ export function DesktopCatalogue({
           </View>
 
           {activeTab === 'fastener' ? <FastenerCatalogueCards search={search.trim()} desktop /> : <>
-          {catalogue.isPending ? <Txt>Loading catalogue...</Txt> : null}
+          {catalogue.isPending ? <ProductGridSkeleton /> : null}
           {catalogue.isError ? <Txt onPress={() => void catalogue.refetch()}>Could not load catalogue. Tap to retry.</Txt> : null}
           {!catalogue.isPending && !catalogue.isError && !filteredProducts.length ? <Txt>No products match these filters.</Txt> : null}
           {/* 2-Column Desktop Grid of Cards */}

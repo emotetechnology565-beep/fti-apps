@@ -12,3 +12,19 @@ export function saleMovement(change: string | null) {
 }
 export const saleMoney = (price: string) =>
   `₹${Number(price).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+export function salePublished(at: string) {
+  const stamp = new Date(at);
+  const date = stamp.toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const time = stamp.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+  return `Published ${date} · ${time} IST`;
+}

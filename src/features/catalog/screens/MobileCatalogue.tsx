@@ -9,6 +9,7 @@ import { useProducts } from '../hooks/use-products';
 import { useAvailableFilters } from '../hooks/use-available-filters';
 import { isTmtCategory } from '../model/tmt';
 import type { Product } from '../model/types';
+import { ProductGridSkeleton } from '../components/ProductSkeleton';
 
 export function MobileCatalogue({ initialKind, initialSearch, initialCategory }: { initialKind: 'steel' | 'fastener' | 'tractor_part'; initialSearch: string; initialCategory: string }) {
   const [kind, setKind] = useState<Product['product_kind']>(initialKind);
@@ -28,8 +29,8 @@ export function MobileCatalogue({ initialKind, initialSearch, initialCategory }:
     <View style={m.body}>
       <View style={m.row}><Pressable accessibilityRole="button" onPress={() => setFiltersOpen(true)} style={[m.input, m.row, { flex: 1 }]}><Icon name="filter" color="#123657" size={17} /><Txt style={{ color: '#123657', fontWeight: '700', fontSize: 12 }}>Filters{category || grade ? ' •' : ''}</Txt></Pressable><Pressable accessibilityRole="button" onPress={() => setSort(sort === 'relevance' ? 'name' : 'relevance')} style={[m.input, m.row, { flex: 1.5 }]}><Icon name="sliders" color="#123657" size={15} /><Txt style={{ color: '#123657', fontSize: 12 }}>Sort: {sort === 'relevance' ? 'Relevance' : 'Name (this page)'}</Txt></Pressable></View>
       {kind === 'fastener' ? <FastenerCatalogueCards search={search} desktop /> : <>
-        <Txt style={m.muted}>{query.isPending ? 'Loading products...' : `${query.data?.total ?? 0} products`}</Txt>
-        {query.isError ? <Pressable onPress={() => void query.refetch()}><Txt>Catalogue unavailable. Tap to retry.</Txt></Pressable> : !query.isPending && !items.length ? <Txt style={m.muted}>No matching products. Try another category or clear your filters.</Txt> : items.map((product) => <DesktopProductCard key={product.id} product={product} />)}
+        {!query.isPending ? <Txt style={m.muted}>{`${query.data?.total ?? 0} products`}</Txt> : null}
+        {query.isPending ? <ProductGridSkeleton count={3}/> : query.isError ? <Pressable onPress={() => void query.refetch()}><Txt>Catalogue unavailable. Tap to retry.</Txt></Pressable> : !items.length ? <Txt style={m.muted}>No matching products. Try another category or clear your filters.</Txt> : items.map((product) => <DesktopProductCard key={product.id} product={product} />)}
         {(query.data?.total ?? 0) > 12 ? <View style={[m.row, { justifyContent: 'space-between' }]}><Pressable disabled={!page} onPress={() => setPage(page - 1)} style={m.input}><Txt>Previous</Txt></Pressable><Txt style={m.muted}>Page {page + 1}</Txt><Pressable disabled={(page + 1) * 12 >= (query.data?.total ?? 0)} onPress={() => setPage(page + 1)} style={m.input}><Txt>Next</Txt></Pressable></View> : null}
       </>}
     </View>

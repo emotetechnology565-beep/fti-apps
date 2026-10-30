@@ -83,9 +83,9 @@ export function AccountHub({ settings = false }: { settings?: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  hub: { gap: 26 },
+  hub: { gap: 22 },
   group: { gap: 12 },
-  groupTitle: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: c.muted },
+  groupTitle: { fontSize: 10, lineHeight:16, fontWeight: '700', letterSpacing: 0.9, color: '#47627E' },
   profile: { padding: 0, borderRadius: 18, overflow: 'hidden', borderColor: accountBlue, borderTopWidth: 4, borderTopColor: accountBlue, gap: 18 },
   profileHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingHorizontal: 20, paddingTop: 24 },
   avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: c.dark, alignItems: 'center', justifyContent: 'center' },

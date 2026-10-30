@@ -357,7 +357,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </View>
         ) : null}
         <View style={{ flex: 1, minWidth: 0 }}>
-          {mobileCommercePage ? <MaterialMobileHeader variant={path === '/' ? 'white' : 'navy'} count={cart.length} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : <View
+          {mobileCommercePage ? <MaterialMobileHeader variant={path === '/' ? 'white' : 'navy'} compact={path === '/rates' || path === '/account'} count={cart.length} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : <View
             style={{
               height: phone ? 68 : 76,
               backgroundColor: 'white',
@@ -512,6 +512,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </View>}
           <ScrollView
             ref={contentScroll}
+            style={path === '/account' && !desktop ? {backgroundColor:'#F5F7FB'} : undefined}
             key={staffWorkspace ? `${path}-${adminSection ?? ''}` : path}
             contentContainerStyle={{
               padding: mobileCommercePage ? 0 : phone ? 18 : 32,

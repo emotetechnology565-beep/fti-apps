@@ -4,6 +4,7 @@ import json
 import re
 import threading
 import time
+from datetime import datetime, timedelta, timezone
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -24,6 +25,7 @@ server = ThreadingHTTPServer(('127.0.0.1', 0), partial(Handler, directory=str(ro
 threading.Thread(target=server.serve_forever, daemon=True).start()
 base = f'http://127.0.0.1:{server.server_port}'
 actor = '00000000-0000-4000-8000-000000000001'
+subscription_expiry = (datetime.now(timezone.utc)+timedelta(days=365)).isoformat()
 enc = lambda value: base64.urlsafe_b64encode(json.dumps(value).encode()).decode().rstrip('=')
 user = {'id':actor,'aud':'authenticated','role':'authenticated','phone':'919000000001','app_metadata':{},'user_metadata':{}}
 session = {'user':user,'access_token':enc({'alg':'HS256'})+'.'+enc({'sub':actor,'aud':'authenticated','role':'authenticated','aal':'aal1','exp':int(time.time())+3600})+'.isolated','refresh_token':'isolated','expires_at':int(time.time())+3600,'expires_in':3600,'token_type':'bearer'}
@@ -49,7 +51,9 @@ def api(route):
     args = body if direct else body.get('arguments',{})
     if '/auth/v1/user' in req.url: result = user
     elif operation == 'fti_identity_me': result = identity
-    elif operation == 'fti_subscription_status': result = {'active':mode['subscribed'],'expires_at':'2099-12-31T23:59:59Z' if mode['subscribed'] else None,'amount_paise':120000,'revision':1,'currency':'INR','purchases':[]}
+    elif operation in ['fti_catalog_list','fti_catalog_filtered_list']: result = {'items':[],'total':0,'categories':[]}
+    elif operation == 'fti_customer_orders': result = {'orders':[],'total':0}
+    elif operation == 'fti_subscription_status': result = {'active':mode['subscribed'],'expires_at':subscription_expiry if mode['subscribed'] else None,'amount_paise':120000,'revision':1,'currency':'INR','purchases':[{'id':'paid-preview','amount_paise':120000,'status':'paid','created_at':'2026-10-29T06:30:00Z','expires_at':subscription_expiry}]}
     elif operation and operation.startswith('fti_pricing_market_customer_'):
         requests.append((operation,args))
         if not mode['subscribed']:
@@ -81,7 +85,7 @@ def api(route):
 try:
     with sync_playwright() as p:
         browser = p.chromium.launch(args=['--disable-gpu'])
-        for width in [390,1440]:
+        for width in [325,390,1440]:
             mode.update({'subscribed':True,'fail':False,'many':False})
             settings['notes']='All Rates Are Quoted, Estimated (As per Rumours)\nWe are not responsible for any profit or loss.\nBest Service, Right Time, Right People'
             context = browser.new_context(viewport={'width':width,'height':1000})
@@ -99,6 +103,9 @@ try:
             assert page.get_by_text(re.compile('Base price|Increase amount|Rolling charge|Profit amount')).count()==0
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
             page.screenshot(path=str(out/f'board-{width}.png'))
+            if width < 1000:
+                expect(page.get_by_label('Latest publication date: 30 Oct 2026',exact=True)).to_be_visible()
+                assert page.get_by_text('Market notes',exact=True).first.evaluate('(element) => element.scrollWidth <= element.clientWidth + 1'), 'Market notes label is truncated'
             expect(page.get_by_role('button',name='WhatsApp alerts',exact=True)).to_have_count(4)
             expect(page.get_by_role('button',name='SMS alerts',exact=True)).to_have_count(4)
             if width < 1000:
@@ -107,6 +114,7 @@ try:
             page.get_by_role('button',name='Show market notes for Mandi Gobindgarh, Punjab',exact=True).click()
             expect(page.get_by_text('We are not responsible for any profit or loss.',exact=True)).to_have_count(2)
             card = page.get_by_role('button',name='View price history for Mandi Gobindgarh, Punjab',exact=True).locator('..').locator('..')
+            assert card.evaluate('(element) => element.scrollWidth <= element.clientWidth'), 'Rate card content overflows'
             card.screenshot(path=str(out/f'rate-card-notes-{width}.png'))
             page.get_by_role('button',name='Hide market notes for Mandi Gobindgarh, Punjab',exact=True).click()
             page.get_by_role('button',name='WhatsApp alerts',exact=True).first.click()
@@ -167,6 +175,38 @@ try:
             page.get_by_role('button',name='Refresh market prices',exact=True).click()
             page.get_by_role('button',name='Next markets',exact=True).click()
             expect(page.get_by_text('25–28 of 28',exact=True)).to_be_visible()
+            mode['many']=False
+            page.goto(base+'/',wait_until='networkidle')
+            expect(page.get_by_role('link',name='View all district market rates',exact=True)).to_be_visible()
+            expect(page.get_by_role('link',name='Open Ingot rates for Mandi Gobindgarh, Punjab',exact=True)).to_be_visible()
+            page.get_by_role('tab',name='Market watch Scrap',exact=True).click()
+            tile = page.get_by_role('link',name='Open Scrap rates for Durgapur, West Bengal',exact=True)
+            expect(tile).to_be_visible()
+            page.get_by_role('link',name='View all district market rates',exact=True).locator('..').locator('..').screenshot(path=str(out/f'home-market-watch-{width}.png'))
+            tile.click()
+            expect(page.get_by_text('₹35,800',exact=True)).to_be_visible()
+            expect(page.get_by_text('1 district quote',exact=True)).to_be_visible()
+            assert 'category=Scrap' in page.url and 'district=l5' in page.url
+            page.goto(base+'/account',wait_until='networkidle')
+            expect(page.get_by_role('button',name='Renew for one year',exact=True)).to_be_visible()
+            expect(page.get_by_text('Recent payments',exact=True)).to_be_visible()
+            expect(page.get_by_text('₹1,200',exact=True)).to_be_visible()
+            subscription = page.get_by_text('FTI rate subscription',exact=True).locator('..').locator('..')
+            assert subscription.evaluate('(element) => element.scrollWidth <= element.clientWidth')
+            if width < 1000:
+                bounds = subscription.bounding_box()
+                assert bounds['x'] >= 12 and bounds['x']+bounds['width'] <= width-12,bounds
+                assert page.get_by_text('RATES & SUBSCRIPTION',exact=True).evaluate("(element) => { for(let node=element; node; node=node.parentElement) { if(getComputedStyle(node).backgroundColor === 'rgb(245, 247, 251)') return true; } return false; }")
+            subscription.screenshot(path=str(out/f'account-subscription-{width}.png'))
+            with page.expect_response(lambda response: 'fti_subscription_status' in response.url):
+                page.get_by_role('button',name='Refresh subscription status',exact=True).click()
+            page.get_by_text('RATES & SUBSCRIPTION',exact=True).scroll_into_view_if_needed()
+            page.screenshot(path=str(out/f'account-overview-{width}.png'))
+            page.get_by_role('button',name='View ISO 9001:2015 Registration Certificate',exact=True).click()
+            expect(page.get_by_text('Certificate of Registration',exact=True)).to_be_visible()
+            page.get_by_role('button',name='Close',exact=True).click()
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+            page.goto(base+'/rates',wait_until='networkidle')
             mode['subscribed']=False
             count = len(requests)
             page.reload(wait_until='networkidle')
@@ -176,6 +216,6 @@ try:
             context.close()
         browser.close()
     assert not errors,errors
-    print(json.dumps({'widths':[390,1440],'page_errors':errors,'checks':['sale-only prices','four categories','up/down/unchanged indicators','sale-only dated history','multi-state and district filters','search/empty state','per-card WhatsApp and SMS actions','saved contact selection','per-card note cards','middle mobile Market Rates navigation','admin notes and alert contacts','refreshing saved notes','error/retry','pagination','subscription gate','no page overflow']}))
+    print(json.dumps({'widths':[325,390,1440],'page_errors':errors,'checks':['compact mobile theme and date badge','reference card layout','sale-only prices','four categories','up/down/unchanged indicators','sale-only dated history','multi-state and district filters','search/empty state','per-card WhatsApp and SMS actions','saved contact selection','per-card note cards','middle mobile Market Rates navigation','admin notes and alert contacts','refreshing saved notes','home market watch district feed','home-to-district links','error/retry','pagination','subscription gate','no page/card overflow']}))
 finally:
     server.shutdown()

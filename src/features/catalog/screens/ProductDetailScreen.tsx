@@ -25,16 +25,17 @@ import { RawMaterialDetail } from './RawMaterialDetailScreen';
 import { RawMaterialDetails } from '../components/RawMaterialDetails';
 import { ProductDescription } from '../components/ProductDescription';
 import { BackToCatalogue } from '../components/BackToCatalogue';
+import { ProductDetailSkeleton } from '../components/ProductSkeleton';
 
 export function ProductDetail({ id }: { id: string }) {
   const params = useLocalSearchParams<{ size?: string; grade?: string }>();
   const query = useProduct(id);
   if (query.isPending)
     return (
-      <Card>
+      <View style={{gap:16}}>
         <BackToCatalogue />
-        <Txt style={s.muted}>Loading product…</Txt>
-      </Card>
+        <ProductDetailSkeleton />
+      </View>
     );
   const p = query.data;
   if (query.error || !p)

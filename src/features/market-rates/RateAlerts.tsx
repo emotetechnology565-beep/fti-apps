@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Modal, Platform, StyleSheet, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as Linking from 'expo-linking';
-import { Button, Card, Icon, Txt, WhatsAppButton, c } from '@shared/ui';
+import { Button, Card, Icon, Txt, c } from '@shared/ui';
 import {
   alertContacts,
   rateAlertLink,
@@ -13,9 +14,13 @@ import type { CustomerOptions, MarketQuote } from './customer-api';
 export function RateAlerts({
   quote,
   settings,
+  children,
+  compact = false,
 }: {
   quote: MarketQuote;
   settings?: CustomerOptions['settings'];
+  children?: ReactNode;
+  compact?: boolean;
 }) {
   const [channel, setChannel] = useState<AlertChannel | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,27 +58,53 @@ export function RateAlerts({
   const contacts = channel === 'whatsapp' ? whatsapp : sms;
   return (
     <View style={styles.group}>
-      <View style={styles.actions}>
-        <View style={styles.action}>
-          <WhatsAppButton
-            label="WhatsApp alerts"
-            disabled={busy || !whatsapp.length}
-            onPress={() => request('whatsapp')}
+      <View style={[styles.actions, compact && { gap: 5, flexWrap: 'nowrap' }]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="WhatsApp alerts"
+          disabled={busy || !whatsapp.length}
+          accessibilityState={{ disabled: busy || !whatsapp.length }}
+          hitSlop={compact ? 4 : undefined}
+          onPress={() => request('whatsapp')}
+          style={[
+            styles.whatsapp,
+            compact && styles.compactAction,
+            (busy || !whatsapp.length) && { opacity: 0.45 },
+          ]}
+        >
+          <FontAwesome
+            name="whatsapp"
+            size={compact ? 14 : 19}
+            color="#008665"
+            accessible={false}
           />
-        </View>
-        <Button
-          secondary
-          icon="message-square"
-          style={{
-            ...styles.action,
-            backgroundColor: '#DEEAF9',
-            borderColor: '#BDD1EC',
-          }}
+          <Txt style={[styles.whatsappText, compact && styles.compactText]}>
+            WhatsApp alerts
+          </Txt>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="SMS alerts"
+          accessibilityState={{ disabled: busy || !sms.length }}
+          hitSlop={compact ? 4 : undefined}
+          style={[
+            styles.sms,
+            compact && styles.compactAction,
+            (busy || !sms.length) && { opacity: 0.45 },
+          ]}
           disabled={busy || !sms.length}
           onPress={() => request('sms')}
         >
-          SMS alerts
-        </Button>
+          <Icon
+            name="message-square"
+            size={compact ? 14 : 16}
+            color="#0D2B50"
+          />
+          <Txt style={[styles.smsText, compact && styles.compactText]}>
+            SMS alerts
+          </Txt>
+        </Pressable>
+        {children}
       </View>
       {status ? (
         <Txt accessibilityRole="alert" style={styles.hint}>
@@ -127,8 +158,45 @@ export function RateAlerts({
 }
 const styles = StyleSheet.create({
   group: { gap: 8 },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  action: { flexGrow: 1, flexBasis: 130 },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sms: {
+    minHeight: 42,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    backgroundColor: '#FFFFFF',
+    borderColor: '#CFD9E7',
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  smsText: { fontSize: 12, fontWeight: '700', color: '#0D2B50' },
+  compactAction: {
+    minHeight: 36,
+    paddingHorizontal: 4,
+    gap: 4,
+    borderRadius: 4,
+  },
+  compactText: { fontSize: 9.5 },
+  whatsapp: {
+    minHeight: 42,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    borderWidth: 1,
+    borderColor: '#55B69C',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 5,
+  },
+  whatsappText: { fontSize: 12, fontWeight: '700', color: '#008665' },
   hint: { fontSize: 11, lineHeight: 17, color: c.muted },
   overlay: {
     flex: 1,

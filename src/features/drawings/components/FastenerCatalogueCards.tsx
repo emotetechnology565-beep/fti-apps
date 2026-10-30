@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { drawingApi } from '../services/drawing-api';
 import { FastenerPhotoCards } from './FastenerPhotoCards';
 import { Button, Card, Txt } from '@shared/ui';
+import { ProductGridSkeleton } from '@features/catalog/components/ProductSkeleton';
 
 /** Published fastener cards are maintained separately from catalogue SKU records. */
 export function FastenerCatalogueCards({ search = '', desktop = false }: { search?: string; desktop?: boolean }) {
@@ -14,9 +15,7 @@ export function FastenerCatalogueCards({ search = '', desktop = false }: { searc
   });
   if (drawings.isPending)
     return (
-      <Card>
-        <Txt>Loading fastener catalogue…</Txt>
-      </Card>
+      <ProductGridSkeleton />
     );
   if (drawings.error)
     return (

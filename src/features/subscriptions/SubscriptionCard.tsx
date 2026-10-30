@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { useAuth } from '@features/auth/ui';
-import { Badge, Button, Card, Txt, s } from '@shared/ui';
+import { Badge, Button, Card, Icon, Txt, c } from '@shared/ui';
 import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { useSubscription } from './SubscriptionProvider';
 import { paymentRequest } from './api';
@@ -55,29 +55,58 @@ export function SubscriptionCard() {
     }
   }
   return (
-    <Card style={{ gap: 14 }}>
-      <Badge>{active ? 'ACTIVE' : 'ANNUAL PLAN'}</Badge>
-      <Txt style={s.h2}>FTI rate subscription</Txt>
-      <Txt>One user. Every category. Access on iOS, Android and web.</Txt>
+    <Card style={styles.card}>
+      <View style={styles.header}>
+        <View style={styles.icon}>
+          <Icon name="bar-chart-2" size={21} color={c.blue} />
+        </View>
+        <Badge tone={active ? 'green' : 'blue'}>
+          {active ? 'ACTIVE' : 'ANNUAL PLAN'}
+        </Badge>
+      </View>
+      <View style={styles.copy}>
+        <Txt style={styles.title}>FTI rate subscription</Txt>
+        <Txt style={styles.body}>
+          One user. Every category. Access on iOS, Android and web.
+        </Txt>
+      </View>
       {query.isPending ? (
         <Txt>Loading subscription…</Txt>
       ) : query.isError ? (
         <Txt accessibilityRole="alert">{query.error.message}</Txt>
       ) : data ? (
         <>
-          <Txt style={s.h2}>
-            ₹{(data.amount_paise / 100).toLocaleString('en-IN')} / year
+          <Txt style={styles.price}>
+            ₹{(data.amount_paise / 100).toLocaleString('en-IN')}
+            <Txt style={styles.year}> / year</Txt>
           </Txt>
-          <Txt>
+          <Txt style={styles.body}>
             One-time payment. Renew manually each year. No automatic charges.
           </Txt>
           {data.expires_at ? (
-            <Txt>
-              {active ? 'Access until' : 'Previous access ended'}{' '}
-              {new Date(data.expires_at).toLocaleDateString('en-IN')}
-            </Txt>
+            <View
+              style={[
+                styles.access,
+                { backgroundColor: active ? '#EDF8F0' : '#F1F5F9' },
+              ]}
+            >
+              <Icon
+                name={active ? 'check-circle' : 'clock'}
+                size={16}
+                color={active ? '#15803D' : c.muted}
+              />
+              <Txt style={styles.accessText}>
+                {active ? 'Access until' : 'Previous access ended'}{' '}
+                {new Date(data.expires_at).toLocaleDateString('en-IN', {
+                  timeZone: 'Asia/Kolkata',
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </Txt>
+            </View>
           ) : null}
-          <Txt>
+          <Txt style={styles.body}>
             {active
               ? 'Renewing now adds one year to your existing expiry.'
               : 'Your year starts when payment is confirmed.'}{' '}
@@ -95,15 +124,27 @@ export function SubscriptionCard() {
                     : 'Subscribe for one year'}
           </Button>
           {data.purchases.filter((p) => p.status === 'paid').length > 0 ? (
-            <View style={{ gap: 8 }}>
-              <Txt>Recent payments</Txt>
+            <View style={styles.payments}>
+              <Txt style={styles.sectionTitle}>Recent payments</Txt>
               {data.purchases
                 .filter((p) => p.status === 'paid')
                 .map((p) => (
-                  <Txt key={p.id}>
-                    ₹{(p.amount_paise / 100).toLocaleString('en-IN')} ·{' '}
-                    {new Date(p.created_at).toLocaleDateString('en-IN')} · Paid
-                  </Txt>
+                  <View key={p.id} style={styles.receipt}>
+                    <View style={styles.copy}>
+                      <Txt style={styles.receiptAmount}>
+                        ₹{(p.amount_paise / 100).toLocaleString('en-IN')}
+                      </Txt>
+                      <Txt style={styles.body}>
+                        {new Date(p.created_at).toLocaleDateString('en-IN', {
+                          timeZone: 'Asia/Kolkata',
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </Txt>
+                    </View>
+                    <Badge tone="green">Paid</Badge>
+                  </View>
                 ))}
             </View>
           ) : null}
@@ -120,3 +161,69 @@ export function SubscriptionCard() {
     </Card>
   );
 }
+const styles = StyleSheet.create({
+  card: {
+    gap: 16,
+    padding: 18,
+    borderRadius: 12,
+    borderColor: '#D8E3EF',
+    borderTopWidth: 3,
+    borderTopColor: '#123B70',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#EAF2FC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  copy: { gap: 5 },
+  title: { fontSize: 19, lineHeight: 26, fontWeight: '700', color: c.dark },
+  body: { fontSize: 12, lineHeight: 19, color: '#60738A' },
+  price: {
+    fontSize: 30,
+    lineHeight: 38,
+    fontWeight: '700',
+    color: c.dark,
+    fontVariant: ['tabular-nums'],
+  },
+  year: { fontSize: 13, fontWeight: '500', color: c.muted },
+  access: {
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  accessText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 19,
+    fontWeight: '600',
+    color: c.dark,
+  },
+  payments: {
+    gap: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E6EDF5',
+    paddingTop: 14,
+  },
+  sectionTitle: { fontSize: 12, fontWeight: '700', color: c.dark },
+  receipt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#F5F8FC',
+  },
+  receiptAmount: { fontSize: 14, fontWeight: '700', color: c.dark },
+});

@@ -2,7 +2,7 @@ import { BusinessForm } from '../components/BusinessForm';
 import { BusinessDetails } from '../components/BusinessDetails';
 import { AccountHub, RateSubscription } from '../components/AccountHub';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { selectedAccountSection } from '../model/sections';
 import { AccessGate, useAuth } from '@features/auth/ui';
@@ -149,8 +149,9 @@ function AccountDetails() {
   );
 }
 export function Account() {
+  const mobile = useWindowDimensions().width < 1000;
   return (
-    <View>
+    <View style={mobile ? {padding:16,paddingBottom:28,backgroundColor:'#F5F7FB'} : undefined}>
       <Heading
         eyebrow="YOUR FTI ACCOUNT"
         title="Your account"

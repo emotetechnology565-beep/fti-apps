@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { Txt, c } from '@shared/ui';
+import { Txt } from '@shared/ui';
 
 export function MarketNotes({ notes }: { notes: string }) {
   const lines = notes
