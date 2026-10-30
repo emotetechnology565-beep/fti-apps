@@ -18,6 +18,11 @@ const writeOperations = new Set([
   'fti_pricing_publish',
   'fti_pricing_grade_base_update',
 ]);
+const customerOperations = new Set([
+  'fti_pricing_market_customer_options',
+  'fti_pricing_market_customer_board',
+  'fti_pricing_market_customer_history',
+]);
 
 Deno.serve(async (request: Request) => {
   const requestId = crypto.randomUUID();
@@ -54,7 +59,7 @@ Deno.serve(async (request: Request) => {
       return json({ code: 'INVALID_OPERATION', message: 'Unsupported operation' }, 400);
 
     const authorization = request.headers.get('Authorization');
-    if (writeOperations.has(operation)) {
+    if (writeOperations.has(operation) || customerOperations.has(operation)) {
       if (!authorization?.startsWith('Bearer '))
         return json({ code: 'UNAUTHENTICATED', message: 'Sign in required' }, 401);
       const verified = await fetch(`${url}/auth/v1/user`, {
@@ -68,7 +73,7 @@ Deno.serve(async (request: Request) => {
     const allowed =
       operation === 'fti_pricing_markets' || operation === 'fti_pricing_rates' ||
       operation === 'fti_pricing_history' ||
-      writeOperations.has(operation);
+      writeOperations.has(operation) || customerOperations.has(operation);
     if (!allowed)
       return json({ code: 'INVALID_OPERATION', message: 'Unsupported operation' }, 400);
     const args = body.arguments ?? {};

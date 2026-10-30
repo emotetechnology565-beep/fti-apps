@@ -1,3 +1,3 @@
 import { withShell } from '@core/layout/withShell';
-import { Rates } from '@features/pricing/screens/RatesScreen';
-export default withShell(Rates);
+import { CustomerMarketRates } from '@features/market-rates/CustomerMarketRates';
+export default withShell(CustomerMarketRates);
