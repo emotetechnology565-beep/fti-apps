@@ -60,9 +60,13 @@ export function OrderClosure({
       setReview(false);
       setMessage(admin ? 'Order rejected.' : 'Order cancelled.');
       await Promise.all(
-        ['commerce', 'raw-orders', 'fastener-orders', 'operations'].map((key) =>
-          client.invalidateQueries({ queryKey: [key] }),
-        ),
+        [
+          'commerce',
+          'raw-orders',
+          'fastener-orders',
+          'operations',
+          'admin-orders',
+        ].map((key) => client.invalidateQueries({ queryKey: [key] })),
       );
       await onClosed?.();
     } catch (error) {

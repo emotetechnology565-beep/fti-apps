@@ -113,6 +113,7 @@ export function RequestFulfillment({
       setEditing(false);
       setReview(false);
       setSuccess(`${next.label} saved.`);
+      void client.invalidateQueries({ queryKey: ['admin-orders'] });
       void client.invalidateQueries({
         queryKey: [kind === 'material' ? 'raw-orders' : 'fastener-orders'],
       });

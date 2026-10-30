@@ -1,6 +1,7 @@
 import type { Identity } from '@features/auth';
 
 export const staffSections = [
+  {id: 'orders-overview', label: 'Orders overview', icon: 'clipboard', permissions: ['order.manage']},
   {id: 'subscriptions', label: 'Subscriptions', icon: 'credit-card', permissions: ['subscription.manage']},
   {id: 'businesses', label: 'Business approvals', icon: 'briefcase', permissions: ['business.review']},
   {id: 'catalogue', label: 'FTI catalogue', icon: 'box', permissions: ['catalog.manage']},

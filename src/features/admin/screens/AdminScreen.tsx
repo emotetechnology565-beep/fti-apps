@@ -1,3 +1,4 @@
+import { AdminOrdersOverview } from '../components/AdminOrdersOverview';
 import { MaterialOrdersWorkspace } from '../components/MaterialOrdersWorkspace';
 import { SubscriptionManagement } from '@features/subscriptions/SubscriptionManagement';
 import { useState } from 'react';
@@ -159,6 +160,8 @@ function StaffWorkspace() {
     );
   const content = (() => {
     switch (selected.id) {
+      case 'orders-overview':
+        return <AdminOrdersOverview />;
       case 'subscriptions':
         return <SubscriptionManagement />;
       case 'businesses':

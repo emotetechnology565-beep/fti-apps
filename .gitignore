@@ -38,6 +38,9 @@ dist-native/
 # typescript
 *.tsbuildinfo
 
+# Generated build for isolated admin order browser checks
+/artifacts/admin-orders-preview/
+
 # generated native folders
 /ios
 /android
