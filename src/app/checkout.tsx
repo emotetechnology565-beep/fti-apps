@@ -3,7 +3,7 @@ import { AccessGate } from '@features/auth/ui';
 import { Checkout } from '@features/checkout/screens/CheckoutScreen';
 function ProtectedScreen() {
   return (
-    <AccessGate>
+    <AccessGate returnTo="checkout">
       <Checkout />
     </AccessGate>
   );

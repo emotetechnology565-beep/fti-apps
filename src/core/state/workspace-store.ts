@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createWorkspaceState } from './create-workspace-state';
 import { persistedWorkspace } from './persistence';
 import type { WorkspaceState } from './types';
+import { mergeCheckoutBasket } from '@features/cart/model/checkout-transfer';
 export const useStore = create<WorkspaceState>()(
   persist(createWorkspaceState, {
     name: 'fti-workspace-loading',
@@ -13,6 +14,10 @@ export const useStore = create<WorkspaceState>()(
   }),
 );
 let pending = Promise.resolve();
+const checkoutTransferKey = 'fti-checkout-login-transfer-v1';
+export async function prepareGuestCheckout() {
+  await AsyncStorage.setItem(checkoutTransferKey, JSON.stringify({ at: Date.now(), cart: useStore.getState().cart }));
+}
 export function activateWorkspace(userId: string | null) {
   pending = pending
     .catch(() => {})
@@ -28,6 +33,20 @@ export function activateWorkspace(userId: string | null) {
         if (raw) data = JSON.parse(raw).state ?? {};
       } catch {
         /* Recover from corrupt local storage with empty state. */
+      }
+      if (userId) {
+        const staged = await AsyncStorage.getItem(checkoutTransferKey);
+        if (staged) {
+          try {
+            const transfer = JSON.parse(staged);
+            if (Array.isArray(transfer.cart) && Number.isFinite(transfer.at) && Date.now() - transfer.at < 30 * 60 * 1000) {
+              data.cart = mergeCheckoutBasket(Array.isArray(data.cart) ? data.cart : [], transfer.cart);
+              await AsyncStorage.setItem(name, JSON.stringify({ state: { ...data, cart: data.cart }, version: 0 }));
+            }
+          } finally {
+            await AsyncStorage.removeItem(checkoutTransferKey);
+          }
+        }
       }
       // Only drafts/preferences are restored, never identity, permissions, catalog or server records.
       useStore.setState(

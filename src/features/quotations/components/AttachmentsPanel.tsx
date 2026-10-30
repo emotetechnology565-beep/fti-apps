@@ -1,33 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Badge, Button, Card, Txt, s } from '@shared/ui';
 import { salesApi } from '../services/sales-api';
 import type { SalesDetail } from '../model/sales-types';
+import { useAuth } from '@features/auth/ui';
+import { pickSalesAttachment, pendingRequirementUpload, clearRequirementUpload, salesAttachmentTypes, type RequirementUpload } from '../data/requirement-upload';
 
-const supported = ['application/pdf','image/jpeg','image/png'];
+const supported = salesAttachmentTypes;
 const extension = (mime: string) => mime === 'application/pdf' ? 'pdf' : mime === 'image/png' ? 'png' : 'jpg';
 export function AttachmentsPanel({ detail, refresh }: { detail: SalesDetail; refresh: () => Promise<void> }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const auth = useAuth();
+  const owner = auth.session?.user.id ?? null;
+  const [pending, setPending] = useState<RequirementUpload | null>(null);
+  useEffect(() => { let active = true; void pendingRequirementUpload(owner).then(file => { if (active) setPending(file); }).catch(error => { if (active) setError((error as Error).message); }); return () => { active = false; }; }, [owner]);
   const open = ['submitted','reviewing','quoted'].includes(detail.status);
-  async function upload() {
+  async function upload(staged = false) {
     setError('');
+    setSuccess('');
     try {
-      const picked = await DocumentPicker.getDocumentAsync({ type: supported, copyToCacheDirectory: true, base64: true });
-      if (picked.canceled) return;
-      const asset = picked.assets[0];
-      if (!asset || !asset.mimeType || !supported.includes(asset.mimeType) || !asset.size || asset.size > 3*1024*1024)
-        throw new Error('Choose a PDF, JPEG or PNG file up to 3 MB.');
+      const asset = staged ? pending : await pickSalesAttachment(owner);
+      if (!asset) return;
       setBusy(true);
-      const encoded = Platform.OS === 'web' ? asset.base64 ?? await asset.file?.arrayBuffer().then(buffer => {
-        const bytes = new Uint8Array(buffer); let raw = ''; bytes.forEach(b => { raw += String.fromCharCode(b); }); return btoa(raw);
-      }) : await new File(asset.uri).base64();
-      const base64 = encoded?.replace(/^data:[^,]*;base64,/i, '');
-      if (!base64) throw new Error('Could not read this file. Please choose it again.');
-      await salesApi.uploadAttachment(detail.id, asset.mimeType, base64);
+      await salesApi.uploadAttachment(detail.id, asset.mimeType, asset.base64);
+      if (staged) { await clearRequirementUpload(); setPending(null); }
+      setSuccess('Requirement file uploaded successfully.');
       await refresh();
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
@@ -55,9 +56,11 @@ export function AttachmentsPanel({ detail, refresh }: { detail: SalesDetail; ref
   return <Card style={{ gap: 10 }}><Txt style={s.h2}>Private attachments</Txt>
     <Txt style={s.muted}>PDF, JPEG or PNG up to 3 MB. Files are retrieved only after account authorization.</Txt>
     {!detail.attachments.length && <Txt>No attachments yet.</Txt>}
+    {pending && open ? <View style={{ gap: 8 }}><Txt>Selected requirement list: {pending.name} · {Math.ceil(pending.size / 1024)} KB</Txt><Button disabled={busy} onPress={() => void upload(true)}>{busy ? 'Uploading…' : 'Upload selected requirement list'}</Button></View> : null}
     {detail.attachments.map(a => <View key={a.id} style={{ gap: 6 }}><Badge>{a.mime_type}</Badge><Txt>{Math.ceil(a.size_bytes/1024)} KB · {new Date(a.created_at).toLocaleString()}</Txt>
       <Button secondary disabled={busy} onPress={() => void download(a.id)}>Open attachment</Button></View>)}
     {open && detail.attachments.length < 10 && <Button secondary disabled={busy} onPress={() => void upload()}>{busy ? 'Working…' : 'Add attachment'}</Button>}
     {!!error && <Txt accessibilityRole="alert">{error}</Txt>}
+    {success ? <Txt accessibilityLiveRegion="polite">{success}</Txt> : null}
   </Card>;
 }

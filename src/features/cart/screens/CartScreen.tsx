@@ -1,4 +1,3 @@
-import { usePriceAccess } from '@shared/hooks/use-price-access';
 import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
 import { useEffect } from 'react';
 import { Pressable, View, useWindowDimensions } from 'react-native';
@@ -6,9 +5,10 @@ import { router } from 'expo-router';
 import { useQueries } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
 import { supabaseCatalogRepository } from '@features/catalog/export';
-import { catalogApi, selectionPrice, type Product } from '@features/catalog';
+import type { Product } from '@features/catalog';
 import { Button, Txt } from '@shared/ui';
-import { cartLinePrice } from '../model/line-price';
+import { useBasketPricing } from '../hooks/use-basket-pricing';
+import { basketQuantitySummary } from '../model/quantity-summary';
 import { MobileBasket } from '../components/MobileBasket';
 import { FastenerRequirementSummary } from '../components/FastenerRequirementSummary';
 
@@ -20,7 +20,6 @@ const money = (value: number) =>
   }).format(value);
 export function Cart() {
   const { width } = useWindowDimensions();
-  const priceAccess = usePriceAccess();
   const cart = useStore((state) => state.cart);
   const updateQuantity = useStore((state) => state.quantity);
   const setProducts = useStore((state) => state.setCatalogProducts);
@@ -40,47 +39,11 @@ export function Cart() {
     .map((query) => query.data)
     .filter((product): product is Product => !!product);
   const productsKey = JSON.stringify(products);
-  const materialPrices = useQueries({
-    queries: cart.map((line) => ({
-      queryKey: ['catalog', 'basket-price', line.productId, line.material?.optionId ?? ''],
-      enabled: priceAccess && !line.material?.fastenerRequirement && !!line.material?.optionId,
-      queryFn: async () => {
-        const sizes = await catalogApi.selectionOptions(undefined, undefined, line.productId);
-        const normalize = (value: string) => value.toUpperCase().replace(/\s+/g, '');
-        const size = sizes.sizes.find((entry) => normalize(entry.label) === normalize(line.material!.size));
-        if (!size) return null;
-        const available = await catalogApi.selectionOptions(undefined, size.id, line.productId);
-        const option = available.options.find((entry) => entry.id === line.material!.optionId);
-        const price = option ? selectionPrice(option) : null;
-        return price ? { amount: Number(price.amount.replaceAll(',', '')), unit: price.unit, tax: price.tax } : null;
-      },
-      staleTime: 30_000,
-      retry: false,
-    })),
-  });
   useEffect(() => {
     if (products.length) setProducts(products);
   }, [productsKey, setProducts]); // eslint-disable-line react-hooks/exhaustive-deps
-  const prices = cart.map((line, index) =>
-    !priceAccess || line.material?.fastenerRequirement
-      ? null
-      : cartLinePrice(
-          line.material?.optionId ? { ...line, material: { ...line.material, indicativePrice: materialPrices[index].data ?? undefined } } : line,
-          products.find((p) => p.id === line.productId),
-        ),
-  );
-  const subtotal = prices.reduce((sum, price) => sum + (price?.total ?? 0), 0);
-  const unpriced = prices.filter((price) => !price).length;
-  const tonnes = cart.reduce(
-    (sum, line) =>
-      sum +
-      (line.material?.unit === 'MT'
-        ? line.quantity
-        : line.material?.unit === 'kg'
-          ? line.quantity / 1000
-          : 0),
-    0,
-  );
+  const { prices, subtotal, unpriced, loading, priceAccess } = useBasketPricing(cart, products);
+  const { tonnes } = basketQuantitySummary(cart, products);
   const blocked = cart.some((line) => {
     if (line.material) return false;
     const p = products.find((p) => p.id === line.productId);
@@ -103,7 +66,7 @@ export function Cart() {
           return <View key={`${line.productId}-${line.variantId ?? material?.key}`} style={{ flexDirection: 'row', padding: 16, gap: 12, borderBottomWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' }}>
             <View style={{ flex: 2 }}><Txt style={{ fontWeight: '700', color: '#0B1B36' }}>{material?.name ?? product?.name ?? 'Loading material...'}</Txt></View>
             <View style={{ flex: 2, gap: 5 }}>{material?.fastenerRequirement ? <FastenerRequirementSummary material={material} editable /> : <><Txt>Size: {material?.size ?? variant?.size_label ?? 'To confirm'}</Txt><Txt>Grade: {material?.grade || 'To confirm'}</Txt>{material?.brand ? <Txt>Brand: {material.brand}</Txt> : null}</>}</View>
-            <View style={{ flex: 1, gap: 6 }}><Txt style={{ fontWeight: '700' }}>{line.quantity} {material?.unit ?? variant?.uom ?? ''}</Txt>{priceAccess ? <Txt style={{ color: '#64748B', fontSize: 11 }}>{prices[index] ? money(prices[index]!.total) : materialPrices[index].isFetching ? 'Loading price...' : 'Quote required'}</Txt> : null}</View>
+            <View style={{ flex: 1, gap: 6 }}><Txt style={{ fontWeight: '700' }}>{line.quantity} {material?.unit ?? variant?.uom ?? ''}</Txt>{priceAccess ? <Txt style={{ color: '#64748B', fontSize: 11 }}>{prices[index] ? money(prices[index]!.total) : loading ? 'Loading price...' : 'Quote required'}</Txt> : null}</View>
             <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${material?.name ?? product?.name ?? 'material'}`} onPress={() => updateQuantity(line.productId, 0, line.variantId)} style={{ width: 65 }}><Txt style={{ color: '#E51B23', fontSize: 12 }}>Remove</Txt></Pressable>
           </View>;
         })}
@@ -112,7 +75,7 @@ export function Cart() {
         <Txt style={{ fontSize: 18, fontWeight: '800', color: '#0B1B36' }}>Quotation summary</Txt>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><Txt>Total weight</Txt><Txt style={{ fontWeight: '800' }}>{tonnes.toLocaleString('en-IN')} MT</Txt></View>
         {priceAccess ? <>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}><Txt>Material subtotal</Txt><Txt style={{ fontWeight: '700' }}>{materialPrices.some((query) => query.isFetching) ? 'Loading...' : prices.some(Boolean) ? money(subtotal) : 'Quote required'}</Txt></View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}><Txt>Material subtotal</Txt><Txt style={{ fontWeight: '700' }}>{loading ? 'Loading...' : prices.some(Boolean) ? money(subtotal) : 'Quote required'}</Txt></View>
           {unpriced > 0 ? <Txt style={{ color: '#64748B', fontSize: 11 }}>{unpriced} item(s) awaiting a published price. Subtotal includes priced items only.</Txt> : null}
         </> : <SubscribeForPrices />}
         {['GST', 'Freight', 'Final total'].map((label) => <View key={label} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}><Txt>{label}</Txt><Txt style={{ color: '#64748B', fontSize: 11 }}>To be confirmed in quote</Txt></View>)}
@@ -121,5 +84,5 @@ export function Cart() {
       </View>
     </View>
   </View>;
-  return <MobileBasket cart={cart} products={products} prices={prices} tonnes={tonnes} subtotal={subtotal} priceAccess={priceAccess} blocked={blocked} loading={materialPrices.some((query) => query.isFetching)} />;
+  return <MobileBasket cart={cart} products={products} prices={prices} tonnes={tonnes} subtotal={subtotal} priceAccess={priceAccess} blocked={blocked} loading={loading} />;
 }

@@ -1,11 +1,12 @@
 import { supabase } from '@core/api/supabase-client';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,10 @@ import { companyCertificate } from '@shared/config/company-certificates';
 import { FastenerRequirementSummary } from '@features/cart/components/FastenerRequirementSummary';
 import type { MaterialCartSelection } from '@features/cart/model/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useBasketPricing } from '@features/cart/hooks/use-basket-pricing';
+import { basketQuantitySummary } from '@features/cart/model/quantity-summary';
+import { SubscribeForPrices } from '@features/subscriptions/SubscribeForPrices';
+import { MobileMaterialCheckout } from '../components/MobileMaterialCheckout';
 
 type GuidedSubmission = {
   id: string;
@@ -38,6 +43,7 @@ const newRequest = () =>
   });
 
 export function Checkout() {
+  const { width } = useWindowDimensions();
   const params = useLocalSearchParams<{ pincode?: string; notes?: string }>();
   const auth = useAuth();
   const client = useQueryClient();
@@ -54,7 +60,6 @@ export function Checkout() {
   );
   const [consent, setConsent] = useState(true);
   const [attempted, setAttempted] = useState(false);
-  const materialRequests = useRef(new Map<string, { id: string; fingerprint: string }>());
   const [addressChoice, setAddress] = useState('');
   const [addAddressOpen, setShowAddAddress] = useState(false);
 
@@ -83,26 +88,8 @@ export function Checkout() {
     : available[0]?.id ?? '';
   const showAddAddress = addAddressOpen || (!addresses.isPending && available.length === 0);
 
-  // Aggregate stats
-  const totalTonnes = useMemo(() => {
-    return cart.reduce((sum, line) => {
-      const uom = line.material?.unit ?? 'MT';
-      if (uom.toUpperCase() === 'MT') {
-        return sum + (line.quantity || 0);
-      }
-      return sum;
-    }, 0);
-  }, [cart]);
-
-  const estimatedTotal = useMemo(() => {
-    return cart.reduce((sum, line) => {
-      const amt = line.material?.indicativePrice?.amount;
-      if (amt && Number.isFinite(amt)) {
-        return sum + amt * line.quantity;
-      }
-      return sum;
-    }, 0);
-  }, [cart]);
+  const { prices, subtotal: estimatedTotal, priceAccess, loading: pricesLoading, unpriced } = useBasketPricing(cart, catalogProducts);
+  const { tonnes: totalTonnes, otherUnits } = basketQuantitySummary(cart, catalogProducts);
 
   async function saveAddress() {
     setBusy(true);
@@ -203,7 +190,7 @@ export function Checkout() {
       const persistSubmissions = () => AsyncStorage.setItem(submissionStorageKey, JSON.stringify([...guidedSubmissions.values()]));
       for (const pending of guidedSubmissions.values()) {
         if (!pending.acknowledged && !cart.some(line => line.material?.key === pending.material.key)) {
-          throw new Error(`${pending.material.name}: a previous request for ${pending.quantity} pieces is awaiting confirmation. Restore the original requirement in your basket or contact FTI with request ID ${pending.id} before submitting a changed requirement.`);
+          throw new Error(`${pending.material.name}: a previous request for ${pending.quantity} ${pending.material.unit} is awaiting confirmation. Restore the original requirement in your basket or contact FTI with request ID ${pending.id} before submitting a changed requirement.`);
         }
       }
       const submittedReferences = [...guidedSubmissions.values()].filter(entry => entry.acknowledged && entry.reference).map(entry => entry.reference!);
@@ -216,15 +203,23 @@ export function Checkout() {
           whatsapp_consent: consent,
         };
         let id = '';
+        let materialResult: { reference?: string } | undefined;
         if (!item.fastenerRequirement) {
-          const fingerprint = JSON.stringify({ item, quantity: line.quantity, buyer: details });
-          let attempt = materialRequests.current.get(item.key);
+          const { indicativePrice: _displayPrice, ...specification } = item;
+          void _displayPrice;
+          const fingerprint = JSON.stringify({ item: specification, quantity: line.quantity, buyer: details });
+          let attempt = guidedSubmissions.get(item.key);
           if (attempt && attempt.fingerprint !== fingerprint) {
-            throw new Error(`${item.name}: restore the original quantity and buyer details before retrying an earlier submission. Contact FTI before changing an unconfirmed request.`);
+            throw new Error(`${item.name}: restore the original quantity and buyer details before retrying the saved request ${attempt.id}. Contact FTI before changing an unconfirmed request.`);
+          }
+          if (attempt?.acknowledged) {
+            quantity(line.productId, 0, line.variantId);
+            continue;
           }
           if (!attempt) {
-            attempt = { id: newRequest(), fingerprint };
-            materialRequests.current.set(item.key, attempt);
+            attempt = { id: newRequest(), fingerprint, productId: line.productId, variantId: line.variantId, material: item, quantity: line.quantity, acknowledged: false };
+            guidedSubmissions.set(item.key, attempt);
+            await persistSubmissions();
           }
           id = attempt.id;
         }
@@ -290,7 +285,7 @@ export function Checkout() {
           );
           if (error) throw new Error(error.message);
         } else if (item.manualRequest) {
-          await catalogApi.submitManual(
+          materialResult = await catalogApi.submitManual(
             id,
             item.manualRequest,
             String(line.quantity),
@@ -308,9 +303,9 @@ export function Checkout() {
             normalize(entry.grade) === normalize(item.brand ?? item.grade) && entry.uom === item.unit,
           );
           if (matches.length !== 1) throw new Error(`${item.name}: select this size and grade again from the catalogue before ordering.`);
-          await catalogApi.submitSelection(id, matches[0].id, String(line.quantity), details);
+          materialResult = await catalogApi.submitSelection(id, matches[0].id, String(line.quantity), details);
         } else if (item.optionId) {
-          await catalogApi.submitSelection(
+          materialResult = await catalogApi.submitSelection(
             id,
             item.optionId,
             String(line.quantity),
@@ -323,6 +318,14 @@ export function Checkout() {
           throw new Error(
             'Remove the unavailable material and add it again from the catalogue.',
           );
+        }
+        if (!item.fastenerRequirement) {
+          const receipt = guidedSubmissions.get(item.key)!;
+          receipt.acknowledged = true;
+          receipt.reference = materialResult?.reference ?? receipt.id;
+          submittedReferences.push(receipt.reference);
+          await persistSubmissions();
+          quantity(line.productId, 0, line.variantId);
         }
       }
 
@@ -411,6 +414,15 @@ export function Checkout() {
     available.some((item) => item.id === address) &&
     !cart.some((line) => !line.material && !line.variantId);
 
+  if (width < 1000) return <MobileMaterialCheckout
+    cart={cart} products={catalogProducts} prices={prices} priceAccess={priceAccess} loadingPrices={pricesLoading} subtotal={estimatedTotal}
+    buyer={buyer} setBuyer={setBuyer} business={business} setBusiness={setBusiness}
+    phone={auth.identity?.profile.phone ?? auth.session?.user.phone ?? ''} consent={consent} setConsent={setConsent}
+    addresses={available} selectedAddress={address} setAddress={setAddress} loadingAddresses={addresses.isPending} addressError={addresses.error?.message}
+    line1={line1} setLine1={setLine1} city={city} setCity={setCity} state={state} setState={setState} pincode={pincode} setPincode={setPincode}
+    saveAddress={saveAddress} submit={submit} attempted={attempted} busy={busy} valid={isFormValid} message={message}
+  />;
+
   return (
     <ScrollView
       style={styles.scroll}
@@ -480,9 +492,7 @@ export function Checkout() {
               mat?.size ?? variant?.size_label ?? variant?.sku ?? 'Standard';
             const grade = mat?.grade ?? mat?.brand ?? p?.grade ?? 'Primary Mill';
             const unit = mat?.unit ?? variant?.uom ?? 'MT';
-            const linePrice = mat?.indicativePrice?.amount
-              ? Math.round(mat.indicativePrice.amount * line.quantity).toLocaleString('en-IN')
-              : null;
+            const linePrice = prices[idx]?.total.toLocaleString('en-IN', { maximumFractionDigits: 2 }) ?? null;
 
             return (
               <View
@@ -533,19 +543,26 @@ export function Checkout() {
           <View style={styles.summaryMetric}>
             <Txt style={styles.metricLabel}>TOTAL TONNAGE</Txt>
             <Txt style={styles.metricValue}>
-              {totalTonnes > 0 ? `${totalTonnes} MT` : `${cart.length} Lots`}
+              {totalTonnes > 0 ? `${totalTonnes.toLocaleString('en-IN', { maximumFractionDigits: 3 })} MT` : `${cart.length} Lots`}
             </Txt>
           </View>
           <View style={styles.summaryDivider} />
           <View style={styles.summaryMetric}>
             <Txt style={styles.metricLabel}>ESTIMATED MATERIAL</Txt>
             <Txt style={styles.metricValue}>
-              {estimatedTotal > 0
+              {priceAccess && estimatedTotal > 0
                 ? `₹${Math.round(estimatedTotal).toLocaleString('en-IN')}`
-                : 'Verified on invoice'}
+                : priceAccess ? (pricesLoading ? 'Loading current rates?' : 'Quotation required') : 'Subscription required'}
             </Txt>
           </View>
         </View>
+      </View>
+
+      {Object.keys(otherUnits).length ? <Txt style={styles.subtitle}>{Object.entries(otherUnits).map(([unit, qty]) => `${qty} ${unit}`).join(' ? ')} listed separately from tonnage.</Txt> : null}
+      {!priceAccess ? <SubscribeForPrices /> : unpriced > 0 ? <Txt style={styles.subtitle}>{unpriced} item(s) require quotation. Subtotal includes priced items only.</Txt> : null}
+      <View style={styles.card}>
+        <Txt style={styles.cardTitle}>Payment by bank transfer</Txt>
+        <Txt style={styles.subtitle}>FTI will confirm availability, the final amount and bank instructions before payment. Transfer outside the app by NEFT / RTGS. Accounts staff manually verify receipt; submitting a reference does not confirm payment.</Txt>
       </View>
 
       {/* 3. BUYER DETAILS CARD */}

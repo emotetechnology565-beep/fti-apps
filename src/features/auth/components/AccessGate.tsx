@@ -6,9 +6,11 @@ import { Empty, Button } from '@shared/ui';
 export function AccessGate({
   children,
   permission,
+  returnTo,
 }: {
   children: ReactNode;
   permission?: string;
+  returnTo?: 'checkout' | 'requirements';
 }) {
   const auth = useAuth();
   if (!auth.ready)
@@ -24,7 +26,7 @@ export function AccessGate({
         title="Sign in to continue"
         description="Use your WhatsApp number to access your account."
         action={
-          <Button onPress={() => router.push('/login')}>
+          <Button onPress={() => router.push(returnTo ? { pathname: '/login', params: { returnTo } } : '/login')}>
             Sign in with WhatsApp
           </Button>
         }

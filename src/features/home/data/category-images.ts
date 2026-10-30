@@ -51,6 +51,7 @@ export async function loadHomeCatalogue(
   repository = supabaseCatalogRepository,
 ) {
   const images: HomeCategoryImages = {};
+  const publishedProducts = new Map<string, Product>();
   const categories = new Map<string, { id: string; title: string; category: string; imageUrl?: string }>();
   const tractorParts = new Map<
     string,
@@ -61,6 +62,7 @@ export async function loadHomeCatalogue(
     const page = await repository.listProducts({ limit: 50, offset });
     collectCategoryImages(images, page.items);
     for (const product of page.items) {
+      if (product.status === 'published') publishedProducts.set(product.id, product);
       if (product.status === 'published' && product.product_kind === 'steel') {
         const category = page.categories.find((entry) => entry.id === product.category_id || entry.slug === product.category);
         const key = category?.slug ?? product.category;
@@ -84,5 +86,5 @@ export async function loadHomeCatalogue(
     offset += page.items.length;
     if (!page.items.length || offset >= page.total) break;
   }
-  return { images, categories: [...categories.values()], tractorParts: [...tractorParts.values()] };
+  return { images, products: [...publishedProducts.values()], categories: [...categories.values()], tractorParts: [...tractorParts.values()] };
 }

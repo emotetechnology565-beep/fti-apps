@@ -7,9 +7,14 @@ export function cartLinePrice(line: CartLine, product?: Product) {
     const price = line.material.indicativePrice;
     if (!price || !Number.isFinite(price.amount) || price.amount <= 0)
       return null;
-    const perTonne = price.unit === 'PMT' || price.unit === 'MT';
-    if (perTonne && !['MT', 'kg'].includes(line.material.unit)) return null;
-    const factor = perTonne && line.material.unit === 'kg' ? 0.001 : 1;
+    const rateUnit = price.unit === 'PMT' ? 'MT' : price.unit;
+    const quantityUnit = line.material.unit;
+    const factor = rateUnit === quantityUnit ? 1
+      : rateUnit === 'MT' && quantityUnit === 'kg' ? 0.001
+      : rateUnit === 'kg' && quantityUnit === 'MT' ? 1000
+      : null;
+    // A per-weight rate cannot price pieces without an explicit weight basis.
+    if (factor === null) return null;
     return {
       amount: price.amount,
       unit: price.unit,

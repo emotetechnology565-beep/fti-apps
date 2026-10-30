@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { loginReturnPath } from '../model/login-return';
+import { prepareGuestCheckout } from '@core/state/workspace-store';
 import { supabase } from '@core/api/supabase-client';
 import { useAuth } from '../components/AuthProvider';
 import { requestOtp, verifyOtp } from '../services/phone-auth';
@@ -43,6 +44,7 @@ export function Login() {
     setBusy(true);
     setMessage('');
     try {
+      if (returnPath === '/checkout' && !auth.session) await prepareGuestCheckout();
       await verifyOtp(phone, token);
       router.replace(returnPath);
     } catch (e) {
@@ -63,7 +65,7 @@ export function Login() {
           <>
             <Txt>You are signed in.</Txt>
             <Button onPress={() => router.replace(returnPath)}>
-              {returnPath === '/products' ? 'Continue material request' : 'Continue to account'}
+              {returnPath === '/checkout' ? 'Continue checkout' : returnPath === '/rfqs' ? 'Continue requirement' : returnPath === '/products' ? 'Continue material request' : 'Continue to account'}
             </Button>
             <Button
               secondary

@@ -1,5 +1,12 @@
 # Home product images
 
+The mobile home entry is `ProcurementMobileHome.tsx`. Its three division cards,
+category tabs, published product cards and business activity follow the supplied
+mobile home reference. It uses the published catalogue, admin fastener photo and
+drawing library, uploaded Bunny images and authenticated order/RFQ APIs. No sample
+products, rates, compatibility claims or business activity are inserted. Catalogue
+prices retain the existing subscription guard. Desktop home remains separate.
+
 The home screen reads published products and public media through the catalogue
 repository. It checks subsequent pages when needed and selects the first product
 photo in each raw-material category. “Shop by category” has separate horizontal

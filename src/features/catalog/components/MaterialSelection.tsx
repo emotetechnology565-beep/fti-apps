@@ -993,7 +993,7 @@ function SelectionForm({
                           secondary
                           icon="file-text"
                           disabled={!valid || busy}
-                          onPress={() => void review()}
+                          onPress={() => { addToCart(); router.push('/cart'); }}
                           style={{
                             flex: 1,
                             backgroundColor: '#e6eeff',
@@ -1002,7 +1002,7 @@ function SelectionForm({
                             minHeight: 48,
                           }}
                         >
-                          Request quotation
+                          Review quotation basket
                         </Button>
                         <Button
                           icon="shopping-cart"
@@ -1016,7 +1016,7 @@ function SelectionForm({
                             borderRadius: 4,
                             minHeight: 48,
                           }}
-                        >{`Add to Cart${draft.quantity ? ` · ${draft.quantity} ${unit}` : ''}`}</Button>
+                        >{`${priceAccess && price ? 'Add to Cart' : 'Add to RFQ'}${draft.quantity ? ` · ${draft.quantity} ${unit}` : ''}`}</Button>
                       </View>
                     </View>
                   ) : (

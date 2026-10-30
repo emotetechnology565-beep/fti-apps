@@ -1,5 +1,5 @@
 import { useAuth } from '@features/auth/ui';
-import { HomeHeader } from '@features/home/components/HomeHeader';
+import { MaterialMobileHeader } from '@shared/ui/MaterialMobileHeader';
 import { hasPermission } from '@features/auth';
 import { AdminNavigation } from '@features/admin/ui';
 import { AccountNavigation } from '@features/account/ui';
@@ -92,8 +92,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const desktop = width >= 1000;
   const phone = width < 600;
   const path = usePathname();
-  const mobileCommercePage = !desktop && (path === '/' || path === '/products' || path === '/cart' || path.startsWith('/product/'));
-  const mobileDetailPage = !desktop && (path === '/cart' || path.startsWith('/product/'));
+  const mobileCommercePage = !desktop && (['/', '/products', '/cart', '/checkout', '/orders', '/rates', '/rfqs', '/payments', '/account', '/support'].includes(path) || path.startsWith('/product/'));
   const {section: adminSection} = useLocalSearchParams<{section?: string}>();
   const staffWorkspace = path === '/admin' && hasPermission(auth.identity,'staff.access');
   const accountWorkspace = path === '/account' && !!auth.identity;
@@ -346,7 +345,7 @@ export function Shell({ children }: { children: ReactNode }) {
     return <Txt>{auth.error ?? 'Opening your workspace...'}</Txt>;
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: c.bg }}
+      style={{ flex: 1, backgroundColor: !desktop ? '#071A38' : c.bg }}
       edges={['top', 'bottom']}
     >
       <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -358,7 +357,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </View>
         ) : null}
         <View style={{ flex: 1, minWidth: 0 }}>
-          {mobileCommercePage ? (path === '/' ? <HomeHeader market={markets.data?.find(item => item.id === market)?.name ?? ''} name={business.name} onMarket={() => setMarketOpen(true)} onNotifications={() => setNotifications(true)} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : null) : <View
+          {mobileCommercePage ? <MaterialMobileHeader variant={path === '/' ? 'white' : 'navy'} count={cart.length} onMenu={() => { menuProgress.setValue(0); setMenu(true); }} /> : <View
             style={{
               height: phone ? 68 : 76,
               backgroundColor: 'white',
@@ -569,11 +568,11 @@ export function Shell({ children }: { children: ReactNode }) {
               ) : null}
             </View>
           </ScrollView>
-          {!desktop && !mobileDetailPage ? (
+          {!desktop ? (
             <View
               style={{
                 flexDirection: 'row',
-                backgroundColor: c.paper,
+                backgroundColor: '#071A38',
                 borderTopWidth: 1,
                 borderColor: c.cardBorder,
                 minHeight: 64,
@@ -584,8 +583,8 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               {[
                 { label: 'Home', path: '/', icon: 'home' },
-                { label: 'Catalogue', path: '/products', icon: 'search' },
-                { label: 'Quotes', path: '/rfqs', icon: 'file-text' },
+                { label: 'Catalogue', path: '/products', icon: 'grid' },
+                { label: 'Requirements', path: '/rfqs', icon: 'file-text' },
                 { label: 'Orders', path: '/orders', icon: 'package' },
                 { label: 'Account', path: '/account', icon: 'user' },
               ].map((n) => (
@@ -605,12 +604,12 @@ export function Shell({ children }: { children: ReactNode }) {
                   <Icon
                     name={n.icon as IconName}
                     size={18}
-                    color={active(n.path) ? c.brandRed : c.subtle}
+                    color={active(n.path) ? '#EB2027' : '#FFFFFF'}
                   />
                   <Txt
                     style={{
                       fontSize: 10,
-                      color: active(n.path) ? c.brandRed : c.muted,
+                      color: active(n.path) ? '#EB2027' : '#FFFFFF',
                       fontWeight: active(n.path) ? '700' : '500',
                     }}
                   >

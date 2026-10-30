@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { pendingRequirementUpload } from '../data/requirement-upload';
 import { View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useStore } from '@core/state/workspace-store';
@@ -113,10 +115,17 @@ function BuyerDetail({ detail, refresh }: { detail: SalesDetail; refresh: () => 
 }
 
 export function RFQs() {
+  const params = useLocalSearchParams<{ create?: string; attachments?: string }>();
   const auth = useAuth();
   const client = useQueryClient();
   const oldDrafts = useStore(state => state.rfqs);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(params.create === '1');
+  const [pendingFileName, setPendingFileName] = useState('');
+  useEffect(() => {
+    let active = true;
+    void pendingRequirementUpload(auth.session?.user.id ?? null).then(file => { if (active && file) { setPendingFileName(file.name); setOpen(true); } }).catch(() => { if (active) setPendingFileName('Selected file could not be restored. Choose it again from Home.'); });
+    return () => { active = false; };
+  }, [auth.session?.user.id]);
   const [selected, setSelected] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const list = useQuery({ queryKey: ['sales','mine',auth.session?.user.id,offset], queryFn: () => salesApi.mine(offset), retry: false });
@@ -124,6 +133,7 @@ export function RFQs() {
   async function refresh() { await client.invalidateQueries({ queryKey: ['sales'] }); }
   return <View style={{ gap: 18 }}><Heading eyebrow="YOUR MATERIAL REQUIREMENTS" title="Requests & quotations" description="Send multi-item requirements to FTI and review your quotations." action={<Button onPress={() => setOpen(!open)}>{open ? 'Close form' : 'New request'}</Button>} />
     {!selected ? <CategoryQuotationPdfs /> : null}
+    {open && (params.attachments === '1' || pendingFileName) ? <Card><Txt>{pendingFileName ? `Selected requirement list: ${pendingFileName}. ` : ''}Build your requirement below. After submitting it, confirm upload of the selected file in its attachments section. Supported: PDF, JPEG or PNG up to 3 MB.</Txt></Card> : null}
     {open && <Composer submitted={async id => { setOpen(false); setSelected(id); await refresh(); }} />}
     {selected ? <><Button secondary onPress={() => setSelected(null)}>Back to requests</Button>
       {detail.isPending ? <Txt>Loading request…</Txt> : detail.error ? <Empty title="Request unavailable" description={detail.error.message} /> : <BuyerDetail detail={detail.data} refresh={refresh} />}</> : <>
