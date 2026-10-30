@@ -129,8 +129,8 @@ function ReviewOrder({
         }}
       />
       <Txt style={s.muted}>
-        Confirmation reserves available stock and makes this amount payable. It
-        does not mark payment as received.
+        Confirmation reserves available stock. Record any payment already
+        received in the optional field; the remaining balance stays payable.
       </Txt>
       {!review ? (
         <Button disabled={busy || !valid} onPress={() => setReview(true)}>

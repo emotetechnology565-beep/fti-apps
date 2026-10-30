@@ -191,8 +191,8 @@ export function RequestFulfillment({
       )}
       {workflow.status !== 'pending_confirmation' ? (
         <Txt style={styles.muted}>
-          Fulfillment tracking does not confirm receipt of payment. Verify
-          agreed payment terms separately before dispatch.
+          Payment totals include recorded receipts. Leave the optional payment
+          field blank when no additional payment was received.
         </Txt>
       ) : null}
       <OrderClosure

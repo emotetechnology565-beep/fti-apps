@@ -2,6 +2,8 @@
 
 Apply `202610300008_order_confirmation_whatsapp_total.sql`, then `202610300009_order_payment_tracking.sql` after preceding migrations.
 
+The payment migration is safe to rerun when `order_receipts` already exists. It preserves rows, reuses existing indexes, replaces functions and skips hooks already installed. Reapplying it does not replay payments or duplicate the step integration.
+
 ## Payment recording
 
 Each material/fastener fulfillment step and parts confirmation/dispatch/delivery form has an optional **Payment received at this step (INR)** field. Leave it blank when no money was received. A positive entry requires a receipt number or bank reference (5–120 characters) and `payment.review` permission with staff MFA. The entered amount is a new receipt, added to earlier receipts; it is not the cumulative amount paid.

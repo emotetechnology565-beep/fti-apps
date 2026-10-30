@@ -435,6 +435,33 @@ test('receipts are atomic, permission checked, idempotent and reflected in all o
           job.parameters.every((text) => text.length <= 100),
       ),
     );
+    // Rerunning the deployment must preserve receipts and avoid duplicate hooks.
+    const beforeRerun = await db.query(
+      'select * from commerce.order_receipts order by id',
+    );
+    const beforeFunctions = await db.query(
+      `select proname,pg_get_functiondef(oid) as definition from pg_proc where proname in ('fti_request_fulfillment_update','fti_commerce_expire','fti_admin_orders','fti_customer_orders') order by proname`,
+    );
+    const rerunMigration = await readFile(
+      'supabase/migrations/202610300009_order_payment_tracking.sql',
+      'utf8',
+    );
+    await db.exec(rerunMigration);
+    await db.exec(rerunMigration);
+    assert.deepEqual(
+      (await db.query('select * from commerce.order_receipts order by id'))
+        .rows,
+      beforeRerun.rows,
+    );
+    assert.deepEqual(
+      (
+        await db.query(
+          `select proname,pg_get_functiondef(oid) as definition from pg_proc where proname in ('fti_request_fulfillment_update','fti_commerce_expire','fti_admin_orders','fti_customer_orders') order by proname`,
+        )
+      ).rows,
+      beforeFunctions.rows,
+    );
+    assert.equal((await summary('commerce', manual.id)).remaining, '0');
     await db.exec('set role anon');
     await assert.rejects(summary('commerce', cart.id), /permission denied/);
   } finally {
