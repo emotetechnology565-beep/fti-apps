@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { Button, Empty, Icon, Txt } from '@shared/ui';
 import { orderHistory, type HistoryOrder } from '../services/order-history';
+import { OrderClosure } from './OrderClosure';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
 import { FulfillmentTimeline } from '@features/operations/components/FulfillmentTimeline';
@@ -21,6 +22,8 @@ const filters = [
   ['active', 'Active'],
   ['shipped', 'In Transit'],
   ['delivered', 'Delivered'],
+  ['cancelled', 'Cancelled'],
+  ['rejected', 'Rejected'],
 ] as const;
 const statusLabel = (status: string) =>
   status === 'shipped' ? 'In transit' : status.replaceAll('_', ' ');
@@ -142,6 +145,8 @@ function LedgerCard({
               ? 'Hide order details'
               : 'View order & dispatch details'}
         </Button>
+        {f.closure_note ? <Txt>{f.closure_note}</Txt> : null}
+        <OrderClosure kind={order.kind} id={order.id} status={order.status} />
         {expanded ? (
           <View style={styles.notes}>
             <Txt style={styles.strong}>Fulfillment updates</Txt>

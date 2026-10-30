@@ -32,7 +32,9 @@ export function CustomerShipmentTracking({
     shipments.some((item) =>
       ['shipped', 'in_transit', 'dispatched'].includes(item.status),
     );
-  const stopped = ['cancelled', 'expired'].includes(status);
+  const stopped = ['cancelled', 'rejected', 'expired', 'refunded'].includes(
+    status,
+  );
   const timelineStatus = stopped
     ? status
     : delivered
@@ -55,7 +57,11 @@ export function CustomerShipmentTracking({
   const headline = stopped
     ? status === 'cancelled'
       ? 'Order cancelled'
-      : 'Order expired'
+      : status === 'rejected'
+        ? 'Order rejected'
+        : status === 'refunded'
+          ? 'Order refunded'
+          : 'Order expired'
     : delivered
       ? 'Your order has arrived'
       : dispatched

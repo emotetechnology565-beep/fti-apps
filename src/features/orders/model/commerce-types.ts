@@ -4,6 +4,7 @@ export type OrderSummary = {
   reservation_expires_at: string | null;
 };
 export type OrderDetail = OrderSummary & {
+  closure_note?: string | null;
   buyer_id: string; business_id: string | null; delivery_address_snapshot: {
     line1: string; line2: string | null; city: string; state: string; pincode: string;
   };

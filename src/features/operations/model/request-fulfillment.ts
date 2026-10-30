@@ -5,10 +5,12 @@ export const fulfillmentSteps = [
   { status: 'shipped', label: 'Dispatched' },
   { status: 'delivered', label: 'Delivered' },
 ] as const;
-export type FulfillmentStatus = (typeof fulfillmentSteps)[number]['status'];
+export type FulfillmentStatus =
+  (typeof fulfillmentSteps)[number]['status'] | 'cancelled' | 'rejected';
 export type RequestFulfillmentState = {
   status: FulfillmentStatus;
   revision: number;
+  closure_note?: string | null;
   confirmed_total?: string | null;
   confirmation_note?: string | null;
   carrier?: string | null;

@@ -62,6 +62,7 @@ export function OrderOverview({ order }: { order: OrderDetail }) {
         <OrderStatus status={order.status} />
       </View>
 
+      {order.closure_note ? <Txt>{order.closure_note}</Txt> : null}
       {awaiting ? (
         <View style={styles.notice}>
           <View style={styles.noticeIcon}>
@@ -145,6 +146,7 @@ export function OrderOverview({ order }: { order: OrderDetail }) {
         </View>
         <View style={styles.summary}>
           <Txt style={styles.title}>Payment summary</Txt>
+          {order.closure_note ? <Txt>{order.closure_note}</Txt> : null}
           {awaiting ? (
             <>
               <Row style={styles.summaryRow}>

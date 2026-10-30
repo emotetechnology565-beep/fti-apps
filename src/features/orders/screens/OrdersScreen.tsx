@@ -18,6 +18,7 @@ import { ShipmentTracking } from '@features/operations/ui';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
 import { OrderOverview, OrderStatus } from '../components/OrderOverview';
+import { OrderClosure } from '../components/OrderClosure';
 import { OrderLedger } from '../components/OrderLedger';
 
 function OrderPanel({
@@ -69,6 +70,7 @@ function OrderPanel({
   return (
     <View style={{ gap: 18 }}>
       <OrderOverview order={order} />
+      <OrderClosure kind="commerce" id={order.id} status={order.status} onClosed={refresh} />
       {Number.isFinite(expiry) && order.status === 'pending_payment' ? (
         <Txt style={s.muted}>
           Stock reserved until {new Date(expiry).toLocaleString()}

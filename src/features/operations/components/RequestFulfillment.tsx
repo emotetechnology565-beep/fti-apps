@@ -1,3 +1,4 @@
+import { OrderClosure } from '@features/orders/components/OrderClosure';
 import { FulfillmentTimeline } from './FulfillmentTimeline';
 import { DriverDetails, DriverFields } from './DriverDetails';
 import { validDriverDetails } from '../model/driver-details';
@@ -33,7 +34,7 @@ export function RequestFulfillment({
   const index = fulfillmentSteps.findIndex(
     (step) => step.status === workflow.status,
   );
-  const next = fulfillmentSteps[index + 1];
+  const next = index >= 0 ? fulfillmentSteps[index + 1] : undefined;
   const [editing, setEditing] = useState(false);
   const [review, setReview] = useState(false);
   const [reviewedRevision, setReviewedRevision] = useState(-1);
@@ -169,6 +170,17 @@ export function RequestFulfillment({
           agreed payment terms separately before dispatch.
         </Txt>
       ) : null}
+      <OrderClosure
+        kind={kind}
+        id={requestId}
+        status={workflow.status}
+        admin
+        onClosed={() => {
+          setEditing(false);
+          setReview(false);
+        }}
+      />
+      {workflow.closure_note ? <Txt>{workflow.closure_note}</Txt> : null}
       {next && !editing ? (
         <Button
           disabled={!permitted}

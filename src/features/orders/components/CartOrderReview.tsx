@@ -1,3 +1,4 @@
+import { OrderDecisions } from './OrderDecisions';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -54,6 +55,7 @@ export function CartOrderQueue() {
   const query = useQuery({ queryKey: ['commerce', 'cart-queue', auth.session?.user.id], queryFn: commerceApi.cartQueue, enabled: permitted, retry: false });
   if (!permitted) return null;
   return <View style={{ gap: 14 }}>
+    <OrderDecisions />
     <Txt style={s.h2}>Tractor orders awaiting confirmation</Txt>
     <Button secondary onPress={() => void query.refetch()}>Refresh orders</Button>
     {query.isPending ? <Txt>Loading orders…</Txt> : query.error ? <Txt accessibilityRole="alert">{query.error.message}</Txt> : <>

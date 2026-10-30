@@ -18,6 +18,7 @@ export type HistoryOrder = {
     location?: string;
   };
   fulfillment: {
+    closure_note?: string | null;
     carrier?: string;
     tracking_number?: string;
     vehicle_number?: string;

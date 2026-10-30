@@ -53,7 +53,9 @@ export function FulfillmentTimeline({
     : status === 'paid'
       ? 'confirmed'
       : status;
-  const stopped = ['cancelled', 'expired'].includes(normalized);
+  const stopped = ['cancelled', 'rejected', 'expired', 'refunded'].includes(
+    normalized,
+  );
   const active = Math.max(
     0,
     stages.findIndex((stage) => stage.status === normalized),
@@ -64,7 +66,13 @@ export function FulfillmentTimeline({
         {
           status: normalized,
           title:
-            normalized === 'cancelled' ? 'Order cancelled' : 'Order expired',
+            normalized === 'cancelled'
+              ? 'Order cancelled'
+              : normalized === 'rejected'
+                ? 'Order rejected'
+                : normalized === 'refunded'
+                  ? 'Order refunded'
+                  : 'Order expired',
           detail: 'Contact FTI if you need help with this order.',
         },
       ]

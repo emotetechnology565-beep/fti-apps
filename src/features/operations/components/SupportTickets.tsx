@@ -107,9 +107,17 @@ function Thread({ ticket, staff }: { ticket: Ticket; staff: boolean }) {
 export function SupportTickets({ staff = false }: { staff?: boolean }) {
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
-  const params = useLocalSearchParams<{ order?: string }>();
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
+  const params = useLocalSearchParams<{
+    order?: string;
+    subject?: string;
+    body?: string;
+  }>();
+  const [subject, setSubject] = useState(
+    typeof params.subject === 'string' ? params.subject : '',
+  );
+  const [body, setBody] = useState(
+    typeof params.body === 'string' ? params.body : '',
+  );
   const [order, setOrder] = useState(
     typeof params.order === 'string' ? params.order : '',
   );

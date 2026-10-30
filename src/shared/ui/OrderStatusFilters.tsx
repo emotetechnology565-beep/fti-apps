@@ -8,6 +8,8 @@ export const adminOrderStatuses = [
   ['processing', 'Processing'],
   ['shipped', 'Dispatched'],
   ['delivered', 'Delivered'],
+  ['cancelled', 'Cancelled'],
+  ['rejected', 'Rejected'],
 ] as const;
 export const adminOrderStatusLabel = (status: string) =>
   adminOrderStatuses.find(([value]) => value === status)?.[1] ?? status;
@@ -30,7 +32,9 @@ export function OrderStatusFilters({
     >
       {adminOrderStatuses
         .filter(
-          ([status]) => !dispatchOnly || status !== 'pending_confirmation',
+          ([status]) =>
+            !dispatchOnly ||
+            !['pending_confirmation', 'cancelled', 'rejected'].includes(status),
         )
         .map(([status, label]) => (
           <Pressable
