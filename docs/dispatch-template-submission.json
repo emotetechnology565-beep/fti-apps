@@ -1,0 +1,17 @@
+{
+  "name": "fti_order_dispatch_v1",
+  "id": "1167282989040942",
+  "language": "en_US",
+  "category": "UTILITY",
+  "status_at_submission": "PENDING",
+  "parameters": [
+    "Order reference",
+    "Transporter",
+    "LR / tracking number",
+    "Vehicle number",
+    "Driver name",
+    "Driver phone"
+  ],
+  "missing_field_text": "Not provided",
+  "customer_messages_sent_during_submission": false
+}

@@ -8,6 +8,12 @@ import urllib.request
 from pathlib import Path
 
 NAMES = {
+    'fti_order_dispatch_v1': {
+        'name': 'fti_order_dispatch_v1', 'category': 'UTILITY',
+        'components': [{'type': 'BODY',
+            'text': 'Your FTI order {{1}} has been dispatched.\nTransporter: {{2}}\nLR / tracking number: {{3}}\nVehicle number: {{4}}\nDriver name: {{5}}\nDriver phone: {{6}}\nDetails marked "Not provided" are not yet available. Open the FTI app for dispatch updates or contact FTI for assistance.',
+            'example': {'body_text': [['FTI-RM-1001', 'Punjab Road Transport', 'LR-2026-001', 'PB10AB1234', 'Gurpreet Singh', '+919876543210']]}}],
+    },
     'fti_raw_material_received_v1': {
         'name': 'fti_raw_material_received_v1', 'category': 'UTILITY',
         'components': [{'type': 'BODY',

@@ -11,6 +11,7 @@ const env = {
  storageEndpoint: Deno.env.get('BUNNY_STORAGE_ENDPOINT') ?? '', encryptionKey: Deno.env.get('BUNNY_MEDIA_ENCRYPTION_KEY') ?? '',
 };
 const parameterCounts: Record<string,number> = {
+ fti_order_dispatch_v1:6,
  fti_order_status_v1:2,fti_support_reply_v1:1,fti_request_received_v1:2,fti_admin_request_v1:2,
  fti_request_approved_v1:2,fti_request_rejected_v1:2,fti_request_update_v1:3,
  fti_category_quotation_v1:3,
