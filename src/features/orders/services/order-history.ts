@@ -1,6 +1,8 @@
+import type { PaymentSummary } from '../model/order-payments';
 import { supabase } from '@core/api/supabase-client';
 
 export type HistoryOrder = {
+  payment_summary?: PaymentSummary;
   id: string;
   kind: 'commerce' | 'material' | 'fastener';
   reference: string;

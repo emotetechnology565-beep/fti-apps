@@ -1,10 +1,19 @@
+import {
+  OrderPayments,
+  PaymentFields,
+} from '@features/orders/components/OrderPayments';
+import {
+  newPaymentDraft,
+  paymentDraftError,
+} from '@features/orders/model/order-payments';
+import { orderPayments } from '@features/orders/services/order-payments-api';
 import { OrderClosure } from '@features/orders/components/OrderClosure';
 import { FulfillmentTimeline } from './FulfillmentTimeline';
 import { DriverDetails, DriverFields } from './DriverDetails';
 import { validDriverDetails } from '../model/driver-details';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { hasPermission } from '@features/auth';
 import { useAuth } from '@features/auth/ui';
 import { Badge, Button, Field, Row, Txt, c } from '@shared/ui';
@@ -26,6 +35,13 @@ export function RequestFulfillment({
 }) {
   const auth = useAuth();
   const client = useQueryClient();
+  const payments = useQuery({
+    queryKey: ['order-payments', auth.session?.user.id, kind, requestId],
+    queryFn: () => orderPayments(kind, requestId),
+    enabled: !!auth.session,
+    retry: false,
+  });
+  const [payment, setPayment] = useState(newPaymentDraft);
   const [saved, setSaved] = useState<RequestFulfillmentState | null>(null);
   const workflow =
     saved && saved.revision > (initial?.revision ?? 0)
@@ -56,7 +72,7 @@ export function RequestFulfillment({
   const permitted =
     hasPermission(auth.identity, 'order.manage') &&
     hasPermission(auth.identity, permission);
-  const valid =
+  const stepValid =
     next?.status === 'confirmed'
       ? /^\d{1,14}(\.\d{1,2})?$/.test(total) &&
         Number(total) > 0 &&
@@ -72,6 +88,9 @@ export function RequestFulfillment({
         : next?.status === 'delivered'
           ? proof.trim().length >= 5 && proof.trim().length <= 1000
           : !!next;
+  const remaining =
+    next?.status === 'confirmed' ? total : payments.data?.remaining;
+  const valid = stepValid && !paymentDraftError(payment, remaining);
   const actionLabel =
     next?.status === 'confirmed'
       ? 'Confirm order'
@@ -99,6 +118,7 @@ export function RequestFulfillment({
         workflow.revision,
         next.status,
         {
+          ...payment,
           confirmed_total: total.trim(),
           confirmation_note: note.trim(),
           carrier: carrier.trim(),
@@ -110,6 +130,9 @@ export function RequestFulfillment({
         },
       );
       setSaved(result);
+      setPayment(newPaymentDraft());
+      void client.invalidateQueries({ queryKey: ['order-payments'] });
+      void client.invalidateQueries({ queryKey: ['commerce'] });
       setEditing(false);
       setReview(false);
       setSuccess(`${next.label} saved.`);
@@ -152,6 +175,7 @@ export function RequestFulfillment({
           ) : undefined
         }
       />
+      <OrderPayments kind={kind} id={requestId} editable={!editing} />
       {workflow.confirmed_total ? (
         <Txt>
           Agreed order total: INR{' '}
@@ -297,9 +321,23 @@ export function RequestFulfillment({
               multiline
             />
           )}
+          <PaymentFields
+            draft={payment}
+            remaining={remaining}
+            onChange={(value) => {
+              setPayment(value);
+              setReview(false);
+            }}
+          />
           {review ? (
             <View style={styles.review}>
               <Txt style={styles.title}>Review before saving</Txt>
+              {payment.payment_amount ? (
+                <Txt>
+                  Record INR {payment.payment_amount} received against{' '}
+                  {payment.payment_reference}.
+                </Txt>
+              ) : null}
               <Txt>
                 {next.status === 'confirmed'
                   ? `Confirm this order for INR ${total} with note: ${note}`

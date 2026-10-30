@@ -73,6 +73,8 @@ export function ordersWorkbook(
       'LR / tracking',
       'Closure reason',
       'Internal ID',
+      'Payment received (INR)',
+      'Remaining amount (INR)',
     ],
   ];
   for (const order of result.orders)
@@ -98,6 +100,8 @@ export function ordersWorkbook(
       order.fulfillment?.tracking_number ?? '',
       order.closure_note,
       order.id,
+      moneyCell(order.payment_summary?.paid ?? null),
+      moneyCell(order.payment_summary?.remaining ?? order.amount_due),
     ]);
   const { summary: s } = result;
   const overview: Cell[][] = [

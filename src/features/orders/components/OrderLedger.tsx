@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@features/auth/ui';
 import { Button, Empty, Icon, Txt } from '@shared/ui';
 import { orderHistory, type HistoryOrder } from '../services/order-history';
+import { PaymentTotals } from './OrderPayments';
 import { OrderClosure } from './OrderClosure';
 import { commerceApi } from '../services/commerce-api';
 import type { OrderDetail } from '../model/commerce-types';
@@ -107,6 +108,9 @@ function LedgerCard({
             <Txt style={styles.small}>Due {money(order.amount_due)}</Txt>
           ) : null}
         </View>
+        {order.payment_summary ? (
+          <PaymentTotals summary={order.payment_summary} />
+        ) : null}
         <View style={styles.timelineSection}>
           <Txt style={styles.strong}>Order & dispatch timeline</Txt>
           <FulfillmentTimeline

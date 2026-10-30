@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { hasPermission } from '@features/auth';
 import { useAuth } from '@features/auth/ui';
 import { RequestFulfillment } from '@features/operations/ui';
+import { OrderPayments } from '@features/orders/components/OrderPayments';
 import { OrderOverview } from '@features/orders/components/OrderOverview';
 import { OrderClosure } from '@features/orders/components/OrderClosure';
 import { commerceApi } from '@features/orders/services/commerce-api';
@@ -95,6 +96,7 @@ function PartsDetail({ order }: { order: AdminOrder }) {
   return (
     <>
       <OrderOverview order={detail.data} />
+      <OrderPayments kind="commerce" id={order.id} editable />
       <OrderClosure
         kind="commerce"
         id={order.id}

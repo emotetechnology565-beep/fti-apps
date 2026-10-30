@@ -15,7 +15,7 @@ export function useAction() {
  const client=useQueryClient(); const [busy,setBusy]=useState(false); const [message,setMessage]=useState('');
  async function run(action:()=>Promise<unknown>,done?:()=>void) {
   setBusy(true);setMessage('');
-  try {await action();done?.();setMessage('Saved.');await client.invalidateQueries({queryKey:['operations']});await client.invalidateQueries({queryKey:['commerce']});}
+  try {await action();done?.();setMessage('Saved.');await client.invalidateQueries({queryKey:['operations']});await client.invalidateQueries({queryKey:['commerce']});await client.invalidateQueries({queryKey:['order-payments']});await client.invalidateQueries({queryKey:['admin-orders']});}
   catch(e){setMessage((e as Error).message);}finally{setBusy(false);}
  }
  return {busy,message,run};

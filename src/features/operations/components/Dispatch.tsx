@@ -1,3 +1,12 @@
+import {
+  OrderPayments,
+  PaymentFields,
+} from '@features/orders/components/OrderPayments';
+import {
+  newPaymentDraft,
+  paymentDraftError,
+} from '@features/orders/model/order-payments';
+import { orderStepWithPayment } from '@features/orders/services/order-payments-api';
 import { FulfillmentTimeline } from './FulfillmentTimeline';
 import { DriverDetails, DriverFields } from './DriverDetails';
 import { validDriverDetails } from '../model/driver-details';
@@ -89,6 +98,7 @@ export function ShipmentTracking({
   );
 }
 function DispatchEditor({ order }: { order: DispatchOrder }) {
+  const [payment, setPayment] = useState(newPaymentDraft);
   const [carrier, setCarrier] = useState('');
   const [tracking, setTracking] = useState('');
   const [vehicle, setVehicle] = useState('');
@@ -102,6 +112,7 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
     <Card style={{ gap: 10 }}>
       <Txt style={s.h2}>{order.order_no}</Txt>
       <Badge>{order.status === 'shipped' ? 'Dispatched' : order.status}</Badge>
+      <OrderPayments kind="commerce" id={order.id} editable />
       <ShipmentTracking
         orderId={order.id}
         status={order.status}
@@ -157,6 +168,13 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
               digits, or leave the fields empty.
             </Txt>
           )}
+          <PaymentFields
+            draft={payment}
+            onChange={(value) => {
+              setPayment(value);
+              setConfirm(false);
+            }}
+          />
           {!confirm ? (
             <Button
               disabled={
@@ -181,24 +199,27 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
                   : 'Confirm the entire order has left with this transporter? Check shipping documents before confirming.'}
               </Txt>
               <Button
-                disabled={action.busy}
+                disabled={action.busy || !!paymentDraftError(payment)}
                 onPress={() =>
                   void action.run(
                     () =>
-                      shipped
-                        ? rpc('fti_operations_deliver', {
-                            p_order: order.id,
-                            p_note: note,
-                          })
-                        : rpc('fti_operations_dispatch', {
-                            p_order: order.id,
-                            p_carrier: carrier,
-                            p_tracking: tracking,
-                            p_vehicle: vehicle,
-                            p_driver_name: driverName.trim(),
-                            p_driver_phone: driverPhone.trim(),
-                          }),
-                    () => setConfirm(false),
+                      orderStepWithPayment(
+                        shipped ? 'deliver' : 'dispatch',
+                        order.id,
+                        {
+                          ...payment,
+                          note,
+                          carrier,
+                          tracking,
+                          vehicle,
+                          driver_name: driverName.trim(),
+                          driver_phone: driverPhone.trim(),
+                        },
+                      ),
+                    () => {
+                      setConfirm(false);
+                      setPayment(newPaymentDraft());
+                    },
                   )
                 }
               >
@@ -206,7 +227,7 @@ function DispatchEditor({ order }: { order: DispatchOrder }) {
               </Button>
               <Button
                 secondary
-                disabled={action.busy}
+                disabled={action.busy || !!paymentDraftError(payment)}
                 onPress={() => setConfirm(false)}
               >
                 Cancel

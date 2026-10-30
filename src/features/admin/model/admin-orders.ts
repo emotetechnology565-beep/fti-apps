@@ -1,3 +1,4 @@
+import type { PaymentSummary } from '@features/orders/model/order-payments';
 import type { OrderKind } from '@features/orders/model/order-actions';
 import type { RequestFulfillmentState } from '@features/operations/model/request-fulfillment';
 
@@ -16,6 +17,7 @@ export const emptyOrderFilters: OrderFilters = {
   to: '',
 };
 export type AdminOrder = {
+  payment_summary?: PaymentSummary;
   id: string;
   kind: OrderKind;
   reference: string;
