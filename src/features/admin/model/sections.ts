@@ -6,6 +6,7 @@ export const staffSections = [
   {id: 'businesses', label: 'Business approvals', icon: 'briefcase', permissions: ['business.review']},
   {id: 'catalogue', label: 'FTI catalogue', icon: 'box', permissions: ['catalog.manage']},
   {id: 'pricing', label: 'Pricing', icon: 'trending-up', permissions: ['price.manage']},
+  {id: 'market-rates', label: 'Market Rates', icon: 'bar-chart-2', permissions: ['price.manage']},
   {id: 'sales', label: 'RFQs & quotations', icon: 'file-text', permissions: ['sales.manage']},
   {id: 'inventory', label: 'FTI inventory', icon: 'package', permissions: ['inventory.manage']},
   {id: 'tractor-orders', label: 'Tractor order confirmation', icon: 'shopping-cart', permissions: ['order.manage']},

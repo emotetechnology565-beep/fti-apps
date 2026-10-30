@@ -40,6 +40,7 @@ dist-native/
 
 # Generated build for isolated admin order browser checks
 /artifacts/admin-orders-preview/
+/artifacts/market-rates-preview/
 
 # generated native folders
 /ios

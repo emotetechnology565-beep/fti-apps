@@ -9,6 +9,7 @@ import { AccessGate, StaffMfa, useAuth } from '@features/auth/ui';
 import { identityRpc, hasPermission } from '@features/auth';
 import { CatalogManagement } from '@features/catalog';
 import { PricingManagement } from '@features/pricing/ui';
+import { MarketRatesAdmin } from '@features/market-rates/MarketRatesAdmin';
 import { SalesManagement } from '@features/quotations/ui';
 import { OperationsManagement } from '@features/operations/ui';
 import { CartOrderQueue, CommerceManagement } from '@features/orders/ui';
@@ -170,6 +171,8 @@ function StaffWorkspace() {
         return <CatalogManagement />;
       case 'pricing':
         return <PricingManagement />;
+      case 'market-rates':
+        return <MarketRatesAdmin />;
       case 'sales':
         return <SalesManagement />;
       case 'inventory':

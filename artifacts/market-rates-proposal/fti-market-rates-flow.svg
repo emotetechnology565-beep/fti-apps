@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2240" viewBox="0 0 1600 2240" role="img" aria-labelledby="title desc">
+<title id="title">FTI Market Rates — proposed pricing and history flow</title>
+<desc id="desc">Client review proposal showing fast admin updates, pricing fields awaiting confirmation, dated price records and customer history. Illustrative values are not current market quotes.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 1 L8 5 L0 9" fill="none" stroke="#167d80" stroke-width="1.7"/></marker></defs>
+<rect width="1600" height="2240" fill="#f3f5f7"/>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="0" y="0" width="1600" height="255" rx="0" fill="#102d42" stroke="#102d42"/>
+<text x="64" y="57" font-size="19" fill="#9dc6ce" font-weight="700">FIELDFAST TECH INTERNATIONAL</text>
+<text x="64" y="119" font-size="46" fill="#ffffff" font-weight="700">Market rates. Every update, preserved.</text>
+<text x="64" y="165" font-size="25" fill="#d3e1e9" font-weight="400">Proposed admin workflow + customer price history</text>
+<text x="64" y="212" font-size="16" fill="#9dc6ce" font-weight="600">CLIENT REVIEW  /  30 OCT 2026  /  VERSION 01</text>
+<rect x="1240" y="39" width="294" height="44" rx="22" fill="#254758" stroke="#426373"/>
+<text x="1264" y="68" font-size="17" fill="#ffffff" font-weight="700">PROPOSAL • TO CONFIRM</text>
+<rect x="64" y="282" width="1472" height="88" rx="16" fill="#fff7e6" stroke="#ead4a7"/>
+<text x="88" y="316" font-size="21" fill="#7c5817" font-weight="700">Starting point: your market.txt report</text>
+<text x="88" y="347" font-size="21" fill="#7c5817" font-weight="400">Ingot / Scrap / Billet + city / grade + quoted rate + movement + report date and time.</text>
+<text x="64" y="423" font-size="17" fill="#167d80" font-weight="700">01</text>
+<text x="109" y="423" font-size="27" fill="#172d40" font-weight="700">Admin updates prices quickly</text>
+<rect x="64" y="448" width="344" height="152" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="86" y="481" font-size="14" fill="#167d80" font-weight="700">STEP 1</text>
+<text x="86" y="517" font-size="22" fill="#172d40" font-weight="700">Select the market</text>
+<text x="86" y="552" font-size="17" fill="#526779" font-weight="400">Choose material, city and grade.</text>
+<text x="86" y="577" font-size="17" fill="#526779" font-weight="400">Load the latest saved values.</text>
+<path d="M414 524 L434 524" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<rect x="440" y="448" width="344" height="152" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="462" y="481" font-size="14" fill="#167d80" font-weight="700">STEP 2</text>
+<text x="462" y="517" font-size="22" fill="#172d40" font-weight="700">Edit changed values</text>
+<text x="462" y="552" font-size="17" fill="#526779" font-weight="400">Update a row, paste Excel data,</text>
+<text x="462" y="577" font-size="17" fill="#526779" font-weight="400">or apply a bulk + / − adjustment.</text>
+<path d="M790 524 L810 524" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<rect x="816" y="448" width="344" height="152" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="838" y="481" font-size="14" fill="#167d80" font-weight="700">STEP 3</text>
+<text x="838" y="517" font-size="22" fill="#172d40" font-weight="700">Review before publishing</text>
+<text x="838" y="552" font-size="17" fill="#526779" font-weight="400">See old → new values and totals.</text>
+<text x="838" y="577" font-size="17" fill="#526779" font-weight="400">Set effective date + time (IST).</text>
+<path d="M1166 524 L1186 524" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<rect x="1192" y="448" width="344" height="152" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="1214" y="481" font-size="14" fill="#167d80" font-weight="700">STEP 4</text>
+<text x="1214" y="517" font-size="22" fill="#172d40" font-weight="700">Publish the update</text>
+<text x="1214" y="552" font-size="17" fill="#526779" font-weight="400">Save the batch together.</text>
+<text x="1214" y="577" font-size="17" fill="#526779" font-weight="400">Show prices when effective.</text>
+<text x="64" y="631" font-size="19" fill="#172d40" font-weight="400">Suggested defaults: carry forward rolling / profit values; publish only edited rows. Both rules need approval.</text>
+<text x="64" y="688" font-size="17" fill="#167d80" font-weight="700">02</text>
+<text x="109" y="688" font-size="27" fill="#172d40" font-weight="700">Pricing model — confirm the definitions and formula</text>
+<rect x="64" y="713" width="930" height="366" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="88" y="749" font-size="16" fill="#526779" font-weight="700">ILLUSTRATIVE ADMIN ENTRY  •  INR PER METRIC TONNE</text>
+<rect x="88" y="766" width="882" height="41" rx="5" fill="#edf2f5" stroke="#edf2f5"/>
+<text x="104" y="794" font-size="17" fill="#172d40" font-weight="700">Field</text>
+<text x="388" y="794" font-size="17" fill="#172d40" font-weight="700">Example</text>
+<text x="595" y="794" font-size="17" fill="#172d40" font-weight="700">Proposed behaviour</text>
+<text x="104" y="840" font-size="18" fill="#172d40" font-weight="400">Base price</text>
+<text x="388" y="840" font-size="19" fill="#172d40" font-weight="700">₹46,300</text>
+<text x="595" y="840" font-size="17" fill="#172d40" font-weight="400">Admin enters the source rate</text>
+<text x="104" y="881" font-size="18" fill="#172d40" font-weight="400">Increase / adjustment</text>
+<text x="388" y="881" font-size="19" fill="#172d40" font-weight="700">+₹200</text>
+<text x="595" y="881" font-size="17" fill="#172d40" font-weight="400">Meaning to confirm with client</text>
+<text x="104" y="922" font-size="18" fill="#172d40" font-weight="400">Increased price</text>
+<text x="388" y="922" font-size="19" fill="#172d40" font-weight="700">₹46,500</text>
+<text x="595" y="922" font-size="17" fill="#172d40" font-weight="400">Calculated: base + adjustment</text>
+<text x="104" y="963" font-size="18" fill="#172d40" font-weight="400">Rolling price / charge</text>
+<text x="388" y="963" font-size="19" fill="#172d40" font-weight="700">₹3,000</text>
+<text x="595" y="963" font-size="17" fill="#172d40" font-weight="400">Definition and preset rule to confirm</text>
+<text x="104" y="1004" font-size="18" fill="#172d40" font-weight="400">Profit</text>
+<text x="388" y="1004" font-size="19" fill="#172d40" font-weight="700">₹500</text>
+<text x="595" y="1004" font-size="17" fill="#172d40" font-weight="400">Amount or percentage to confirm</text>
+<rect x="88" y="1018" width="882" height="39" rx="5" fill="#e6f3ef" stroke="#e6f3ef"/>
+<text x="104" y="1045" font-size="18" fill="#172d40" font-weight="600">Final selling price</text>
+<text x="388" y="1045" font-size="19" fill="#172d40" font-weight="700">₹50,000</text>
+<text x="595" y="1045" font-size="17" fill="#172d40" font-weight="400">Calculated if this model is approved</text>
+<rect x="1018" y="713" width="518" height="366" rx="16" fill="#102d42" stroke="#102d42"/>
+<text x="1046" y="753" font-size="25" fill="#ffffff" font-weight="700">Proposed calculation</text>
+<text x="1046" y="800" font-size="21" fill="#d3e1e9" font-weight="400">Base + adjustment = increased price</text>
+<text x="1046" y="834" font-size="21" fill="#d3e1e9" font-weight="400">Increased + rolling + profit = final</text>
+<path d="M1046 866 L1508 866" stroke="#426373" stroke-width="2" fill="none"/>
+<text x="1046" y="904" font-size="21" fill="#ffffff" font-weight="700">Keep these concepts separate</text>
+<text x="1046" y="942" font-size="18" fill="#d3e1e9" font-weight="400">Market movement: change from prior quote.</text>
+<text x="1046" y="972" font-size="18" fill="#d3e1e9" font-weight="400">Price adjustment: a pricing input, if required.</text>
+<text x="1046" y="1002" font-size="18" fill="#d3e1e9" font-weight="400">Do not add movement twice to a source rate.</text>
+<text x="1046" y="1047" font-size="17" fill="#edcd94" font-weight="600">Rolling and profit are absent from market.txt.</text>
+<path d="M800 1094 L800 1120" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<rect x="64" y="1137" width="1472" height="124" rx="16" fill="#e7f1f2" stroke="#c5dcde"/>
+<text x="88" y="1174" font-size="26" fill="#172d40" font-weight="700">03   One dated record for each published price</text>
+<text x="88" y="1211" font-size="20" fill="#172d40" font-weight="400">Save market + material + grade, all price inputs, effective date/time, publication time and admin.</text>
+<text x="88" y="1240" font-size="18" fill="#526779" font-weight="400">Preserve earlier records. Corrections create a linked revision; past values remain traceable. Proposed policy.</text>
+<path d="M800 1272 L800 1299" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<text x="64" y="1346" font-size="17" fill="#167d80" font-weight="700">04</text>
+<text x="109" y="1346" font-size="27" fill="#172d40" font-weight="700">Customer sees the latest rate and its history</text>
+<rect x="64" y="1371" width="660" height="371" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="90" y="1409" font-size="17" fill="#167d80" font-weight="700">MARKET RATES</text>
+<text x="90" y="1449" font-size="28" fill="#172d40" font-weight="700">Mandi Gobindgarh · Billet</text>
+<text x="90" y="1484" font-size="18" fill="#526779" font-weight="400">Illustrative update · 28 Oct 2026, 12:00 PM IST</text>
+<text x="90" y="1546" font-size="46" fill="#172d40" font-weight="700">₹50,000</text>
+<text x="302" y="1546" font-size="21" fill="#526779" font-weight="400">/ tonne</text>
+<text x="90" y="1580" font-size="20" fill="#b34a43" font-weight="600">−₹200 vs previous published final price</text>
+<path d="M90 1600 L698 1600" stroke="#dbe2e8" stroke-width="2" fill="none"/>
+<text x="90" y="1634" font-size="20" fill="#172d40" font-weight="400">Search city / grade     |     Ingot · Scrap · Billet</text>
+<rect x="90" y="1660" width="608" height="52" rx="10" fill="#167d80" stroke="#167d80"/>
+<text x="258" y="1693" font-size="21" fill="#ffffff" font-weight="600">View price history →</text>
+<path d="M734 1558 L768 1558" stroke="#167d80" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+<rect x="788" y="1371" width="748" height="371" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="814" y="1410" font-size="17" fill="#167d80" font-weight="700">PRICE HISTORY</text>
+<text x="814" y="1448" font-size="23" fill="#172d40" font-weight="700">Filter by date range · choose an update time</text>
+<rect x="814" y="1470" width="696" height="38" rx="6" fill="#edf2f5" stroke="#edf2f5"/>
+<text x="830" y="1496" font-size="17" fill="#172d40" font-weight="400">Today       7 days       30 days       Custom dates</text>
+<text x="830" y="1550" font-size="21" fill="#172d40" font-weight="400">28 Oct · 12:00 PM</text>
+<text x="1175" y="1550" font-size="23" fill="#172d40" font-weight="700">₹50,000</text>
+<text x="1394" y="1550" font-size="19" fill="#b34a43" font-weight="400">−₹200</text>
+<path d="M814 1565 L1510 1565" stroke="#dbe2e8" stroke-width="2" fill="none"/>
+<text x="830" y="1599" font-size="21" fill="#172d40" font-weight="400">28 Oct · 10:00 AM</text>
+<text x="1175" y="1599" font-size="23" fill="#172d40" font-weight="700">₹50,200</text>
+<text x="1394" y="1599" font-size="19" fill="#167d80" font-weight="400">+₹100</text>
+<path d="M814 1614 L1510 1614" stroke="#dbe2e8" stroke-width="2" fill="none"/>
+<text x="830" y="1648" font-size="21" fill="#172d40" font-weight="400">27 Oct · 04:00 PM</text>
+<text x="1175" y="1648" font-size="23" fill="#172d40" font-weight="700">₹50,100</text>
+<text x="1394" y="1648" font-size="19" fill="#167d80" font-weight="400">—</text>
+<path d="M814 1663 L1510 1663" stroke="#dbe2e8" stroke-width="2" fill="none"/>
+<text x="814" y="1714" font-size="18" fill="#526779" font-weight="400">Tap a row → approved customer breakdown for that time.</text>
+<text x="64" y="1776" font-size="19" fill="#172d40" font-weight="400">Customer visibility needs approval: show final price only, or selected breakdown fields. Profit defaults to admin-only.</text>
+<rect x="64" y="1813" width="1472" height="183" rx="16" fill="#ffffff" stroke="#dbe2e8"/>
+<text x="88" y="1851" font-size="28" fill="#172d40" font-weight="700">Please confirm or suggest changes</text>
+<text x="88" y="1890" font-size="19" fill="#526779" font-weight="400">1. What does rolling price mean? Confirm one real calculation.</text>
+<text x="88" y="1922" font-size="19" fill="#526779" font-weight="400">2. Which values are preset, and do they vary by material / mill?</text>
+<text x="88" y="1954" font-size="19" fill="#526779" font-weight="400">3. What can customers see? Should profit stay private?</text>
+<text x="840" y="1890" font-size="19" fill="#526779" font-weight="400">4. Are GST / freight included? Confirm ₹ / tonne and IST.</text>
+<text x="840" y="1922" font-size="19" fill="#526779" font-weight="400">5. Who can publish? Is a separate approval step needed?</text>
+<text x="840" y="1954" font-size="19" fill="#526779" font-weight="400">6. Every update in history? Allow backdating or scheduling?</text>
+<text x="64" y="2040" font-size="16" fill="#167d80" font-weight="700">REFERENCE PATTERNS</text>
+<a href="https://www.bigmint.co/prices/detail" target="_blank">
+<text x="64" y="2075" font-size="22" fill="#172d40" font-weight="700">BigMint ↗</text>
+</a>
+<text x="64" y="2105" font-size="18" fill="#526779" font-weight="400">Date filters, comparisons and price chart options.</text>
+<a href="https://www.steelorbis.com/steel-prices/steel-price-analysis/" target="_blank">
+<text x="822" y="2075" font-size="22" fill="#172d40" font-weight="700">SteelOrbis ↗</text>
+</a>
+<text x="822" y="2105" font-size="18" fill="#526779" font-weight="400">Product / location selection and historical comparisons.</text>
+<text x="64" y="2141" font-size="17" fill="#526779" font-weight="400">Public reference pages reviewed 30 Oct 2026. These support customer history patterns; admin workflow is our proposal.</text>
+<path d="M64 2170 L1536 2170" stroke="#dbe2e8" stroke-width="2" fill="none"/>
+<text x="64" y="2205" font-size="22" fill="#172d40" font-weight="600">Please review this proposed flow and share any changes before we finalize the scope.</text>
+</g></svg>
