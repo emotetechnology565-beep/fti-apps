@@ -3,22 +3,13 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { hasPermission } from '@features/auth';
 import { useAuth } from '@features/auth/ui';
-import {
-  Badge,
-  Button,
-  Card,
-  Chip,
-  Empty,
-  Field,
-  Row,
-  Txt,
-  c,
-} from '@shared/ui';
+import { Button, Card, Chip, Empty, Field, Row, Txt, c } from '@shared/ui';
 import { marketRatesApi } from './api';
+import { MarketMultiSelect } from './StateDropdown';
+import { BulkPriceEditor } from './BulkPriceEditor';
 import { exportMarketHistory } from './export-history';
 import {
   categories,
-  priceTotal,
   rateTime,
   historyRangeError,
   historyPreset,
@@ -62,179 +53,6 @@ function Choices({
         ))}
       </ScrollView>
     </View>
-  );
-}
-
-function PriceEditor({
-  location,
-  latest,
-  canPublish,
-  onDirty,
-  onSaved,
-  onBusy,
-}: {
-  location: Location;
-  latest?: Rate;
-  canPublish: boolean;
-  onDirty: (v: boolean) => void;
-  onSaved: () => Promise<void>;
-  onBusy: (v: boolean) => void;
-}) {
-  const [base, setBase] = useState(latest?.base_price ?? '');
-  const [increase, setIncrease] = useState(latest?.increase_amount ?? '0');
-  const [review, setReview] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
-  const total = priceTotal(base, increase);
-  const changed =
-    total !== null &&
-    (!latest ||
-      Number(base) !== Number(latest.base_price) ||
-      Number(increase) !== Number(latest.increase_amount));
-  function update(field: 'base' | 'increase', value: string) {
-    const nextBase = field === 'base' ? value : base,
-      nextIncrease = field === 'increase' ? value : increase;
-    setBase(nextBase);
-    setIncrease(nextIncrease);
-    setReview(false);
-    setMessage('');
-    onDirty(
-      nextBase !== (latest?.base_price ?? '') ||
-        nextIncrease !== (latest?.increase_amount ?? '0'),
-    );
-  }
-  async function publish() {
-    if (busy || !changed || !total) return;
-    setBusy(true);
-    onBusy(true);
-    setMessage('');
-    try {
-      await marketRatesApi.publish(
-        location.id,
-        latest?.id ?? null,
-        base.trim(),
-        increase.trim(),
-      );
-      onDirty(false);
-      setReview(false);
-      setMessage('Price published. History has been updated.');
-      await onSaved();
-    } catch (error) {
-      setMessage((error as Error).message);
-    } finally {
-      setBusy(false);
-      onBusy(false);
-    }
-  }
-  return (
-    <Card style={styles.group}>
-      <Row style={styles.wrap}>
-        <Txt style={styles.title}>{location.district}</Txt>
-        <Badge>{location.category}</Badge>
-      </Row>
-      <Txt>{location.state} · INR per metric tonne</Txt>
-      <Txt>
-        {latest
-          ? `Last published ${rateTime(latest.published_at)} IST`
-          : 'No price published yet. Enter the first rate below.'}
-      </Txt>
-      <View style={styles.priceRow}>
-        <View style={styles.priceCell}>
-          <Field
-            label="Base price (₹ / tonne)"
-            numeric
-            editable={!busy && canPublish}
-            value={base}
-            onChangeText={(v) => update('base', v)}
-            placeholder="e.g. 46300"
-          />
-        </View>
-        <View style={styles.priceCell}>
-          <Field
-            label="Increase amount (₹ / tonne)"
-            editable={!busy && canPublish}
-            value={increase}
-            onChangeText={(v) => update('increase', v)}
-            placeholder="e.g. 200 or -200"
-          />
-        </View>
-        <View style={[styles.priceCell, styles.total]}>
-          <Txt style={styles.label}>Sale price (₹ / tonne)</Txt>
-          <Txt style={styles.amount}>{total ? money(total) : '—'}</Txt>
-          <Txt>Base + increase</Txt>
-        </View>
-      </View>
-      <Txt>
-        Increase is an added amount, not the resulting price. Use a negative
-        amount for a reduction. Sale price calculates automatically.
-      </Txt>
-      {!total && base !== '' ? (
-        <Txt accessibilityRole="alert">
-          Enter a positive base and sale price, with up to two decimal places.
-          Do not use commas.
-        </Txt>
-      ) : null}
-      {canPublish ? (
-        <>
-          {review ? (
-            <View style={styles.review}>
-              <Txt style={styles.label}>Review this update</Txt>
-              <Txt>
-                {location.category} · {location.state} · {location.district}
-              </Txt>
-              <Txt>
-                Base: {latest ? money(latest.base_price) : 'Not set'} →{' '}
-                {money(base)}
-              </Txt>
-              <Txt>
-                Increase: {latest ? money(latest.increase_amount) : 'Not set'} →{' '}
-                {money(increase)}
-              </Txt>
-              <Txt>
-                Sale: {latest ? money(latest.sale_price) : 'Not set'} →{' '}
-                {money(total!)}
-              </Txt>
-              <Txt>
-                The publication date and time will be recorded automatically.
-                Earlier prices remain in history.
-              </Txt>
-              <Row style={styles.wrap}>
-                <Button disabled={busy} onPress={() => void publish()}>
-                  {busy ? 'Publishing…' : 'Confirm & publish price'}
-                </Button>
-                <Button
-                  secondary
-                  disabled={busy}
-                  onPress={() => setReview(false)}
-                >
-                  Back to editing
-                </Button>
-              </Row>
-            </View>
-          ) : (
-            <Button disabled={busy || !changed} onPress={() => setReview(true)}>
-              Review price update
-            </Button>
-          )}
-        </>
-      ) : (
-        <Txt>Publishing requires price.publish permission.</Txt>
-      )}
-      <Button
-        secondary
-        disabled={busy}
-        onPress={() => {
-          setBase(latest?.base_price ?? '');
-          setIncrease(latest?.increase_amount ?? '0');
-          setReview(false);
-          setMessage('');
-          onDirty(false);
-        }}
-      >
-        Reset to last saved price
-      </Button>
-      {message ? <Txt accessibilityRole="alert">{message}</Txt> : null}
-    </Card>
   );
 }
 
@@ -586,8 +404,9 @@ export function MarketRatesAdmin() {
   const permitted = hasPermission(auth.identity, 'price.manage');
   const user = auth.session?.user.id;
   const [category, setCategory] = useState<Category>('Ingot');
-  const [state, setState] = useState('');
-  const [district, setDistrict] = useState('');
+  const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
+  const [historyDistrict, setHistoryDistrict] = useState('');
   const [tab, setTab] = useState('Prices');
   const [adding, setAdding] = useState(false);
   const [newState, setNewState] = useState(''),
@@ -608,11 +427,19 @@ export function MarketRatesAdmin() {
   const locations =
     query.data?.locations.filter((l) => l.category === category) ?? [];
   const states = [...new Set(locations.map((l) => l.state))];
-  const selected = locations.find((l) => l.id === district);
+  const availableDistricts = locations.filter((l) =>
+    selectedStates.includes(l.state),
+  );
+  const selected = availableDistricts.filter((l) =>
+    selectedDistricts.includes(l.id),
+  );
+  const districtIds = selected.map((l) => l.id).sort();
+  const historyLocation =
+    selected.find((l) => l.id === historyDistrict) ?? selected[0];
   const current = useQuery({
-    queryKey: [...queryRoot, user, 'latest', district],
-    queryFn: () => marketRatesApi.history(district, '', '', 0),
-    enabled: permitted && !!selected,
+    queryKey: [...queryRoot, user, 'latest', districtIds],
+    queryFn: () => marketRatesApi.current(districtIds),
+    enabled: permitted && districtIds.length > 0 && districtIds.length <= 100,
     retry: false,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
@@ -634,8 +461,8 @@ export function MarketRatesAdmin() {
     try {
       const id = await marketRatesApi.location(category, newState, newDistrict);
       await refresh();
-      setState(newState.trim());
-      setDistrict(id);
+      setSelectedStates([newState.trim()]);
+      setSelectedDistricts([id]);
       setAdding(false);
       setNewState('');
       setNewDistrict('');
@@ -659,8 +486,8 @@ export function MarketRatesAdmin() {
         <Txt style={styles.eyebrow}>MARKET RATE DESK</Txt>
         <Txt style={styles.heroTitle}>District prices, in one place.</Txt>
         <Txt style={{ color: '#CBD5E1' }}>
-          Choose a category, state and district. Review the three price columns
-          and publish a dated update.
+          Choose a category, multiple states and districts. Review the price
+          columns and publish a dated update.
         </Txt>
       </Card>
       {pending ? (
@@ -729,22 +556,32 @@ export function MarketRatesAdmin() {
             onChange={(value) =>
               navigate(() => {
                 setCategory(value as Category);
-                setState('');
-                setDistrict('');
+                setSelectedStates([]);
+                setSelectedDistricts([]);
                 setAdding(false);
               })
             }
           />
           <Card style={styles.group}>
             {states.length ? (
-              <Choices
-                label="2. State"
-                values={states}
-                selected={state}
-                onChange={(value) =>
+              <MarketMultiSelect
+                key={category}
+                label="States"
+                options={states
+                  .sort()
+                  .map((value) => ({ id: value, label: value }))}
+                selected={selectedStates}
+                disabled={busy || saving}
+                onChange={(values) =>
                   navigate(() => {
-                    setState(value);
-                    setDistrict('');
+                    setSelectedStates(values);
+                    setSelectedDistricts((ids) =>
+                      ids.filter((id) =>
+                        locations.some(
+                          (l) => l.id === id && values.includes(l.state),
+                        ),
+                      ),
+                    );
                   })
                 }
               />
@@ -753,32 +590,28 @@ export function MarketRatesAdmin() {
                 No districts configured for {category}. Add a district to begin.
               </Txt>
             )}
-            {state ? (
-              <View style={styles.group}>
-                <Txt style={styles.label}>3. District</Txt>
-                <Row style={styles.wrap}>
-                  {locations
-                    .filter((l) => l.state === state)
-                    .map((l) => (
-                      <Chip
-                        key={l.id}
-                        selected={district === l.id}
-                        onPress={() => navigate(() => setDistrict(l.id))}
-                      >
-                        {l.district}
-                      </Chip>
-                    ))}
-                </Row>
-              </View>
+            {selectedStates.length ? (
+              <MarketMultiSelect
+                label="Districts"
+                options={availableDistricts.map((l) => ({
+                  id: l.id,
+                  label: `${l.district} · ${l.state}`,
+                }))}
+                selected={selectedDistricts}
+                disabled={busy || saving}
+                onChange={(ids) => navigate(() => setSelectedDistricts(ids))}
+              />
             ) : states.length ? (
-              <Txt>Select a state to see its available districts.</Txt>
+              <Txt>Select states to see their available districts.</Txt>
             ) : null}
             <Button
               secondary
               disabled={busy || dirty}
               onPress={() => {
                 setAdding(!adding);
-                setNewState(state);
+                setNewState(
+                  selectedStates.length === 1 ? selectedStates[0] : '',
+                );
               }}
             >
               {' '}
@@ -814,7 +647,11 @@ export function MarketRatesAdmin() {
               </View>
             ) : null}
           </Card>
-          {selected ? (
+          {selected.length > 100 ? (
+            <Txt accessibilityRole="alert">
+              Select up to 100 districts per update.
+            </Txt>
+          ) : selected.length ? (
             current.isPending ? (
               <Txt>Loading district prices…</Txt>
             ) : current.error ? (
@@ -829,19 +666,41 @@ export function MarketRatesAdmin() {
               />
             ) : (
               <>
-                <PriceEditor
-                  key={`${selected.id}-${current.data[0]?.id ?? 'new'}-${editorEpoch}`}
-                  location={selected}
-                  latest={current.data[0]}
+                <BulkPriceEditor
+                  key={`${districtIds.join(',')}-${current.data.map((row) => row.latest?.id ?? 'new').join(',')}-${editorEpoch}`}
+                  locations={selected}
+                  current={current.data}
                   canPublish={hasPermission(auth.identity, 'price.publish')}
                   onDirty={setDirty}
                   onBusy={setSaving}
                   onSaved={async () => {
                     await refresh();
-                    setMessage('Price published. History has been updated.');
+                    setMessage(
+                      'District prices published. History has been updated.',
+                    );
                   }}
                 />
-                <History key={selected.id} location={selected} user={user} />
+                {historyLocation ? (
+                  <>
+                    <Choices
+                      label="District history"
+                      values={selected.map((l) => `${l.district} · ${l.state}`)}
+                      selected={`${historyLocation.district} · ${historyLocation.state}`}
+                      onChange={(label) =>
+                        setHistoryDistrict(
+                          selected.find(
+                            (l) => `${l.district} · ${l.state}` === label,
+                          )!.id,
+                        )
+                      }
+                    />
+                    <History
+                      key={historyLocation.id}
+                      location={historyLocation}
+                      user={user}
+                    />
+                  </>
+                ) : null}
               </>
             )
           ) : null}

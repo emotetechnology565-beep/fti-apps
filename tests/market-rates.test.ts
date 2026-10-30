@@ -194,6 +194,96 @@ test('market rate storage enforces staff permissions, history, stale-write prote
     assert.equal(afterRerun.locations.length, 4);
     assert.equal(afterRerun.settings.revision, 2);
     assert.equal(afterRerun.settings.notes, 'Updated notes');
+    await db.exec(
+      await readFile(
+        'supabase/migrations/202610300011_market_rates_bulk.sql',
+        'utf8',
+      ),
+    );
+    const otherDistrict = await call<string>(
+      `public.fti_pricing_market_rates_location('Ingot','Haryana','Hisar')`,
+    );
+    const currentRows = await call<
+      { location_id: string; latest: { id: string } | null }[]
+    >(`public.fti_pricing_market_rates_current($1::uuid[])`, [
+      [location, otherDistrict],
+    ]);
+    assert.equal(currentRows.length, 2);
+    assert.equal(
+      currentRows.find((r) => r.location_id === otherDistrict)?.latest,
+      null,
+    );
+    const latestId = currentRows.find((r) => r.location_id === location)!
+      .latest!.id;
+    const items = [
+      {
+        location_id: location,
+        previous: latestId,
+        base: '47000',
+        increase: '100',
+      },
+      {
+        location_id: otherDistrict,
+        previous: null,
+        base: '45000',
+        increase: '200',
+      },
+    ];
+    assert.equal(
+      await call(`public.fti_pricing_market_rates_bulk_publish($1::jsonb)`, [
+        JSON.stringify(items),
+      ]),
+      2,
+    );
+    const updated = await call<
+      { location_id: string; latest: { id: string; sale_price: string } }[]
+    >(`public.fti_pricing_market_rates_current($1::uuid[])`, [
+      [location, otherDistrict],
+    ]);
+    assert.equal(
+      updated.find((r) => r.location_id === otherDistrict)!.latest.sale_price,
+      '45200.00',
+    );
+    const countBefore = await call<number>(
+      `(select count(*)::integer from pricing.market_rate_entries)`,
+    );
+    // One stale row rolls back even a preceding valid publication.
+    const mixed = updated.map((r, i) => ({
+      location_id: r.location_id,
+      previous: i === 1 ? '00000000-0000-0000-0000-000000000099' : r.latest.id,
+      base: '48000',
+      increase: '0',
+    }));
+    await assert.rejects(
+      call(`public.fti_pricing_market_rates_bulk_publish($1::jsonb)`, [
+        JSON.stringify(mixed),
+      ]),
+      /Prices changed/,
+    );
+    assert.equal(
+      await call<number>(
+        `(select count(*)::integer from pricing.market_rate_entries)`,
+      ),
+      countBefore,
+    );
+    await assert.rejects(
+      call(`public.fti_pricing_market_rates_bulk_publish($1::jsonb)`, [
+        JSON.stringify([items[0], items[0]]),
+      ]),
+      /appear once/,
+    );
+    const scrap = await call<string>(
+      `public.fti_pricing_market_rates_location('Scrap','Haryana','Hisar')`,
+    );
+    await assert.rejects(
+      call(`public.fti_pricing_market_rates_bulk_publish($1::jsonb)`, [
+        JSON.stringify([
+          items[0],
+          { location_id: scrap, previous: null, base: '100', increase: '0' },
+        ]),
+      ]),
+      /one category/,
+    );
     assert.equal(
       (
         await call<unknown[]>(

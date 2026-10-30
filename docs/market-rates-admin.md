@@ -8,11 +8,17 @@ Run the complete contents of `supabase/migrations/202610300010_market_rates_admi
 
 The script can be run again. Existing locations, published prices, edited notes and contact details are preserved. Missing objects are added and RPC functions are replaced. The original single-date history function is removed in favour of the date-range function. No rate tables should be dropped.
 
-Deploy the updated `pricing` Edge Function as well. Its staff-only operation list now includes the five `fti_pricing_market_rates_*` operations. This is necessary for requests to reach the new SQL functions. Customer Market Rates screens are outside this change.
+Deploy the updated `pricing` Edge Function as well. Its staff-only operation list includes the `fti_pricing_market_rates_*` operations. This is necessary for requests to reach the new SQL functions. Customer Market Rates screens are outside this change.
 
 ## Workflow
 
 Choose Ingot, Scrap, Billet or Old Scrap, then a state and district. Locations are configured per category using “Add a district”. Historical source report rates are not seeded as current prices.
+
+Multiple states and districts can now be selected together within one category using searchable dropdowns with checkboxes, Select all and Clear. District options are restricted to the chosen states and include the state name to distinguish duplicates. Removing states removes their districts after confirming any unsaved changes.
+
+The selected districts appear as separate editable price rows. A common increase amount can be applied to all selected districts. Review and publish saves only changed rows, atomically: any stale or invalid row prevents the whole batch from publishing. Up to 100 districts can be included. History and exports remain district-specific; choose the district under District history.
+
+For an existing installation, also run `supabase/migrations/202610300011_market_rates_bulk.sql` and redeploy the updated `pricing` Edge Function. This adds the current-prices batch read and atomic multi-district publish operations without changing existing history.
 
 Base price + increase amount = sale price, in INR per metric tonne. Negative adjustments are allowed when the final price stays positive. Publishing uses server time; inputs from the latest rate are carried forward. A review step shows previous and proposed prices. Concurrent changes are rejected until the admin resets and refreshes.
 

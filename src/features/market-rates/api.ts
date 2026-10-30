@@ -1,6 +1,22 @@
 import { pricingRpc } from '@features/pricing/services/pricing-api';
 import type { Category, MarketAdmin, MarketSettings, Rate } from './model';
 export const marketRatesApi = {
+  current: (locations: string[]) =>
+    pricingRpc<{ location_id: string; latest: Rate | null }[]>(
+      'fti_pricing_market_rates_current',
+      { p_locations: locations },
+    ),
+  bulkPublish: (
+    items: {
+      location_id: string;
+      previous: string | null;
+      base: string;
+      increase: string;
+    }[],
+  ) =>
+    pricingRpc<number>('fti_pricing_market_rates_bulk_publish', {
+      p_items: items,
+    }),
   admin: () => pricingRpc<MarketAdmin>('fti_pricing_market_rates_admin'),
   location: (category: Category, state: string, district: string) =>
     pricingRpc<string>('fti_pricing_market_rates_location', {

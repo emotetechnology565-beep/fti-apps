@@ -5,6 +5,8 @@ const cors = {
   'Cache-Control': 'private, no-store',
 };
 const writeOperations = new Set([
+  'fti_pricing_market_rates_current',
+  'fti_pricing_market_rates_bulk_publish',
   'fti_pricing_market_rates_admin',
   'fti_pricing_market_rates_location',
   'fti_pricing_market_rates_history',
